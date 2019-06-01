@@ -8,6 +8,6 @@ public class Login {
 	
     @RequestMapping("/")
     public String index() {
-        return "Hello world!";
+        return "Whats POPPING?!";
     }
 }
