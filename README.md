@@ -1,5 +1,5 @@
 # Group2
-**CSCI 5308: Group 2 Project Repo**	
+**Group 2 Project Repo**	
 
 Ueli Haltner      [B00526617]
 
