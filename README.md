@@ -8,3 +8,5 @@ Samson Maconi     [B00801169]
 Babatunde Adeniyi [B00792158]  
 
 Yash Modi [B00799125]
+
+Milestone 1 Check
