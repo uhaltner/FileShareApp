@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>User Profile Page</title>
+    <link rel="stylesheet" href="../static/bootstrap.css" th:href="@{/bootstrap.css}" />
+</head>
+<body>
+
+<div class="container">
+
+    <div class="text-center m-5">
+        <h1>Profile</h1>
+    </div>
+
+    <form action="/feedback">
+        <div class="form-group row">
+            <label for="userFirstName" class="col-sm-2 col-form-label">First Name</label>
+            <div class="col-10">
+                <input th:placeholder="${userFirstName}" type="name" class="form-control" id="userFirstName" placeholder="[First Name]" readonly>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="userLastName" class="col-sm-2 col-form-label">Last Name</label>
+            <div class="col-10">
+                <input th:placeholder="${userLastName}" type="name" class="form-control" id="userLastName" placeholder="[Last Name]" readonly>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="userEmail" class="col-sm-2 col-form-label">Email</label>
+            <div class="col-10">
+                <input th:placeholder="${userEmail}" type="email" class="form-control" id="userEmail" placeholder="[Email]" readonly>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+            <div class="col-10">
+                <input type="password" class="form-control" id="inputPassword" placeholder="Password" >
+                <div>
+                    <small id="passwordHelpInline" class="text-muted">
+                        Requires: Lowercase letter (a-z), Uppercase letter (A-Z), Numeral (0-9), Minimum 8 characters.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="inputPasswordConfirm" class="col-sm-2 col-form-label">Confirm Password</label>
+            <div class="col-10">
+                <input type="password" class="form-control" id="inputPasswordConfirm" placeholder="Confirm Password">
+            </div>
+        </div>
+
+
+        <div class="form-group row">
+            <div class="col-sm-10 offset-sm-1">
+                <div class="text-center">
+                    <button id="btnUpdate" value="update" type="button" class="btn btn-primary btn-lg mr-5">Update</button>
+                    <button id="btnCancel" value="cancel" type="button" class="btn btn-default btn-lg ">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>
+
+
+<!--Reference: https://v4-alpha.getbootstrap.com/components/forms/ -->
