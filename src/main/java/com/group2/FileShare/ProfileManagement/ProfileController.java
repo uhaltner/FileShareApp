@@ -1,39 +1,41 @@
-package com.group2.FileShare.UserProfile;
+package com.group2.FileShare.ProfileManagement;
 
+import com.group2.FileShare.User.IUser;
+import com.group2.FileShare.User.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @Controller
 public class ProfileController {
 
-    private String firstName = "";
-    private String lastName = "";
-    private String email = "";
+
+    private IUser user;
     private boolean firstFormCall = true;
 
     @GetMapping("/profile")
-    public String profileForm(HttpServletRequest request, Model model){
+    public String profileForm(HttpSession session, Model model){
 
+
+        //int userId = session.getAttribute("userId");
+        int userId = 1;
         System.out.println("Hello Profile Form");
 
         if(firstFormCall){
 
             System.out.println("Profile Form Call");
 
-            firstName = "John";
-            lastName = "Smith";
-            email = "john.smith@email.com";
+            user = new User(userId);
 
             firstFormCall = false;
         }
 
 
-        model.addAttribute("userFirstName", firstName);
-        model.addAttribute("userLastName", lastName);
-        model.addAttribute("userEmail", email);
+        model.addAttribute("userFirstName", user.getFirstName());
+        model.addAttribute("userLastName", user.getLastName());
+        model.addAttribute("userEmail", user.getEmail());
 
         model.addAttribute("passwordForm", new PasswordForm());
 

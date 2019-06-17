@@ -1,4 +1,4 @@
-package com.group2.FileShare.UserProfile;
+package com.group2.FileShare.ProfileManagement;
 
 public class PasswordForm {
 
