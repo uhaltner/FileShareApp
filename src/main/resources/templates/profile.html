@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>User Profile Page</title>
+    <title>User Profile</title>
     <link rel="stylesheet" href="../static/bootstrap.css" th:href="@{/bootstrap.css}" />
 </head>
 <body>
@@ -13,7 +13,7 @@
         <h1>Profile</h1>
     </div>
 
-    <form action="/feedback">
+    <form action="#" th:action="@{/profile}" th:object="${passwordForm}" method="post">
         <div class="form-group row">
             <label for="userFirstName" class="col-sm-2 col-form-label">First Name</label>
             <div class="col-10">
@@ -38,7 +38,7 @@
         <div class="form-group row">
             <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
             <div class="col-10">
-                <input type="password" class="form-control" id="inputPassword" placeholder="Password" >
+                <input type="password" class="form-control" id="inputPassword" placeholder="Password" th:field="*{password}" >
                 <div>
                     <small id="passwordHelpInline" class="text-muted">
                         Requires: Lowercase letter (a-z), Uppercase letter (A-Z), Numeral (0-9), Minimum 8 characters.
@@ -50,7 +50,7 @@
         <div class="form-group row">
             <label for="inputPasswordConfirm" class="col-sm-2 col-form-label">Confirm Password</label>
             <div class="col-10">
-                <input type="password" class="form-control" id="inputPasswordConfirm" placeholder="Confirm Password">
+                <input type="password" class="form-control" id="inputPasswordConfirm" placeholder="Confirm Password" th:field="*{confirmPassword}">
             </div>
         </div>
 
@@ -58,8 +58,8 @@
         <div class="form-group row">
             <div class="col-sm-10 offset-sm-1">
                 <div class="text-center">
-                    <button id="btnUpdate" value="update" type="button" class="btn btn-primary btn-lg mr-5">Update</button>
-                    <button id="btnCancel" value="cancel" type="button" class="btn btn-default btn-lg ">Cancel</button>
+                    <button id="btnUpdate" name="action" value="update" type="submit" class="btn btn-primary btn-lg mr-5">Update</button>
+                    <button id="btnCancel" name="action" value="cancel" type="submit" class="btn btn-default btn-lg ">Cancel</button>
                 </div>
             </div>
         </div>
