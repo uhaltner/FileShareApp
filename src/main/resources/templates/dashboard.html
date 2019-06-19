@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="../static/bootstrap.css" th:href="@{/bootstrap.css}" />
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ROW 1 -->
+    <div class="row m-5 ">
+        <div class="col-6 col-md-4"></div>
+
+        <!-- Storage Indicator -->
+        <div class="col-6 col-md-4">
+            <label>Available Storage</label>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+
+        <!-- Profile & Logout Buttons -->
+        <div class="col-6 col-md-4 text-right">
+            <a href="/profile" th:href="@{/profile}" class="btn btn-large btn-primary m-2">Profile</a>
+            <a href="/signout" th:href="@{/signout}" class="btn btn-large btn-primary">Sign Out</a>
+        </div>
+    </div>
+
+    <!-- ROW 2 -->
+    <div class="row align-items-center text-left mt-4">
+
+        <!-- Dashboard tabs -->
+        <div class="col-sm-8">
+
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/dashboard/private" th:href="@{/dashboard/private}">Private Files</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard/public" th:href="@{/dashboard/public}">Public Files</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard/trash" th:href="@{/dashboard/trash}">Trash Files</a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- ROW 3 -->
+    <div class="row mt-4">
+
+        <!-- Search Form -->
+        <div class="col-12 col-md-8">
+            <form action="/searchbar" class="form-inline active-cyan-4">
+                <input class="form-control form-control-sm mr-3 w-75" type="text" placeholder="Search..." aria-label="Search">
+                <button type="submit" name="searchtext" class="btn btn-outline-primary">Search</button>
+            </form>
+        </div>
+
+        <!-- Dropdown Filter -->
+        <div class="col-3 col-md-2">
+
+            <div class="dropdown">
+                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Filter
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/filter/name">Name</a>
+                    <a class="dropdown-item" href="/filter/size">File Size</a>
+                    <a class="dropdown-item" href="/filter/type">File Type</a>
+                    <a class="dropdown-item" href="/filter/date">Date Modified</a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Add File Button-->
+        <div class="col-3 col-md-2">
+            <a href="/addfile" th:href="@{/addfile}" class="btn btn-outline-primary">Upload File</a>
+        </div>
+
+    </div>
+
+
+    <!-- ROW 4 -->
+    <div class="row mt-4">
+
+        <!-- Table-->
+        <table class="table align-middle">
+
+            <tbody>
+            <!-- list has to be given by dashboard controller -->
+            <tr th:each="doc : ${docList}">
+                <td class="align-middle col-sm-1" th:text="${doc.name}">FileName</td>
+                <td class="align-middle" th:text="${doc.timestamp}">TimeStamp</td>
+                <td>
+                    <a href="/downloadfile" th:href="@{/downloadfile}" th:object="${doc}" class="btn btn-outline-primary">Download</a>
+                </td>
+                <td>
+                    <a href="/sharefile" th:href="@{/sharefile}" th:object="${doc}" class="btn btn-outline-primary">Share</a>
+                </td>
+                <td>
+                    <a href="/deletefile" th:href="@{/deletefile}" th:object="${doc}" class="btn btn-outline-danger">Delete</a>
+                </td>
+                <td>
+                    <a href="/pinfile" th:href="@{/pinfile}" th:object="${doc}" method="post" class="btn btn-outline-primary">Pin</a>
+                </td>
+
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+
+</div>
+
+</body>
+</html>
