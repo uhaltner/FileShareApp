@@ -29,7 +29,7 @@ public class S3StorageService implements IStorage {
 
 	private S3StorageService() {
 		String bucket_name;
-		if (System.getProperty("FILESHARE_S3_BUCKET_NAME") == null || System.getProperty("FILESHARE_S3_BUCKET_NAME").isBlank()) {
+		if (System.getProperty("FILESHARE_S3_BUCKET_NAME") == null || System.getProperty("FILESHARE_S3_BUCKET_NAME").stripTrailing().isEmpty()) {
 			// TODO should load default bucket_name from configuration class
 			bucket_name = "csci5308-file-share-app";
 		} else {
