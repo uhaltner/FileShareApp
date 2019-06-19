@@ -1,8 +1,9 @@
 package com.group2.FileShare.User;
 
 public class UserModelMock implements IUserModel {
+
     @Override
-    public String getFirstName(int userId) {
+    public String pullFirstName(int userId) {
 
         switch(userId){
             case 1:
@@ -16,7 +17,7 @@ public class UserModelMock implements IUserModel {
     }
 
     @Override
-    public String getLastName(int userId) {
+    public String pullLastName(int userId) {
 
         switch(userId){
             case 1:
@@ -29,7 +30,7 @@ public class UserModelMock implements IUserModel {
     }
 
     @Override
-    public String getEmail(int userId) {
+    public String pullEmail(int userId) {
 
         switch(userId){
             case 1:
@@ -39,5 +40,46 @@ public class UserModelMock implements IUserModel {
             default:
                 return "nobody@email.com";
         }
+    }
+
+    @Override
+    public String pullPassword(int userId){
+        return "Password123";
+    }
+
+    @Override
+    public boolean exist(int userId){
+
+        //DB Implementation
+        return false;
+    }
+
+    @Override
+    public int pullUserId(String email, String password){
+
+        //DB Implementation
+        return 1;
+    }
+
+    /** Push user attributes to the database **/
+
+    @Override
+    public void pushFirstName(int userId, String firstName){
+        System.out.println("UserId: " + userId + " -> First Name: " + firstName);
+    }
+
+    @Override
+    public void pushLastName(int userId, String lastName){
+        System.out.println("UserId: " + userId + " -> First Name: " + lastName);
+    }
+
+    @Override
+    public void pushEmail(int userId, String email){
+        System.out.println("UserId: " + userId + " -> First Name: " + email);
+    }
+
+    @Override
+    public void pushPassword(int userId, String hashedPassword){
+        System.out.println("UserId: " + userId + " -> First Name: " + hashedPassword);
     }
 }

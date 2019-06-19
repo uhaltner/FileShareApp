@@ -4,5 +4,5 @@ public interface IPasswordEncoder {
 
     public String hashPassword(String password);
 
-    public boolean match(String password, String encryptedPassword);
+    public boolean matches(String password, String encryptedPassword);
 }

@@ -40,10 +40,10 @@ public class PasswordValidatorTest {
 
         //create rules
         ArrayList<IPasswordRule> passwordRules= new ArrayList<>();
-        passwordRules.add(new LengthRule(8,30));
-        passwordRules.add(new LowercaseCharacterRule());
-        passwordRules.add(new UppercaseCharacterRule());
-        passwordRules.add(new NumericCharacterRule());
+        passwordRules.add(new LengthRuleMock(8,30));
+        passwordRules.add(new LowercaseCharacterRuleMock());
+        passwordRules.add(new UppercaseCharacterRuleMock());
+        passwordRules.add(new NumericCharacterRuleMock());
 
         assertEquals("passwordRulesTest", true, v.validatePassword("Password123","Password123", passwordRules));
     }

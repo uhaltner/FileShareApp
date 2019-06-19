@@ -15,15 +15,12 @@ public class PasswordEncoderTest {
     @Test
     public void passwordsMatchTest(){
 
-        PasswordEncoder e = new PasswordEncoder();
+        PasswordEncoder pe = new PasswordEncoder();
 
-        String textPassword = "password";
-        String hashedPassword = e.hashPassword(textPassword);
-        System.out.println("Hashed Password 1: " + hashedPassword);
-        hashedPassword = e.hashPassword(textPassword);
-        System.out.println("Hashed Password 2: " + hashedPassword);
+        String rawPassword = "Password123";
+        String hashedPassword = pe.hashPassword(rawPassword);
 
-        assertEquals("hashPasswordTest", true, e.match(textPassword,hashedPassword));
+        assertEquals("hashPasswordTest", true, pe.matches(rawPassword, hashedPassword));
     }
 
 }

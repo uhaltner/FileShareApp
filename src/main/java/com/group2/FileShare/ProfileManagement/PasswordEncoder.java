@@ -2,30 +2,25 @@ package com.group2.FileShare.ProfileManagement;
 
 /**
  * https://www.mkyong.com/spring-security/spring-security-password-hashing-example/
+ * https://dzone.com/articles/spring-security-with-spring-boot-20-password-encod
  */
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 public class PasswordEncoder implements IPasswordEncoder {
 
     @Override
-    public String hashPassword(String password) {
+    public String hashPassword(String rawPassword) {
 
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String hashedPassword = passwordEncoder.encode(password);
+        String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt(4));
 
         return hashedPassword;
     }
 
     @Override
-    public boolean match(String password, String hashedPassword) {
+    public boolean matches(String rawPassword, String hashedPassword) {
 
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        if(hashedPassword.equals(passwordEncoder.encode(password))){
-            return true;
-        }
-
-        return false;
+        return BCrypt.checkpw(rawPassword, hashedPassword);
     }
 
 }
