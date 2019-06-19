@@ -11,10 +11,10 @@ public class PasswordRuleSet {
         passwordRules = new ArrayList<>();
 
         // Add the password rules
-        passwordRules.add(new LengthRuleMock(8,30));
-        passwordRules.add(new LowercaseCharacterRuleMock());
-        passwordRules.add(new UppercaseCharacterRuleMock());
-        passwordRules.add(new NumericCharacterRuleMock());
+        passwordRules.add(new LengthRule(8,30));
+        passwordRules.add(new LowercaseCharacterRule());
+        passwordRules.add(new UppercaseCharacterRule());
+        passwordRules.add(new NumericCharacterRule());
     }
 
 

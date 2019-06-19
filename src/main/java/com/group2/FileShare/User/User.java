@@ -7,10 +7,8 @@ public class User implements IUser {
 	private String lastName;
 	private String email;
 	
-	public User(int userId) {
+	public User(int userId, IUserModel userModel) {
 		this.id = userId;
-
-		UserModelMock userModel = new UserModelMock();
 
 		firstName = userModel.pullFirstName(userId);
 		lastName = userModel.pullLastName(userId);

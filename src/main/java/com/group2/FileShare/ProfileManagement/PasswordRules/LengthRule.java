@@ -1,11 +1,11 @@
 package com.group2.FileShare.ProfileManagement.PasswordRules;
 
-public class LengthRuleMock implements IPasswordRule{
+public class LengthRule implements IPasswordRule{
 
     private int minLength;
     private int maxLength;
 
-    public LengthRuleMock(int min, int max){
+    public LengthRule(int min, int max){
 
         this.minLength = min;
         this.maxLength = max;

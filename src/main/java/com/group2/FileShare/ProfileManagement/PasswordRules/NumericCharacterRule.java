@@ -4,9 +4,9 @@ package com.group2.FileShare.ProfileManagement.PasswordRules;
  * https://stackoverflow.com/questions/4388546/how-to-determine-whether-a-string-contains-an-integer
  */
 
-public class NumericCharacterRuleMock implements IPasswordRule{
+public class NumericCharacterRule implements IPasswordRule{
 
-    public NumericCharacterRuleMock(){
+    public NumericCharacterRule(){
 
     }
 

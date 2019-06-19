@@ -29,7 +29,7 @@ public class ProfileController {
     @PostMapping(value="/profile", params = "action=cancel")
     public String cancelProfile(@ModelAttribute PasswordForm passwordForm){
 
-        return "dashboardMock";
+        return "dashboard";
     }
 
     @PostMapping(value="/profile", params = "action=update")
@@ -37,6 +37,7 @@ public class ProfileController {
 
         PasswordValidator passwordValidator = new PasswordValidator();
         PasswordRuleSet passwordRules = new PasswordRuleSet();
+        PasswordEncoder passwordEncoder = new PasswordEncoder();
 
         boolean validPassword = false;
 
@@ -56,14 +57,13 @@ public class ProfileController {
         if(validPassword){
 
             //encode password
-            PasswordEncoder passwordEncoder = new PasswordEncoder();
             String hashedPassword = passwordEncoder.hashPassword(updatedPassword);
 
             //store password in DB
             UserModel userModel = new UserModel();
             userModel.pushPassword(userId, hashedPassword);
 
-            return "dashboardMock";
+            return "dashboard";
 
         }else{
 
