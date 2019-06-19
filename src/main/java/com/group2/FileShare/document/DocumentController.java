@@ -59,7 +59,6 @@ public class DocumentController {
 	@GetMapping("/{fileIndex}")
 	public ResponseEntity<Resource> handleFileDownload(@PathVariable int fileIndex) {
 
-		System.err.println(fileIndex);
 		Document d = documentsCollection.get((fileIndex));
 		String filename = d.getFilename();
 		String filePath = d.getStorageURL();
