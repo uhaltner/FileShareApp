@@ -2,20 +2,17 @@ package com.group2.FileShare.User;
 
 public class User implements IUser {
 
-	int id;
-	String firstName;
-	String lastName;
-	String email;
+	private int id;
+	private String firstName;
+	private String lastName;
+	private String email;
 	
-	
-	public User(int userId) {
+	public User(int userId, IUserModel userModel) {
 		this.id = userId;
 
-		UserModelMock dbModel = new UserModelMock();
-
-		firstName = dbModel.getFirstName(userId);
-		lastName = dbModel.getLastName(userId);
-		email = dbModel.getEmail(userId);
+		firstName = userModel.pullFirstName(userId);
+		lastName = userModel.pullLastName(userId);
+		email = userModel.pullEmail(userId);
 	}
 
 	public User(String firstName, String lastName){
