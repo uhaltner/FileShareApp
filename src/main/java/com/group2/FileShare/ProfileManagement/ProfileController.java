@@ -45,7 +45,7 @@ public class ProfileController {
     @PostMapping(value="/profile", params = "action=cancel")
     public String cancelProfile(@ModelAttribute PasswordForm passwordForm){
 
-        return "dashboardMock";
+        return "dashboard";
     }
 
 
@@ -64,7 +64,7 @@ public class ProfileController {
             return "redirect:/profile";
         }
 
-        return "dashboardMock";
+        return "dashboard";
     }
 
 
