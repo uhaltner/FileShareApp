@@ -37,7 +37,7 @@ public class DocumentController {
 		loadDocumentCollection();
 	}
 
-	@PostMapping("")
+	@PostMapping("/")
 	public String handleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
 		// TODO check Document with Document validator ????
 
@@ -56,7 +56,7 @@ public class DocumentController {
 		return "redirect:/";
 	}
 
-	@GetMapping("/download/{fileIndex}")
+	@GetMapping("/{fileIndex}")
 	public ResponseEntity<Resource> handleFileDownload(@PathVariable int fileIndex) {
 
 		System.err.println(fileIndex);
@@ -74,7 +74,7 @@ public class DocumentController {
 				.body(resource);
 	}
 
-	@GetMapping("/collection")
+	@GetMapping("/")
 	public Document[] getDocumentCollection() {
 		return documentsCollection.toArray(new Document[0]);
 	}
