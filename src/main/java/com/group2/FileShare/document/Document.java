@@ -4,30 +4,30 @@ import java.util.Date;
 
 public class Document {
 	private int id;
-	private String name;
-	private int size;
+	private String filename;
+	private long size;
 	private String description;
-	private String storageURL;
-	private int ownerId; //changed this
-	private FileType type;
+	private int ownerId;
 	private Date createdDate;
-	private boolean isPinned; //??? Should this be here?
+	private boolean isPinned;
 	private boolean isPublic;
 	private boolean isTrashed;
 	private Date trashedDate;
-	
+	private String storageURL;
+
 	public Document() {
 		super();
+		this.createdDate = new Date();
 	}
-	
-	public Document(int id, String name, int size, String storageURL, int ownerId, FileType type) {
+
+	public Document(int id, String filename, int size, String storageURL, int ownerId) {
 		super();
 		this.id = id;
-		this.name = name;
+		this.filename = filename;
 		this.size = size;
 		this.storageURL = storageURL;
 		this.ownerId = ownerId;
-		this.type = type;
+		this.createdDate = new Date();
 	}
 
 	public int getId() {
@@ -38,19 +38,19 @@ public class Document {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getFilename() {
+		return filename;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFilename(String name) {
+		this.filename = name;
 	}
 
-	public int getSize() {
+	public long getSize() {
 		return size;
 	}
 
-	public void setSize(int size) {
+	public void setSize(long size) {
 		this.size = size;
 	}
 
@@ -66,6 +66,10 @@ public class Document {
 		return storageURL;
 	}
 
+	public void setStorageURL() {
+		this.storageURL = (Math.random() * 10 * Math.random() * ownerId) + ((filename.toLowerCase()).replaceAll(" ", "")) + createdDate;
+	}
+	
 	public void setStorageURL(String storageURL) {
 		this.storageURL = storageURL;
 	}
@@ -76,14 +80,6 @@ public class Document {
 
 	public void setOwnerId(int ownerId) {
 		this.ownerId = ownerId;
-	}
-
-	public FileType getType() {
-		return type;
-	}
-
-	public void setType(FileType type) {
-		this.type = type;
 	}
 
 	public Date getCreatedDate() {
@@ -128,12 +124,10 @@ public class Document {
 
 	@Override
 	public String toString() {
-		return "Document [id=" + id + ", name=" + name + ", size=" + size + ", description=" + description
-				+ ", storageURL=" + storageURL + ", ownerId=" + ownerId + ", type=" + type + ", createdDate="
-				+ createdDate + ", isPinned=" + isPinned + ", isPublic=" + isPublic + ", isTrashed=" + isTrashed
-				+ ", trashedDate=" + trashedDate + "]";
+		return "Document [id=" + id + ", name=" + filename + ", size=" + size + ", description=" + description
+				+ ", storageURL=" + storageURL + ", ownerId=" + ownerId + ", createdDate=" + createdDate + ", isPinned="
+				+ isPinned + ", isPublic=" + isPublic + ", isTrashed=" + isTrashed + ", trashedDate=" + trashedDate
+				+ "]";
 	}
-	
-	
-	
+
 }
