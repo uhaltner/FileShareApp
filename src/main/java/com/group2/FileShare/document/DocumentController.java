@@ -35,23 +35,30 @@ public class DocumentController {
 		loadDocumentCollection();
 	}
 
-	@PostMapping("/")
-	public String handleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+	@PostMapping("")
+	public String handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("redirect") String redirect, RedirectAttributes redirectAttributes) {
 		// TODO check Document with Document validator ????
-
 		Document d = new Document();
 		d.setFilename(file.getOriginalFilename());
 //		d.setOwnerId(ownerId);
 		d.setStorageURL();
-		String filename = file.getOriginalFilename();
+		String filename = d.getStorageURL();
 		if (storage.uploadFile(file, filename)) {
 //			d = db.addDocument(d);
 			documentsCollection.add(d);
 			redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + filename + "!");
+			System.out.println("You successfully uploaded " + filename + "!");
 		} else {
 			redirectAttributes.addFlashAttribute("message", "File upload failed for " + filename + "!");
+			System.err.println("File upload failed for " + filename + "!");
 		}
-		return "redirect:/";
+		
+		
+		if (redirect == null) {
+			redirect = "/";
+		}
+		
+		return "redirect:" + redirect;
 	}
 
 	@GetMapping("/{fileIndex}")
@@ -64,20 +71,20 @@ public class DocumentController {
 		try {
 			resource = new UrlResource(storage.downloadFile(filePath));
 		} catch (MalformedURLException e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 			return null;
 		}
 		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
 				.body(resource);
 	}
 
-	@GetMapping("/")
+	@GetMapping("")
 	public Document[] getDocumentCollection() {
 		return documentsCollection.toArray(new Document[0]);
 	}
 
-	@DeleteMapping("/{fileIndex}")
-	public String handleFileDelete(@PathVariable int fileIndex, RedirectAttributes redirectAttributes) {
+	@DeleteMapping("/document/{fileIndex}")
+	public String handleFileDelete(@PathVariable int fileIndex, @RequestParam("redirect") String redirect, RedirectAttributes redirectAttributes) {
 		Document d = documentsCollection.get(fileIndex);
 		String filename = d.getFilename();
 		String filePath = d.getStorageURL();
@@ -87,8 +94,12 @@ public class DocumentController {
 
 			redirectAttributes.addFlashAttribute("message", "File upload failed for " + filename + "!");
 		}
+		
+		if (redirect == null) {
+			redirect = "/";
+		}
 
-		return "redirect:/";
+		return "redirect:" + redirect;
 	}
 
 	private void loadDocumentCollection() {

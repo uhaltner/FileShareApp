@@ -67,7 +67,7 @@ public class Document {
 	}
 
 	public void setStorageURL() {
-		this.storageURL = (Math.random() * 10 * Math.random() * ownerId) + ((filename.toLowerCase()).replaceAll(" ", "")) + createdDate;
+		this.storageURL = (Math.random() * 10 * Math.random() * ownerId) + ((filename.toLowerCase()).replaceAll(" ", "")) + createdDate.getTime();
 	}
 	
 	public void setStorageURL(String storageURL) {
