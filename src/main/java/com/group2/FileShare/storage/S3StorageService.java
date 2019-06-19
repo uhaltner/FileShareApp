@@ -77,29 +77,6 @@ public class S3StorageService implements IStorage {
 
 	@Override
 	public String downloadFile(String objectKey) {
-//		try {
-//		    S3Object o = s3.getObject(s3_bucket.getName(), objectKey);
-//		    S3ObjectInputStream s3is = o.getObjectContent();
-//		    FileOutputStream fos = new FileOutputStream(new File(objectKey));
-//		    byte[] read_buf = new byte[1024];
-//		    int read_len = 0;
-//		    while ((read_len = s3is.read(read_buf)) > 0) {
-//		        fos.write(read_buf, 0, read_len);
-//		    }
-//		    s3is.close();
-//		    fos.close();
-//		} catch (AmazonServiceException e) {
-//		    System.err.println(e.getErrorMessage());
-//		    System.exit(1);
-//		} catch (FileNotFoundException e) {
-//		    System.err.println(e.getMessage());
-//		    System.exit(1);
-//		} catch (IOException e) {
-//		    System.err.println(e.getMessage());
-//		    System.exit(1);
-//		}
-//
-//		return null;
 		return generateS3PreSignedURL(objectKey);
 	}
 
