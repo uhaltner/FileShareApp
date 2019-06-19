@@ -22,7 +22,7 @@ public class ProfileControllerTest {
         passwordForm.setPassword("Password123");
         passwordForm.setConfirmPassword("Password123");
 
-        String expectedOutput = "dashboardMock";
+        String expectedOutput = "dashboard";
 
         ProfileController profile = new ProfileController();
 
