@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.group2.FileShare.Compression.ZipCompression;
 import com.group2.FileShare.storage.IStorage;
 import com.group2.FileShare.storage.S3StorageService;
 
@@ -50,8 +49,7 @@ public class DocumentController {
 		// TODO check Document with Document validator ????
 		
 		String filename = d.getStorageURL();
-		ZipCompression compression = new ZipCompression();
-		if (storage.uploadFile(file, filename, compression)) {
+		if (storage.uploadFile(file, filename)) {
 //			d = db.addDocument(d);
 			documentsCollection.add(d);
 			redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + filename + "!");

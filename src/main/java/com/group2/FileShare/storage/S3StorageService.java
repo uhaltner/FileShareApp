@@ -83,11 +83,10 @@ public class S3StorageService implements IStorage {
 	}
 
 	@Override
-	public boolean uploadFile(MultipartFile file, String filename, ICompression compression) {
+	public boolean uploadFile(MultipartFile file, String filename) {
 		File scratchFile = null;
 		try {
-			scratchFile = compression.compressFile(file);
-			//scratchFile = File.createTempFile(filename, "");
+			scratchFile = File.createTempFile(filename, "");
 			file.transferTo(scratchFile);
 			s3.putObject(s3_bucket.getName(), filename, scratchFile);
 		} catch (IOException e) {

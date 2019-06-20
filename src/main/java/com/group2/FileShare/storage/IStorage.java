@@ -2,8 +2,6 @@ package com.group2.FileShare.storage;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.group2.FileShare.Compression.ICompression;
-
 public interface IStorage {
 	/**
 	 * @param filePath - The path of the file to be deleted
@@ -20,5 +18,5 @@ public interface IStorage {
 	 * @param filename - Name to store the file as.
 	 * @return True if successful and False otherwise
 	 */
-	boolean uploadFile(MultipartFile file, String filename, ICompression compression);
+	boolean uploadFile(MultipartFile file, String filename);
 }

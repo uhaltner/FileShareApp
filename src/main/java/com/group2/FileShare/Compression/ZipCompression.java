@@ -12,30 +12,34 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ZipCompression implements ICompression {
 
+	private String sysDirectory = System.getProperty("user.dir") + "/";
+	private String extension = ".zip";
+	
 	@Override
 	public File compressFile(MultipartFile file) {
 		
-        FileOutputStream fos;
 		try {
 			String fileName = file.getOriginalFilename();
-			fos = new FileOutputStream(fileName + ".zip");
-	        FileInputStream fis = (FileInputStream) file.getInputStream();
-
-	        ZipOutputStream zipOut = new ZipOutputStream(fos);
+			String ziFileName = fileName  + extension;
+			FileOutputStream fileOutputStream = new FileOutputStream(ziFileName);
+	        FileInputStream fileInputStream = (FileInputStream) file.getInputStream();
+		
+	        ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
 	        ZipEntry zipEntry = new ZipEntry(fileName);
-	        zipOut.putNextEntry(zipEntry);
+	        zipOutputStream.putNextEntry(zipEntry);
 	        byte[] bytes = new byte[1024];
 	        int length;
-	        while((length = fis.read(bytes)) >= 0) {
-	            zipOut.write(bytes, 0, length);
+	        while((length = fileInputStream.read(bytes)) >= 0) {
+	        	zipOutputStream.write(bytes, 0, length);
 	        }
 	        
-	        zipOut.close();
-	        fis.close();
-	        fos.close();
+	        zipOutputStream.close();
+	        fileInputStream.close();
+	        fileOutputStream.close();
 	        
-	        return new File(System.getProperty("user.dir") + file.getOriginalFilename());
-	        
+	        File compressedFile = new File(sysDirectory + ziFileName);
+	        return compressedFile;
+	
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -46,14 +50,7 @@ public class ZipCompression implements ICompression {
 	}
 	
 	@Override
-	public File deCompressFile(String url) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public File discard(String path) {
-		// TODO Auto-generated method stub
+	public File deCompressFile(String fileZip) {
 		return null;
 	}
 }
