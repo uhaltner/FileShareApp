@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -35,7 +36,7 @@ public class DocumentController {
 		loadDocumentCollection();
 	}
 
-	@PostMapping("")
+	@PostMapping("/")
 	public String handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("redirect") String redirect, RedirectAttributes redirectAttributes) {
 		// TODO check Document with Document validator ????
 		Document d = new Document();
@@ -78,9 +79,10 @@ public class DocumentController {
 				.body(resource);
 	}
 
-	@GetMapping("")
-	public Document[] getDocumentCollection() {
-		return documentsCollection.toArray(new Document[0]);
+	@GetMapping("/")
+	@ResponseBody
+	public List<Document> getDocumentCollection() {
+		return documentsCollection;
 	}
 
 	@DeleteMapping("/document/{fileIndex}")
