@@ -37,13 +37,17 @@ public class DocumentController {
 		loadDocumentCollection();
 	}
 
-	@PostMapping("/")
-	public String handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("redirect") String redirect, RedirectAttributes redirectAttributes) {
-		// TODO check Document with Document validator ????
+	@PostMapping("")
+	public String handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam(value= "redirect", defaultValue = "/") String redirect, RedirectAttributes redirectAttributes) {
 		Document d = new Document();
 		d.setFilename(file.getOriginalFilename());
+		d.setSize(file.getSize());
+		d.setDescription(file.getContentType()); 
 //		d.setOwnerId(ownerId);
 		d.setStorageURL();
+		
+		// TODO check Document with Document validator ????
+		
 		String filename = d.getStorageURL();
 		if (storage.uploadFile(file, filename)) {
 //			d = db.addDocument(d);
@@ -55,18 +59,19 @@ public class DocumentController {
 			System.err.println("File upload failed for " + filename + "!");
 		}
 		
-		
-		if (redirect == null) {
-			redirect = "/";
-		}
-		
 		return "redirect:" + redirect;
 	}
 
 	@GetMapping("/{fileIndex}")
 	public ResponseEntity<Resource> handleFileDownload(@PathVariable int fileIndex) {
-
-		Document d = documentsCollection.get((fileIndex));
+		Document d = null;
+		try {
+			d = documentsCollection.get(fileIndex);
+		}catch (IndexOutOfBoundsException e){
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
 		String filename = d.getFilename();
 		String filePath = d.getStorageURL();
 		Resource resource = null;
@@ -87,20 +92,27 @@ public class DocumentController {
 		return documentsCollection;
 	}
 
-	@DeleteMapping("/document/{fileIndex}")
-	public String handleFileDelete(@PathVariable int fileIndex, @RequestParam("redirect") String redirect, RedirectAttributes redirectAttributes) {
-		Document d = documentsCollection.get(fileIndex);
+	@DeleteMapping("/{fileIndex}")
+	public String handleFileDelete(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/") String redirect, RedirectAttributes redirectAttributes) {
+		Document d = null;
+		try {
+			d = documentsCollection.get(fileIndex);
+		}catch (IndexOutOfBoundsException e){
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("message", "File upload failed! Please try again later.");
+			return "redirect:" + redirect;
+		}
 		String filename = d.getFilename();
 		String filePath = d.getStorageURL();
 		if (storage.deleteFile(filePath)) {
+//			d = db.removeDocument(d);
+			documentsCollection.remove(fileIndex);
 			redirectAttributes.addFlashAttribute("message", "You successfully deleted " + filename + "!");
+			System.out.println("You successfully deleted " + filename + "!");
 		} else {
-
-			redirectAttributes.addFlashAttribute("message", "File upload failed for " + filename + "!");
-		}
-		
-		if (redirect == null) {
-			redirect = "/";
+			redirectAttributes.addFlashAttribute("message", "File delete failed for " + filename + "!");
+			System.out.println("File delete failed for " + filename + "!");
 		}
 
 		return "redirect:" + redirect;
