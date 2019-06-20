@@ -10,6 +10,8 @@ import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.group2.FileShare.Compression.ICompression;
+import com.group2.FileShare.Compression.ZipCompression;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -81,10 +83,11 @@ public class S3StorageService implements IStorage {
 	}
 
 	@Override
-	public boolean uploadFile(MultipartFile file, String filename) {
+	public boolean uploadFile(MultipartFile file, String filename, ICompression compression) {
 		File scratchFile = null;
 		try {
-			scratchFile = File.createTempFile(filename, "");
+			scratchFile = compression.compressFile(file);
+			//scratchFile = File.createTempFile(filename, "");
 			file.transferTo(scratchFile);
 			s3.putObject(s3_bucket.getName(), filename, scratchFile);
 		} catch (IOException e) {
