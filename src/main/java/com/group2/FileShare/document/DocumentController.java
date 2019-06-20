@@ -86,7 +86,7 @@ public class DocumentController {
 				.body(resource);
 	}
 
-	@GetMapping("/")
+	@GetMapping("")
 	@ResponseBody
 	public List<Document> getDocumentCollection() {
 		return documentsCollection;
