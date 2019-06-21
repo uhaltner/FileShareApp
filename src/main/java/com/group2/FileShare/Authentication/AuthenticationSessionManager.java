@@ -28,8 +28,8 @@ public class AuthenticationSessionManager {
 		return (session.getAttribute(UserIdKey) != null);
 	}
 	
-	public String getUserId() {
-		return (String) user_session.getAttribute(UserIdKey);
+	public int getUserId() {
+		return (int) user_session.getAttribute(UserIdKey);
 	}
 	
 	public void setUserId(int value, HttpSession session) {
@@ -40,9 +40,6 @@ public class AuthenticationSessionManager {
 		return (String) user_session.getAttribute(EmailKey);
 	}
 	
-	public void setEmail(String value, HttpSession session) {
-		session.setAttribute(EmailKey, value);
-	}
 	
 	public String getFirstName() {
 		return (String) user_session.getAttribute(FirstNameKey);
@@ -56,10 +53,6 @@ public class AuthenticationSessionManager {
 		return (String) user_session.getAttribute(LastNameKey);
 	}
 	
-	public void setLastName(String value, HttpSession session) {
-		session.setAttribute(LastNameKey, value);
-	}
-	
 	public void destroySession() {
 		user_session.invalidate();
 	}
@@ -70,10 +63,10 @@ public class AuthenticationSessionManager {
 	
 	public void setSession(User user, HttpSession session) {
 		user_session = session;
-		setUserId(user.getId(), session);
-		setEmail(user.getEmail(), session);
-		setFirstName(user.getFirstName(), session);
-		setLastName(user.getLastName(), session);
+		session.setAttribute(UserIdKey, user.getId());
+		session.setAttribute(EmailKey, user.getEmail());
+		session.setAttribute(FirstNameKey, user.getFirstName());
+		session.setAttribute(LastNameKey, user.getLastName());
 		user_session.setAttribute(UserKey, user);
 	}
 }
