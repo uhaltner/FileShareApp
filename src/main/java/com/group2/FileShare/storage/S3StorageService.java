@@ -10,6 +10,8 @@ import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.group2.FileShare.Compression.ICompression;
+import com.group2.FileShare.Compression.ZipCompression;
 
 import java.io.File;
 import java.io.FileNotFoundException;
