@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.Compression.ICompression;
 import com.group2.FileShare.Compression.ZipCompression;
 import com.group2.FileShare.storage.IStorage;
@@ -35,6 +36,7 @@ public class DocumentController {
 	private List<Document> documentsCollection;
 	private final ICompression compression;
 	private final String compressionExtension;
+	private final AuthenticationSessionManager sessionManager;
 //    private final IDatabase db;
 
 	DocumentController() {
@@ -42,17 +44,18 @@ public class DocumentController {
 		documentsCollection = new ArrayList<>();
 		compression = new ZipCompression();
 		compressionExtension = ".zip";
+		sessionManager = AuthenticationSessionManager.instance();
 //    	db = Database.getInstance();
 		loadDocumentCollection();
 	}
 
 	@PostMapping("")
-	public String handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam(value= "redirect", defaultValue = "/") String redirect, RedirectAttributes redirectAttributes) {
+	public String handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
 		Document d = new Document();
 		d.setFilename(file.getOriginalFilename());
 		d.setSize(file.getSize());
 		d.setDescription(file.getContentType()); 
-//		d.setOwnerId(ownerId);
+		d.setOwnerId(sessionManager.getUserId());
 		d.setStorageURL();
 		
 		// TODO check Document with Document validator ????
@@ -108,7 +111,7 @@ public class DocumentController {
 	}
 
 	@DeleteMapping("/{fileIndex}")
-	public String handleFileDelete(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/") String redirect, RedirectAttributes redirectAttributes) {
+	public String handleFileDelete(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
@@ -134,7 +137,7 @@ public class DocumentController {
 
 
 	@PutMapping("/makepublic/{fileIndex}")
-	public String makePublic(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/") String redirect, RedirectAttributes redirectAttributes) {
+	public String makePublic(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
@@ -154,7 +157,7 @@ public class DocumentController {
 	
 
 	@PutMapping("/makeprivate/{fileIndex}")
-	public String makePrivate(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/") String redirect, RedirectAttributes redirectAttributes) {
+	public String makePrivate(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
@@ -175,7 +178,7 @@ public class DocumentController {
 
 
 	@PutMapping("/pin/{fileIndex}")
-	public String makePinned(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/") String redirect, RedirectAttributes redirectAttributes) {
+	public String makePinned(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
@@ -195,7 +198,7 @@ public class DocumentController {
 	
 
 	@PutMapping("/unpin/{fileIndex}")
-	public String makeUnPinned(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/") String redirect, RedirectAttributes redirectAttributes) {
+	public String makeUnPinned(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
@@ -215,7 +218,7 @@ public class DocumentController {
 
 
 	@PutMapping("/trash/{fileIndex}")
-	public String trashFile(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/") String redirect, RedirectAttributes redirectAttributes) {
+	public String trashFile(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
@@ -236,7 +239,7 @@ public class DocumentController {
 	
 
 	@PutMapping("/untrash/{fileIndex}")
-	public String unTrashFile(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/") String redirect, RedirectAttributes redirectAttributes) {
+	public String unTrashFile(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
