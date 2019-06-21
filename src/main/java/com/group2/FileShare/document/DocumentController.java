@@ -56,6 +56,7 @@ public class DocumentController {
 		d.setStorageURL();
 		
 		// TODO check Document with Document validator ????
+	
 		
 		File compressedFile = compression.compressFile(file);
 
