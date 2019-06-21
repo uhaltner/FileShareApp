@@ -34,18 +34,40 @@ public class PasswordValidatorTest {
     }
 
     @Test
-    public void passwordRulesTest(){
+    public void validPasswordRulesTest(){
 
         PasswordValidator v = new PasswordValidator();
-
-        //create rules
-        ArrayList<IPasswordRule> passwordRules= new ArrayList<>();
-        passwordRules.add(new LengthRule(8,30));
-        passwordRules.add(new LowercaseCharacterRule());
-        passwordRules.add(new UppercaseCharacterRule());
-        passwordRules.add(new NumericCharacterRule());
-
-        assertEquals("passwordRulesTest", true, v.validatePassword("Password123","Password123", passwordRules));
+        assertEquals("validPasswordRulesTest", true, v.validatePassword("Password123","Password123", PasswordRuleSet.getRules()));
     }
+
+    @Test
+    public void shortPasswordTest(){
+
+        PasswordValidator v = new PasswordValidator();
+        assertEquals("shortPasswordTest", false, v.validatePassword("Pass1","Pass1", PasswordRuleSet.getRules()));
+    }
+
+    @Test
+    public void noUpperCasePasswordTest(){
+
+        PasswordValidator v = new PasswordValidator();
+        assertEquals("noUpperCasePasswordTest", false, v.validatePassword("password1","password1", PasswordRuleSet.getRules()));
+    }
+
+    @Test
+    public void noLowerCasePasswordTest(){
+
+        PasswordValidator v = new PasswordValidator();
+        assertEquals("noLowerCasePasswordTest", false, v.validatePassword("PASSWORD1","PASSWORD1", PasswordRuleSet.getRules()));
+    }
+
+    @Test
+    public void noNumberPasswordTest(){
+
+        PasswordValidator v = new PasswordValidator();
+        assertEquals("noNumberPasswordTest", false, v.validatePassword("SUPERPASSWORD","SUPERPASSWORD", PasswordRuleSet.getRules()));
+    }
+
+
 
 }
