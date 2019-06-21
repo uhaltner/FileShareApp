@@ -8,17 +8,10 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-
-import org.springframework.web.multipart.MultipartFile;
 
 public class S3StorageService implements IStorage {
 
@@ -81,21 +74,12 @@ public class S3StorageService implements IStorage {
 	}
 
 	@Override
-	public boolean uploadFile(MultipartFile file, String filename) {
-		File scratchFile = null;
+	public boolean uploadFile(File file, String filename) {
 		try {
-			scratchFile = File.createTempFile(filename, "");
-			file.transferTo(scratchFile);
-			s3.putObject(s3_bucket.getName(), filename, scratchFile);
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-			return false;
+			s3.putObject(s3_bucket.getName(), filename, file);
 		} catch (AmazonServiceException e) {
 			System.err.println(e.getErrorMessage());
 			return false;
-		} finally {
-			scratchFile.delete();
 		}
 		return true;
 	}
