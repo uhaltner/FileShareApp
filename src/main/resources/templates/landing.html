@@ -55,16 +55,36 @@
 <body>
 <div class="card form-signin shadow-sm">
 
+   	<div th:if="${login_error}" class="alert alert-danger" role="alert">
+	   Incorrect email address and / or password.
+	</div> 
+		
     <!--Login form -->
-    <form name="login" method="post" action="" id="signin-form">
+    <form name="login" method="post" th:action="@{/login}" th:object="${signInForm}" id="signin-form">
         <h1 class="h4 font-weight-normal" style="margin-bottom: 3rem">Please sign into <br> File Share </h1>
 
-        <input type="text" id="inputEmail" style="margin-bottom: 1rem" class="form-control input1 noSpace" placeholder="Email address" required autofocus>
+        <div class="form-group row">
+            <div class="col-12">
+                <input type="text" class="form-control col-sm-12" id="email" placeholder="Enter email" th:field="*{email}" required autofocus>
+                <small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</small>
+                
+            </div>
+        </div>
 
-        <input type="password" id="inputPassword" style="margin-bottom: 2rem" class="form-control input1 noSpace" placeholder="Password" required>
+        <div class="form-group row">
+            <div class="col-12">
+                <input type="text" class="form-control col-sm-12" id="inputPassword" placeholder="Enter password" th:field="*{password}" value="password">
+                <small class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</small>
+                
+             <div>     
+        </div>
+         
+       
+            </div>
+        </div>
 
         <div class="text-center">
-            <button class="btn btn-primary" type="button" id="signIn">Sign In</button>
+            <button class="btn btn-primary"type="submit" id="signIn">Sign In</button>
         </div>
         <br>
         <div class="float-right">
@@ -77,23 +97,24 @@
     </form>
 
     <!--Sign Up form-->
-    <form name="signUp" method="post" action="" id="signup-form">
+    <form  action="#" th:action="@{/signup}" th:object="${signupForm}" method="post" name="signUp" id="signup-form">
+    <!-- <form name="signUp" method="post" action="" id="signup-form"> -->
         <h1 class="h4 font-weight-normal" style="margin-bottom: 3rem">Sign up for <br> File Share</h1>
 
         <div class="d-inline-flex" style="margin-bottom: 1rem">
-            <input type="text" id="signupFirstName" class="form-control width-half" placeholder="First Name"
+            <input th:field="*{firstName}" type="text" id="signupFirstName" class="form-control width-half" placeholder="First Name"
                    onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode == 32) || (event.charCode == 46)"
                    required>
-            <input type="text" id="signupLastName" class="form-control width-half" placeholder="Last Name"
+            <input th:field="*{lastName}" type="text" id="signupLastName" class="form-control width-half" placeholder="Last Name"
                    onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode == 32) || (event.charCode == 46)"
                    required>
         </div>
 
-        <input type="email" style="margin-bottom: 1rem" id="signupEmail" class="form-control noSpace" placeholder="Email address" required>
+        <input th:field="*{email}" type="email" style="margin-bottom: 1rem" id="signupEmail" class="form-control noSpace" placeholder="Email address" required>
 
-        <input type="password" style="margin-bottom: 1rem" id="Password" class="form-control noSpace" placeholder="Password" required>
+        <input th:field="*{password}" type="password" style="margin-bottom: 1rem" id="Password" class="form-control noSpace" placeholder="Password" required>
 
-        <input type="password" style="margin-bottom: 1rem" id="confirmPw" class="form-control noSpace" placeholder="Confirm Password" required>
+        <input th:field="*{confirmPassword}" type="password" style="margin-bottom: 1rem" id="confirmPw" class="form-control noSpace" placeholder="Confirm Password" required>
 
         <div class="text-center">
             <button class="btn btn-primary" type="submit">Sign Up</button>

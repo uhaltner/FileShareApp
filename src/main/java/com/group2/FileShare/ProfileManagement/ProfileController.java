@@ -36,8 +36,7 @@ public class ProfileController {
     public String updateProfile(@ModelAttribute PasswordForm passwordForm){
 
         PasswordValidator passwordValidator = new PasswordValidator();
-        PasswordRuleSet passwordRules = new PasswordRuleSet();
-        PasswordEncoder passwordEncoder = new PasswordEncoder();
+        UserModel userModel = new UserModel();
 
         boolean validPassword = false;
 
@@ -47,7 +46,7 @@ public class ProfileController {
 
         //Check validity of password
         try{
-            validPassword = passwordValidator.validatePassword(updatedPassword, updatedPasswordConfirm, passwordRules.getRules());
+            validPassword = passwordValidator.validatePassword(updatedPassword, updatedPasswordConfirm, PasswordRuleSet.getRules());
 
         }catch(Exception e) {
             System.err.println(e);
@@ -56,12 +55,8 @@ public class ProfileController {
         //valid password needs to be encoded and stored
         if(validPassword){
 
-            //encode password
-            String hashedPassword = passwordEncoder.hashPassword(updatedPassword);
-
             //store password in DB
-            UserModel userModel = new UserModel();
-            userModel.pushPassword(userId, hashedPassword);
+            userModel.pushPassword(userId, updatedPassword);
 
             return "dashboard";
 
