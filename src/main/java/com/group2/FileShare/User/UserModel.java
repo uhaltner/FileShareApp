@@ -1,5 +1,7 @@
 package com.group2.FileShare.User;
 
+import com.group2.FileShare.ProfileManagement.PasswordEncoder;
+
 public class UserModel implements IUserModel {
 
     /** Pull user attributes form the database **/
@@ -33,7 +35,13 @@ public class UserModel implements IUserModel {
     }
 
     @Override
-    public boolean exist(int userId){
+    public boolean userExist(int userId){
+
+        //DB Implementation
+        return false;
+    }
+
+    public boolean userExist(String email){
 
         //DB Implementation
         return false;
@@ -70,9 +78,24 @@ public class UserModel implements IUserModel {
     }
 
     @Override
-    public void pushPassword(int userId, String hashedPassword){
+    public void pushPassword(int userId, String rawPassword){
+
+        PasswordEncoder passwordEncoder = new PasswordEncoder();
+        String hashedPassword = passwordEncoder.hashPassword(rawPassword);
 
         //DB Implementation
+
         return;
     }
+
+    public void pushUser(String firstName, String lastName, String email, String rawPassword){
+
+        PasswordEncoder passwordEncoder = new PasswordEncoder();
+        String hashedPassword = passwordEncoder.hashPassword(rawPassword);
+
+        //DB Implementation
+
+        return;
+    }
+
 }
