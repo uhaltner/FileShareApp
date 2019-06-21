@@ -3,7 +3,6 @@ package com.group2.FileShare.SignUp;
 import com.group2.FileShare.ProfileManagement.PasswordRules.PasswordRuleSet;
 import com.group2.FileShare.SignIn.SignInForm;
 import com.group2.FileShare.ProfileManagement.PasswordValidator;
-import com.group2.FileShare.User.UserModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,23 +26,23 @@ public class SignUpController {
     public String signUpUser(@ModelAttribute SignUpForm signupForm){
 
         PasswordValidator passwordValidator = new PasswordValidator();
-        UserModel userModel = new UserModel();
+        SignUpModel signupModel = new SignUpModel();
 
         boolean validPassword = false;
 
         String formFirstName = signupForm.getFirstName();
         String formLastName = signupForm.getLastName();
         String formEmail = signupForm.getEmail();
-        String formPassword = signupForm.getPassword();
-        String formConfirmPassword = signupForm.getConfirmPassword();
+        String formRawPassword = signupForm.getPassword();
+        String formRawConfirmPassword = signupForm.getConfirmPassword();
 
-        if( userModel.userExist(formEmail) == false ){
+        if( signupModel.userExist(formEmail) == false ){
 
-            validPassword = passwordValidator.validatePassword( formPassword, formConfirmPassword, PasswordRuleSet.getRules() );
+            validPassword = passwordValidator.validatePassword( formRawPassword, formRawConfirmPassword, PasswordRuleSet.getRules() );
 
             if(validPassword) {
 
-                userModel.pushUser(formFirstName, formLastName, formEmail, formPassword);
+                signupModel.createProfile(formFirstName, formLastName, formEmail, formRawPassword);
                 return "dashboard";
             }
 

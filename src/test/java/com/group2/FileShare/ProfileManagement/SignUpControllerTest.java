@@ -1,4 +1,4 @@
-package com.group2.FileShare;
+package com.group2.FileShare.ProfileManagement;
 
 import com.group2.FileShare.SignUp.SignUpController;
 import com.group2.FileShare.SignUp.SignUpForm;
