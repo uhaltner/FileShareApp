@@ -40,7 +40,7 @@ public class SignInController {
             SignInService signInService = new SignInService();
             User user = signInService.authenticateUserWith(signInForm);
     		if(user != null) {
-    			authSessionManager.setUser(user, session);
+    			authSessionManager.setSession(user, session);
     		    return "redirect:/dashboard";
     		} else {
             	model.addAttribute("login_error", "UserNotFound.signForm");
@@ -53,7 +53,7 @@ public class SignInController {
     
     @GetMapping("/logout")
     public String logout(HttpSession session){
-    	authSessionManager.destroySession(session);
+    	authSessionManager.destroySession();
     	return "redirect:/login";
     }
 
