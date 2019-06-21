@@ -1,6 +1,7 @@
 package com.group2.FileShare.SignUp;
 
 import com.group2.FileShare.ProfileManagement.PasswordRules.PasswordRuleSet;
+import com.group2.FileShare.SignIn.SignInForm;
 import com.group2.FileShare.ProfileManagement.PasswordValidator;
 import com.group2.FileShare.User.UserModel;
 import org.springframework.stereotype.Controller;
@@ -16,7 +17,7 @@ public class SignUpController {
 
     @GetMapping("/signup")
     public String profileForm(HttpSession session, Model model){
-
+        model.addAttribute("signInForm", new SignInForm());
         model.addAttribute("signupForm", new SignUpForm());
 
         return "landing";

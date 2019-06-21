@@ -7,6 +7,13 @@ public class User implements IUser {
 	private String lastName;
 	private String email;
 	
+	public User(int userId, String email, String firstName, String lastName) {
+		this.id = userId;
+		this.email = email;
+		this.firstName = firstName;
+		this.lastName = lastName;
+	}
+	
 	public User(int userId, IUserModel userModel) {
 		this.id = userId;
 

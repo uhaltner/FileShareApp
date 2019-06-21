@@ -55,16 +55,36 @@
 <body>
 <div class="card form-signin shadow-sm">
 
+   	<div th:if="${login_error}" class="alert alert-danger" role="alert">
+	   Incorrect email address and / or password.
+	</div> 
+		
     <!--Login form -->
-    <form name="login" method="post" action="" id="signin-form">
+    <form name="login" method="post" th:action="@{/login}" th:object="${signInForm}" id="signin-form">
         <h1 class="h4 font-weight-normal" style="margin-bottom: 3rem">Please sign into <br> File Share </h1>
 
-        <input type="text" id="inputEmail" style="margin-bottom: 1rem" class="form-control input1 noSpace" placeholder="Email address" required autofocus>
+        <div class="form-group row">
+            <div class="col-12">
+                <input type="text" class="form-control col-sm-12" id="email" placeholder="Enter email" th:field="*{email}" required autofocus>
+                <small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</small>
+                
+            </div>
+        </div>
 
-        <input type="password" id="inputPassword" style="margin-bottom: 2rem" class="form-control input1 noSpace" placeholder="Password" required>
+        <div class="form-group row">
+            <div class="col-12">
+                <input type="text" class="form-control col-sm-12" id="inputPassword" placeholder="Enter password" th:field="*{password}" value="password">
+                <small class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</small>
+                
+             <div>     
+        </div>
+         
+       
+            </div>
+        </div>
 
         <div class="text-center">
-            <button class="btn btn-primary" type="button" id="signIn">Sign In</button>
+            <button class="btn btn-primary"type="submit" id="signIn">Sign In</button>
         </div>
         <br>
         <div class="float-right">
