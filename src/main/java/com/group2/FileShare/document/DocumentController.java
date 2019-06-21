@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.group2.FileShare.Compression.ICompression;
 import com.group2.FileShare.Compression.ZipCompression;
 import com.group2.FileShare.storage.IStorage;
 import com.group2.FileShare.storage.S3StorageService;
@@ -54,6 +53,7 @@ public class DocumentController {
 		d.setStorageURL();
 		
 		// TODO check Document with Document validator ????
+	
 		
 		File compressedFile = compression.compressFile(file);
 
