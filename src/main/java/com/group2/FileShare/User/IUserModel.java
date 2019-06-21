@@ -13,7 +13,7 @@ public interface IUserModel {
 
     public String pullPassword(int userId);
 
-    public boolean exist(int userId);
+    public boolean userExist(int userId);
 
     public int pullUserId(String email, String password);
 
