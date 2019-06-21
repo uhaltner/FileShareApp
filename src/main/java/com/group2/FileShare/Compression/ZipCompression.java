@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ZipCompression implements ICompression {
 
-	private String sysDirectory = System.getProperty("user.dir") + "/";
+//	private String sysDirectory = System.getProperty("user.dir") + "/";
 	private String extension = ".zip";
 	
 	@Override
@@ -20,8 +20,9 @@ public class ZipCompression implements ICompression {
 		
 		try {
 			String fileName = file.getOriginalFilename();
-			String ziFileName = fileName  + extension;
-			FileOutputStream fileOutputStream = new FileOutputStream(ziFileName);
+//			String ziFileName = fileName  + extension;
+			File compressedFile = File.createTempFile(fileName, extension);
+			FileOutputStream fileOutputStream = new FileOutputStream(compressedFile);
 	        FileInputStream fileInputStream = (FileInputStream) file.getInputStream();
 		
 	        ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
@@ -37,7 +38,7 @@ public class ZipCompression implements ICompression {
 	        fileInputStream.close();
 	        fileOutputStream.close();
 	        
-	        File compressedFile = new File(sysDirectory + ziFileName);
+//	        File compressedFile = new File(sysDirectory + ziFileName);
 	        return compressedFile;
 	
 		} catch (FileNotFoundException e) {
