@@ -1,6 +1,6 @@
 package com.group2.FileShare.storage;
 
-import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
 
 public interface IStorage {
 	/**
@@ -14,9 +14,9 @@ public interface IStorage {
 	 */
 	String downloadFile(String filePath);
 	/**
-	 * @param file - A representation of an uploaded file received in a multipart request.
+	 * @param file - A java.io.File to be uploaded.
 	 * @param filename - Name to store the file as.
 	 * @return True if successful and False otherwise
 	 */
-	boolean uploadFile(MultipartFile file, String filename);
+	boolean uploadFile(File file, String filename);
 }

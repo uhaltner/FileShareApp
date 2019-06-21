@@ -1,5 +1,6 @@
 package com.group2.FileShare.document;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.group2.FileShare.Compression.ICompression;
+import com.group2.FileShare.Compression.ZipCompression;
 import com.group2.FileShare.storage.IStorage;
 import com.group2.FileShare.storage.S3StorageService;
 
@@ -28,11 +31,15 @@ import com.group2.FileShare.storage.S3StorageService;
 public class DocumentController {
 	private final IStorage storage;
 	private List<Document> documentsCollection;
+	private final ICompression compression;
+	private final String compressionExtension;
 //    private final IDatabase db;
 
 	DocumentController() {
 		storage = S3StorageService.getInstance();
 		documentsCollection = new ArrayList<>();
+		compression = new ZipCompression();
+		compressionExtension = ".zip";
 //    	db = Database.getInstance();
 		loadDocumentCollection();
 	}
@@ -48,16 +55,21 @@ public class DocumentController {
 		
 		// TODO check Document with Document validator ????
 		
-		String filename = d.getStorageURL();
-		if (storage.uploadFile(file, filename)) {
+		File compressedFile = compression.compressFile(file);
+
+		String storageFileName = d.getStorageURL();
+		String fileName = d.getFilename();
+		if (storage.uploadFile(compressedFile, storageFileName)) {
 //			d = db.addDocument(d);
 			documentsCollection.add(d);
-			redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + filename + "!");
-			System.out.println("You successfully uploaded " + filename + "!");
+			redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + fileName + "!");
+			System.out.println("You successfully uploaded " + fileName + "!");
 		} else {
-			redirectAttributes.addFlashAttribute("message", "File upload failed for " + filename + "!");
-			System.err.println("File upload failed for " + filename + "!");
+			redirectAttributes.addFlashAttribute("message", "File upload failed for " + fileName + "!");
+			System.err.println("File upload failed for " + fileName + "!");
 		}
+		
+		compressedFile.delete();
 		
 		return "redirect:" + redirect;
 	}
@@ -72,7 +84,7 @@ public class DocumentController {
 			e.printStackTrace();
 			return null;
 		}
-		String filename = d.getFilename();
+		String filename = d.getFilename() + compressionExtension;
 		String filePath = d.getStorageURL();
 		Resource resource = null;
 		try {
