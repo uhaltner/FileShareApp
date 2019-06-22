@@ -24,10 +24,7 @@ public class DatabaseConnection {
         database = databaseCredentials.getDatabase();
         dbURL = "jdbc:mysql://" + url + "/" + database;
         try {
-            Class.forName("com.mysql.jdbc.Driver");
             this.connection = DriverManager.getConnection(dbURL, username, password);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
         }
