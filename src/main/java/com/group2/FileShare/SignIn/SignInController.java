@@ -51,7 +51,7 @@ public class SignInController {
         return "landing";
     }
     
-    @GetMapping("/logout")
+    @GetMapping("/signout")
     public String logout(HttpSession session){
     	authSessionManager.destroySession();
     	return "redirect:/login";

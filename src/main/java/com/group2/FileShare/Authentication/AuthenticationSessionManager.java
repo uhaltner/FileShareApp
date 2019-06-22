@@ -24,8 +24,12 @@ public class AuthenticationSessionManager {
 		return uniqueInstance;
 	}
 	
-	public boolean isUserLoggedIn(HttpSession session) {
-		return (session.getAttribute(UserIdKey) != null);
+	public boolean isUserLoggedIn() {
+		if(user_session == null) {
+			return false;
+		} else {
+			return (user_session.getAttribute(UserIdKey) != null);
+		}
 	}
 	
 	public int getUserId() {
@@ -40,7 +44,6 @@ public class AuthenticationSessionManager {
 		return (String) user_session.getAttribute(EmailKey);
 	}
 	
-	
 	public String getFirstName() {
 		return (String) user_session.getAttribute(FirstNameKey);
 	}
@@ -54,7 +57,7 @@ public class AuthenticationSessionManager {
 	}
 	
 	public void destroySession() {
-		user_session.invalidate();
+		user_session = null;
 	}
 	
 	public User getUser() {
@@ -63,10 +66,10 @@ public class AuthenticationSessionManager {
 	
 	public void setSession(User user, HttpSession session) {
 		user_session = session;
-		session.setAttribute(UserIdKey, user.getId());
-		session.setAttribute(EmailKey, user.getEmail());
-		session.setAttribute(FirstNameKey, user.getFirstName());
-		session.setAttribute(LastNameKey, user.getLastName());
+		user_session.setAttribute(UserIdKey, user.getId());
+		user_session.setAttribute(EmailKey, user.getEmail());
+		user_session.setAttribute(FirstNameKey, user.getFirstName());
+		user_session.setAttribute(LastNameKey, user.getLastName());
 		user_session.setAttribute(UserKey, user);
 	}
 }
