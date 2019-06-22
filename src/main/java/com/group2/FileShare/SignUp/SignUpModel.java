@@ -17,6 +17,7 @@ public class SignUpModel {
         String query = "{ call user_exists(?) }";
 
         ResultSet rs;
+        boolean userExists = true;
 
         //establish database connection
         DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
@@ -29,17 +30,15 @@ public class SignUpModel {
 
             //get the results
             rs = stmt.executeQuery();
-            System.out.println("ResultSet: " + rs);
 
             //parse results
-            boolean userExists = rs.getBoolean(1);
-            System.out.println("userExists: " + userExists);
-
-            if(userExists){
-                return true;
-            }else{
-                return false;
+            if(rs.next()) {
+                 userExists = rs.getBoolean(1);
             }
+
+            db.closeConnection();
+
+            return userExists;
 
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -48,7 +47,7 @@ public class SignUpModel {
         return true;
     }
 
-    public void createProfile(String firstName, String lastName, String email, String rawPassword){
+    public int createProfile(String firstName, String lastName, String email, String rawPassword){
 
         //hash encode the password
         PasswordEncoder passwordEncoder = new PasswordEncoder();
@@ -56,6 +55,9 @@ public class SignUpModel {
 
         //select the stored procedure
         String query = "{ call create_profile(?,?,?,?) }";
+
+        ResultSet rs;
+        int userId = 0;
 
         //establish database connection
         DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
@@ -68,15 +70,22 @@ public class SignUpModel {
             stmt.setString(3, email);
             stmt.setString(4, hashedPassword);
 
-            stmt.executeQuery();
+            rs = stmt.executeQuery();
+
+            //parse results
+            if(rs.next()) {
+                userId = rs.getInt(1);
+            }
+
+            db.closeConnection();
+
+            return userId;
 
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
 
-
-
-
+        return 0;
     }
 
 

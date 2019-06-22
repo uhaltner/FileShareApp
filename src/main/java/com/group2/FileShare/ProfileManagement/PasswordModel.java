@@ -28,6 +28,8 @@ public class PasswordModel {
 
             stmt.executeQuery();
 
+            db.closeConnection();
+
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
