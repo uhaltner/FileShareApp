@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
+import com.group2.FileShare.ProfileManagement.PasswordEncoder;
 import com.group2.FileShare.SignUp.SignUpForm;
 import com.group2.FileShare.User.User;
 
@@ -37,8 +38,9 @@ public class SignInController {
     	signInValidator.validate(signInForm, bindingResult);
     	 
         if (!bindingResult.hasErrors()) {
-            SignInService signInService = new SignInService();
-            User user = signInService.authenticateUserWith(signInForm);
+        	PasswordEncoder passwordEncoder = new PasswordEncoder();
+        	SignInDAO signInDao = new SignInDAO();
+        	User user = signInDao.getUserWith(signInForm, passwordEncoder);
     		if(user != null) {
     			authSessionManager.setSession(user, session);
     		    return "redirect:/dashboard";

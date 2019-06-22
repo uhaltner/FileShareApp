@@ -73,7 +73,7 @@
 
         <div class="form-group row">
             <div class="col-12">
-                <input type="text" class="form-control col-sm-12" id="inputPassword" placeholder="Enter password" th:field="*{password}" value="password">
+                <input type="password" class="form-control col-sm-12" id="inputPassword" placeholder="Enter password" th:field="*{password}" value="password">
                 <small class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</small>
                 
              <div>     
