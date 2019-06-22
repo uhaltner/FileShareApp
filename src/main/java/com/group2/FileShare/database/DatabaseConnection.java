@@ -24,11 +24,11 @@ public class DatabaseConnection {
         database = databaseCredentials.getDatabase();
         dbURL = "jdbc:mysql://" + url + "/" + database;
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             this.connection = DriverManager.getConnection(dbURL, username, password);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -37,7 +37,7 @@ public class DatabaseConnection {
         try {
             if(connection.isClosed())
             {
-                Class.forName("com.mysql.jdbc.Driver");
+                Class.forName("com.mysql.cj.jdbc.Driver");
                 this.connection = DriverManager.getConnection(dbURL, username, password);
             }
         } catch (ClassNotFoundException e) {

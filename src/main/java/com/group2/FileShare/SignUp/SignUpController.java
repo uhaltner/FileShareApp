@@ -1,56 +1,63 @@
 package com.group2.FileShare.SignUp;
 
+import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.ProfileManagement.PasswordRules.PasswordRuleSet;
 import com.group2.FileShare.SignIn.SignInForm;
 import com.group2.FileShare.ProfileManagement.PasswordValidator;
-import com.group2.FileShare.User.UserModel;
+import com.group2.FileShare.User.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
 public class SignUpController {
 
-    @GetMapping("/signup")
-    public String profileForm(HttpSession session, Model model){
-        model.addAttribute("signInForm", new SignInForm());
-        model.addAttribute("signupForm", new SignUpForm());
+//    @RequestMapping(value = "/signup", method = GET)
+//    public String profileForm(HttpSession session, Model model){
+//
+//        model.addAttribute("signInForm", new SignInForm());
+//        model.addAttribute("signupForm", new SignUpForm());
+//
+//        return "landing";
+//    }
 
-        return "landing";
-    }
-
-    @PostMapping("/signup")
-    public String signUpUser(@ModelAttribute SignUpForm signupForm){
+    @RequestMapping(value = "/signup", method = POST)
+    public String signUpUser(@ModelAttribute SignUpForm signupForm, HttpSession session, Model model){
 
         PasswordValidator passwordValidator = new PasswordValidator();
-        UserModel userModel = new UserModel();
+        SignUpModel signupModel = new SignUpModel();
 
         boolean validPassword = false;
 
         String formFirstName = signupForm.getFirstName();
         String formLastName = signupForm.getLastName();
         String formEmail = signupForm.getEmail();
-        String formPassword = signupForm.getPassword();
-        String formConfirmPassword = signupForm.getConfirmPassword();
+        String formRawPassword = signupForm.getPassword();
+        String formRawConfirmPassword = signupForm.getConfirmPassword();
 
-        if( userModel.userExist(formEmail) == false ){
+        if( signupModel.userExist(formEmail) == false ){
 
-            validPassword = passwordValidator.validatePassword( formPassword, formConfirmPassword, PasswordRuleSet.getRules() );
+            validPassword = passwordValidator.validatePassword( formRawPassword, formRawConfirmPassword, PasswordRuleSet.getRules() );
 
             if(validPassword) {
 
-                userModel.pushUser(formFirstName, formLastName, formEmail, formPassword);
-                return "dashboard";
+                int userId = signupModel.createProfile(formFirstName, formLastName, formEmail, formRawPassword);
+
+                User user = new User(userId, formEmail, formFirstName, formLastName);
+
+                AuthenticationSessionManager.instance().setSession(user, session);
+
+                return "redirect:/dashboard";
             }
 
         }
 
-        //has to be updated later to '/landing' or whatever we are calling the landing page
-        return "redirect:/signup";
+        return "redirect:/login";
     }
 
 

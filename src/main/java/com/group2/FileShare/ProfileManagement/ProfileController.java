@@ -1,5 +1,6 @@
 package com.group2.FileShare.ProfileManagement;
 
+import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.ProfileManagement.PasswordRules.*;
 import com.group2.FileShare.User.UserModel;
 import org.springframework.stereotype.Controller;
@@ -11,16 +12,20 @@ import javax.servlet.http.HttpSession;
 @Controller
 public class ProfileController {
 
+    private AuthenticationSessionManager sessionManager;
+
     @GetMapping("/profile")
     public String profileForm(HttpSession session, Model model){
 
-        int userId = 1; // = session.getAttribute("userId");
+        sessionManager = AuthenticationSessionManager.instance();
 
-        UserModel userModel = new UserModel();
+        String firstName = sessionManager.getFirstName();
+        String lastName = sessionManager.getLastName();
+        String email = sessionManager.getEmail();
 
-        model.addAttribute("userFirstName", userModel.pullFirstName(userId));
-        model.addAttribute("userLastName", userModel.pullLastName(userId));
-        model.addAttribute("userEmail", userModel.pullEmail(userId));
+        model.addAttribute("userFirstName", firstName);
+        model.addAttribute("userLastName", lastName);
+        model.addAttribute("userEmail", email);
         model.addAttribute("passwordForm", new PasswordForm());
 
         return "profile";
@@ -36,11 +41,12 @@ public class ProfileController {
     public String updateProfile(@ModelAttribute PasswordForm passwordForm){
 
         PasswordValidator passwordValidator = new PasswordValidator();
-        UserModel userModel = new UserModel();
+        PasswordModel passwordModel = new PasswordModel();
 
         boolean validPassword = false;
 
-        int userId = 1;// = session.getAttribute("userId");
+        int userId = sessionManager.getUserId();
+
         String updatedPassword = passwordForm.getPassword();
         String updatedPasswordConfirm = passwordForm.getConfirmPassword();
 
@@ -52,11 +58,9 @@ public class ProfileController {
             System.err.println(e);
         }
 
-        //valid password needs to be encoded and stored
         if(validPassword){
 
-            //store password in DB
-            userModel.pushPassword(userId, updatedPassword);
+            passwordModel.updatePassword(userId, updatedPassword);
 
             return "dashboard";
 
