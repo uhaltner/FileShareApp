@@ -1,10 +1,10 @@
 package com.group2.FileShare.Compression;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ZipCompression implements ICompression {
 
-//	private String sysDirectory = System.getProperty("user.dir") + "/";
 	private String extension = ".zip";
 	
 	@Override
@@ -20,10 +19,10 @@ public class ZipCompression implements ICompression {
 		
 		try {
 			String fileName = file.getOriginalFilename();
-//			String ziFileName = fileName  + extension;
 			File compressedFile = File.createTempFile(fileName, extension);
 			FileOutputStream fileOutputStream = new FileOutputStream(compressedFile);
-	        FileInputStream fileInputStream = (FileInputStream) file.getInputStream();
+	        InputStream fileInputStream = file.getInputStream();
+
 		
 	        ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
 	        ZipEntry zipEntry = new ZipEntry(fileName);
@@ -38,7 +37,6 @@ public class ZipCompression implements ICompression {
 	        fileInputStream.close();
 	        fileOutputStream.close();
 	        
-//	        File compressedFile = new File(sysDirectory + ziFileName);
 	        return compressedFile;
 	
 		} catch (FileNotFoundException e) {
