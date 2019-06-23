@@ -20,9 +20,8 @@ public class DocumentDAO implements IDocumentDAO {
     private Connection connection;
     private final AuthenticationSessionManager sessionManager;
     private DatabaseConnection databaseConnection;
-    private static DocumentDAO documentDAOInstance;
 
-    private DocumentDAO()
+    public DocumentDAO()
     {
         sessionManager = AuthenticationSessionManager.instance();
 
@@ -35,21 +34,6 @@ public class DocumentDAO implements IDocumentDAO {
         {
             e.printStackTrace();
         }
-    }
-
-    public DocumentDAO getDocumentDAOInstance()
-    {
-        try
-        {
-            if (null == documentDAOInstance) {
-                documentDAOInstance = new DocumentDAO();
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return documentDAOInstance;
     }
 
     public List<Document> getDocuments()
@@ -92,7 +76,7 @@ public class DocumentDAO implements IDocumentDAO {
             }
         }
         return null;
-    } //all documents for current user
+    }
 
     public Document addDocument(Document document)
     {
@@ -140,7 +124,7 @@ public class DocumentDAO implements IDocumentDAO {
             }
         }
         return null;
-    } //returns document with ID from the db
+    }
 
     public Document updateDocument(Document document)
     {
@@ -195,14 +179,10 @@ public class DocumentDAO implements IDocumentDAO {
         try
         {
             int documentId = document.getId();
-            boolean isTrashed = document.isTrashed();
-            Date trashedDate = document.getTrashedDate();
 
-            query = "UPDATE document SET is_trash = ?, trash_date = ? WHERE document_id = ?";
+            query = "DELETE FROM document WHERE document_id = ?";
             preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setBoolean(1, isTrashed);
-            preparedStatement.setObject(2, trashedDate);
-            preparedStatement.setInt(3, documentId);
+            preparedStatement.setInt(1, documentId);
             resultSet = preparedStatement.executeQuery();
 
             while(resultSet.next())

@@ -37,7 +37,7 @@ public class DocumentController {
 	private final ICompression compression;
 	private final String compressionExtension;
 	private final AuthenticationSessionManager sessionManager;
-//    private final IDatabase db;
+	private final IDocumentDAO documentDAO;
 
 	DocumentController() {
 		storage = S3StorageService.getInstance();
@@ -45,28 +45,25 @@ public class DocumentController {
 		compression = new ZipCompression();
 		compressionExtension = ".zip";
 		sessionManager = AuthenticationSessionManager.instance();
-//    	db = Database.getInstance();
-		loadDocumentCollection();
+		documentDAO = new DocumentDAO();
 	}
 
 	@PostMapping("")
-	public String handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
+	public String handleFileUpload(@RequestParam("file") MultipartFile file,
+			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
+			RedirectAttributes redirectAttributes) {
 		Document d = new Document();
 		d.setFilename(file.getOriginalFilename());
 		d.setSize(file.getSize());
-		d.setDescription(file.getContentType()); 
+		d.setDescription(file.getContentType());
 		d.setOwnerId(sessionManager.getUserId());
 		d.setStorageURL();
-		
 		// TODO check Document with Document validator ????
-	
-		
 		File compressedFile = compression.compressFile(file);
-
 		String storageFileName = d.getStorageURL();
 		String fileName = d.getFilename();
 		if (storage.uploadFile(compressedFile, storageFileName)) {
-//			d = db.addDocument(d);
+			d = documentDAO.addDocument(d);
 			documentsCollection.add(d);
 			redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + fileName + "!");
 			System.out.println("You successfully uploaded " + fileName + "!");
@@ -74,9 +71,7 @@ public class DocumentController {
 			redirectAttributes.addFlashAttribute("error", "File upload failed for " + fileName + "!");
 			System.err.println("File upload failed for " + fileName + "!");
 		}
-		
 		compressedFile.delete();
-		
 		return "redirect:" + redirect;
 	}
 
@@ -85,7 +80,7 @@ public class DocumentController {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
-		}catch (IndexOutOfBoundsException e){
+		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 			return null;
@@ -100,22 +95,26 @@ public class DocumentController {
 			return null;
 		}
 		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-				.contentType(MediaType.APPLICATION_OCTET_STREAM)
-				.body(resource);
+				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
 	}
 
 	@GetMapping("")
 	@ResponseBody
 	public List<Document> getDocumentCollection() {
+		if (sessionManager.isUserLoggedIn()) {
+			loadDocumentCollection();
+		}
 		return documentsCollection;
 	}
 
 	@DeleteMapping("/{fileIndex}")
-	public String handleFileDelete(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
+	public String handleFileDelete(@PathVariable int fileIndex,
+			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
+			RedirectAttributes redirectAttributes) {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
-		}catch (IndexOutOfBoundsException e){
+		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 			redirectAttributes.addFlashAttribute("error", "File upload failed! Please try again later.");
@@ -124,7 +123,7 @@ public class DocumentController {
 		String filename = d.getFilename();
 		String filePath = d.getStorageURL();
 		if (storage.deleteFile(filePath)) {
-//			d = db.removeDocument(d);
+			d = documentDAO.deleteDocument(d);
 			documentsCollection.remove(fileIndex);
 			redirectAttributes.addFlashAttribute("message", "You successfully deleted " + filename + "!");
 			System.out.println("You successfully deleted " + filename + "!");
@@ -135,15 +134,16 @@ public class DocumentController {
 		return "redirect:" + redirect;
 	}
 
-
 	@PutMapping("/makepublic/{fileIndex}")
-	public String makePublic(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
+	public String makePublic(@PathVariable int fileIndex,
+			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
+			RedirectAttributes redirectAttributes) {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
 			d.setPublic(true);
-	//		d = db.updateDocument(d);
-		}catch (IndexOutOfBoundsException e){
+			d = documentDAO.updateDocument(d);
+		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 			redirectAttributes.addFlashAttribute("error", "File public access failed for fileIndex" + fileIndex + "!");
@@ -154,37 +154,39 @@ public class DocumentController {
 		System.out.println("You successfully made file at index" + fileIndex + " public!");
 		return "redirect:" + redirect;
 	}
-	
 
 	@PutMapping("/makeprivate/{fileIndex}")
-	public String makePrivate(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
+	public String makePrivate(@PathVariable int fileIndex,
+			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
+			RedirectAttributes redirectAttributes) {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
 			d.setPublic(false);
-	//		d = db.updateDocument(d);
-		}catch (IndexOutOfBoundsException e){
+			d = documentDAO.updateDocument(d);
+		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 			redirectAttributes.addFlashAttribute("error", "File private access failed for fileIndex" + fileIndex + "!");
 			System.out.println("File delete failed for fileIndex" + fileIndex + "!");
 			return "redirect:" + redirect;
 		}
-		redirectAttributes.addFlashAttribute("message", "You successfully made file at index" + fileIndex + " private!");
+		redirectAttributes.addFlashAttribute("message",
+				"You successfully made file at index" + fileIndex + " private!");
 		System.out.println("You successfully made file at index" + fileIndex + " public!");
 		return "redirect:" + redirect;
 	}
 
-
-
 	@PutMapping("/pin/{fileIndex}")
-	public String makePinned(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
+	public String makePinned(@PathVariable int fileIndex,
+			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
+			RedirectAttributes redirectAttributes) {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
 			d.setPinned(true);
-	//		d = db.updateDocument(d);
-		}catch (IndexOutOfBoundsException e){
+			d = documentDAO.updateDocument(d);
+		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 			redirectAttributes.addFlashAttribute("error", "File pin failed for fileIndex" + fileIndex + "!");
@@ -195,86 +197,76 @@ public class DocumentController {
 		System.out.println("You successfully made file at index" + fileIndex + " pinned!");
 		return "redirect:" + redirect;
 	}
-	
 
 	@PutMapping("/unpin/{fileIndex}")
-	public String makeUnPinned(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
+	public String makeUnPinned(@PathVariable int fileIndex,
+			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
+			RedirectAttributes redirectAttributes) {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
 			d.setPinned(false);
-	//		d = db.updateDocument(d);
-		}catch (IndexOutOfBoundsException e){
+			d = documentDAO.updateDocument(d);
+		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 			redirectAttributes.addFlashAttribute("error", "File pin failed for fileIndex" + fileIndex + "!");
 			System.out.println("File pin failed for fileIndex" + fileIndex + "!");
 			return "redirect:" + redirect;
 		}
-		redirectAttributes.addFlashAttribute("message", "You successfully made file at index" + fileIndex + " unpinned!");
+		redirectAttributes.addFlashAttribute("message",
+				"You successfully made file at index" + fileIndex + " unpinned!");
 		System.out.println("You successfully made file at index" + fileIndex + " unpinned!");
 		return "redirect:" + redirect;
 	}
 
-
 	@PutMapping("/trash/{fileIndex}")
-	public String trashFile(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
+	public String trashFile(@PathVariable int fileIndex,
+			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
+			RedirectAttributes redirectAttributes) {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
 			d.setTrashed(true);
 			d.setTrashedDate(new Date());
-	//		d = db.updateDocument(d);
-		}catch (IndexOutOfBoundsException e){
+			d = documentDAO.updateDocument(d);
+		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 			redirectAttributes.addFlashAttribute("error", "File trash failed for fileIndex" + fileIndex + "!");
 			System.out.println("File trash failed for fileIndex" + fileIndex + "!");
 			return "redirect:" + redirect;
 		}
-		redirectAttributes.addFlashAttribute("message", "You successfully made file at index" + fileIndex + " trashed!");
+		redirectAttributes.addFlashAttribute("message",
+				"You successfully made file at index" + fileIndex + " trashed!");
 		System.out.println("You successfully made file at index" + fileIndex + " trashed!");
 		return "redirect:" + redirect;
 	}
-	
 
 	@PutMapping("/untrash/{fileIndex}")
-	public String unTrashFile(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
+	public String unTrashFile(@PathVariable int fileIndex,
+			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
+			RedirectAttributes redirectAttributes) {
 		Document d = null;
 		try {
 			d = documentsCollection.get(fileIndex);
 			d.setTrashed(false);
 			d.setTrashedDate(null);
-	//		d = db.updateDocument(d);
-		}catch (IndexOutOfBoundsException e){
+			d = documentDAO.updateDocument(d);
+		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 			redirectAttributes.addFlashAttribute("error", "File recovery failed for fileIndex" + fileIndex + "!");
 			System.out.println("File recovery failed for fileIndex" + fileIndex + "!");
 			return "redirect:" + redirect;
 		}
-		redirectAttributes.addFlashAttribute("message", "You successfully made file at index" + fileIndex + " not trashed!");
+		redirectAttributes.addFlashAttribute("message",
+				"You successfully made file at index" + fileIndex + " not trashed!");
 		System.out.println("You successfully made file at index" + fileIndex + " not trashed!");
 		return "redirect:" + redirect;
 	}
 
-	
 	private void loadDocumentCollection() {
-		// TODO Load from Database db
-		// documentsCollection = db.getDocuments();
-
-		Document d = new Document();
-		d.setFilename("Code Struct.drawio");
-//		d.setOwnerId(ownerId);
-		d.setStorageURL("Code Struct.drawio");
-//		d = db.addDocument(d);
-		documentsCollection.add(d);
-
-		d = new Document();
-		d.setFilename("A4 v2 Smart Contract Ethereum -CSCI 4145 5409 - Summer 2019.pdf");
-//		d.setOwnerId(ownerId);
-		d.setStorageURL("A4 v2 Smart Contract Ethereum -CSCI 4145 5409 - Summer 2019.pdf");
-//		d = db.addDocument(d);
-		documentsCollection.add(d);
+		documentsCollection = documentDAO.getDocuments();
 	}
 }
