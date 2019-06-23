@@ -14,19 +14,6 @@ public class User implements IUser {
 		this.lastName = lastName;
 	}
 	
-	public User(int userId, IUserModel userModel) {
-		this.id = userId;
-
-		firstName = userModel.pullFirstName(userId);
-		lastName = userModel.pullLastName(userId);
-		email = userModel.pullEmail(userId);
-	}
-
-	public User(String firstName, String lastName){
-		this.firstName = firstName;
-		this.lastName = lastName;
-	}
-	
 	@Override
 	public String getFirstName() {
 		return this.firstName;

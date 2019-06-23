@@ -2,7 +2,6 @@ package com.group2.FileShare.ProfileManagement;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.ProfileManagement.PasswordRules.*;
-import com.group2.FileShare.User.UserModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
