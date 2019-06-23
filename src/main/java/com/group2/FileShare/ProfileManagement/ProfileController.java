@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 public class ProfileController {
 
     private AuthenticationSessionManager sessionManager;
+    private boolean profile_error = false;
 
     @GetMapping("/profile")
     public String profileForm(HttpSession session, Model model){
@@ -26,6 +27,11 @@ public class ProfileController {
         model.addAttribute("userLastName", lastName);
         model.addAttribute("userEmail", email);
         model.addAttribute("passwordForm", new PasswordForm());
+
+        if(profile_error == true){
+            model.addAttribute("profile_error", "Invalid password, please try again.");
+            profile_error = false;
+        }
 
         return "profile";
     }
@@ -65,6 +71,7 @@ public class ProfileController {
 
         }else{
 
+            profile_error = true;
             return "redirect:/profile";
         }
 

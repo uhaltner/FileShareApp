@@ -13,6 +13,10 @@
         <h1>Profile</h1>
     </div>
 
+    <div th:if="${profile_error}" th:text="${profile_error}" class="alert alert-danger" role="alert">
+        [profile error message].
+    </div>
+
     <form action="#" th:action="@{/profile}" th:object="${passwordForm}" method="post">
         <div class="form-group row">
             <label for="userFirstName" class="col-sm-2 col-form-label">First Name</label>
