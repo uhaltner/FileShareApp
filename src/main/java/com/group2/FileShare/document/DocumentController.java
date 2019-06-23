@@ -37,7 +37,7 @@ public class DocumentController {
 	private final ICompression compression;
 	private final String compressionExtension;
 	private final AuthenticationSessionManager sessionManager;
-//    private final IDatabase db;
+    private final IDocumentDAO documentDAO;
 
 	DocumentController() {
 		storage = S3StorageService.getInstance();
@@ -45,7 +45,7 @@ public class DocumentController {
 		compression = new ZipCompression();
 		compressionExtension = ".zip";
 		sessionManager = AuthenticationSessionManager.instance();
-//    	db = Database.getInstance();
+    	documentDAO = new DocumentDAO() ;
 		loadDocumentCollection();
 	}
 
@@ -57,16 +57,12 @@ public class DocumentController {
 		d.setDescription(file.getContentType()); 
 		d.setOwnerId(sessionManager.getUserId());
 		d.setStorageURL();
-		
 		// TODO check Document with Document validator ????
-	
-		
 		File compressedFile = compression.compressFile(file);
-
 		String storageFileName = d.getStorageURL();
 		String fileName = d.getFilename();
 		if (storage.uploadFile(compressedFile, storageFileName)) {
-//			d = db.addDocument(d);
+			d = documentDAO.addDocument(d);
 			documentsCollection.add(d);
 			redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + fileName + "!");
 			System.out.println("You successfully uploaded " + fileName + "!");
@@ -74,9 +70,7 @@ public class DocumentController {
 			redirectAttributes.addFlashAttribute("error", "File upload failed for " + fileName + "!");
 			System.err.println("File upload failed for " + fileName + "!");
 		}
-		
 		compressedFile.delete();
-		
 		return "redirect:" + redirect;
 	}
 
@@ -104,12 +98,14 @@ public class DocumentController {
 				.body(resource);
 	}
 
+	
 	@GetMapping("")
 	@ResponseBody
 	public List<Document> getDocumentCollection() {
 		return documentsCollection;
 	}
 
+	
 	@DeleteMapping("/{fileIndex}")
 	public String handleFileDelete(@PathVariable int fileIndex, @RequestParam(value= "redirect", defaultValue = "/dashboard") String redirect, RedirectAttributes redirectAttributes) {
 		Document d = null;
@@ -124,7 +120,7 @@ public class DocumentController {
 		String filename = d.getFilename();
 		String filePath = d.getStorageURL();
 		if (storage.deleteFile(filePath)) {
-//			d = db.removeDocument(d);
+			d = documentDAO.deleteDocument(d);
 			documentsCollection.remove(fileIndex);
 			redirectAttributes.addFlashAttribute("message", "You successfully deleted " + filename + "!");
 			System.out.println("You successfully deleted " + filename + "!");
@@ -142,7 +138,7 @@ public class DocumentController {
 		try {
 			d = documentsCollection.get(fileIndex);
 			d.setPublic(true);
-	//		d = db.updateDocument(d);
+			d = documentDAO.updateDocument(d);
 		}catch (IndexOutOfBoundsException e){
 			System.err.println(e.getMessage());
 			e.printStackTrace();
@@ -162,7 +158,7 @@ public class DocumentController {
 		try {
 			d = documentsCollection.get(fileIndex);
 			d.setPublic(false);
-	//		d = db.updateDocument(d);
+			d = documentDAO.updateDocument(d);
 		}catch (IndexOutOfBoundsException e){
 			System.err.println(e.getMessage());
 			e.printStackTrace();
@@ -183,7 +179,7 @@ public class DocumentController {
 		try {
 			d = documentsCollection.get(fileIndex);
 			d.setPinned(true);
-	//		d = db.updateDocument(d);
+			d = documentDAO.updateDocument(d);
 		}catch (IndexOutOfBoundsException e){
 			System.err.println(e.getMessage());
 			e.printStackTrace();
@@ -203,7 +199,7 @@ public class DocumentController {
 		try {
 			d = documentsCollection.get(fileIndex);
 			d.setPinned(false);
-	//		d = db.updateDocument(d);
+			d = documentDAO.updateDocument(d);
 		}catch (IndexOutOfBoundsException e){
 			System.err.println(e.getMessage());
 			e.printStackTrace();
@@ -224,7 +220,7 @@ public class DocumentController {
 			d = documentsCollection.get(fileIndex);
 			d.setTrashed(true);
 			d.setTrashedDate(new Date());
-	//		d = db.updateDocument(d);
+			d = documentDAO.updateDocument(d);
 		}catch (IndexOutOfBoundsException e){
 			System.err.println(e.getMessage());
 			e.printStackTrace();
@@ -245,7 +241,7 @@ public class DocumentController {
 			d = documentsCollection.get(fileIndex);
 			d.setTrashed(false);
 			d.setTrashedDate(null);
-	//		d = db.updateDocument(d);
+			d = documentDAO.updateDocument(d);
 		}catch (IndexOutOfBoundsException e){
 			System.err.println(e.getMessage());
 			e.printStackTrace();
@@ -260,21 +256,6 @@ public class DocumentController {
 
 	
 	private void loadDocumentCollection() {
-		// TODO Load from Database db
-		// documentsCollection = db.getDocuments();
-
-		Document d = new Document();
-		d.setFilename("Code Struct.drawio");
-//		d.setOwnerId(ownerId);
-		d.setStorageURL("Code Struct.drawio");
-//		d = db.addDocument(d);
-		documentsCollection.add(d);
-
-		d = new Document();
-		d.setFilename("A4 v2 Smart Contract Ethereum -CSCI 4145 5409 - Summer 2019.pdf");
-//		d.setOwnerId(ownerId);
-		d.setStorageURL("A4 v2 Smart Contract Ethereum -CSCI 4145 5409 - Summer 2019.pdf");
-//		d = db.addDocument(d);
-		documentsCollection.add(d);
+		 documentsCollection = documentDAO.getDocuments();
 	}
 }
