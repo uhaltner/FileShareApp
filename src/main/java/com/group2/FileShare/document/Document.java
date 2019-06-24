@@ -27,7 +27,6 @@ public class Document {
 		this.size = size;
 		this.storageURL = storageURL;
 		this.ownerId = ownerId;
-		this.createdDate = new Date();
 	}
 
 	public int getId() {

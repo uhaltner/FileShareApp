@@ -16,10 +16,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -33,11 +31,11 @@ import com.group2.FileShare.storage.S3StorageService;
 @RequestMapping("/document")
 public class DocumentController {
 	private final IStorage storage;
-	private List<Document> documentsCollection;
+	private static List<Document> documentsCollection;
 	private final ICompression compression;
 	private final String compressionExtension;
-	private final AuthenticationSessionManager sessionManager;
-	private final IDocumentDAO documentDAO;
+	private static AuthenticationSessionManager sessionManager;
+	private static IDocumentDAO documentDAO;
 
 	DocumentController() {
 		storage = S3StorageService.getInstance();
@@ -56,6 +54,7 @@ public class DocumentController {
 		d.setFilename(file.getOriginalFilename());
 		d.setSize(file.getSize());
 		d.setDescription(file.getContentType());
+		d.setCreatedDate(new Date());
 		d.setOwnerId(sessionManager.getUserId());
 		d.setStorageURL();
 		// TODO check Document with Document validator ????
@@ -98,9 +97,7 @@ public class DocumentController {
 				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
 	}
 
-	@GetMapping("")
-	@ResponseBody
-	public List<Document> getDocumentCollection() {
+	public static List<Document> getDocumentCollection() {
 		if (sessionManager.isUserLoggedIn()) {
 			loadDocumentCollection();
 		}
@@ -134,7 +131,7 @@ public class DocumentController {
 		return "redirect:" + redirect;
 	}
 
-	@PutMapping("/makepublic/{fileIndex}")
+	@GetMapping("/makepublic/{fileIndex}")
 	public String makePublic(@PathVariable int fileIndex,
 			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
 			RedirectAttributes redirectAttributes) {
@@ -155,7 +152,7 @@ public class DocumentController {
 		return "redirect:" + redirect;
 	}
 
-	@PutMapping("/makeprivate/{fileIndex}")
+	@GetMapping("/makeprivate/{fileIndex}")
 	public String makePrivate(@PathVariable int fileIndex,
 			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
 			RedirectAttributes redirectAttributes) {
@@ -177,7 +174,7 @@ public class DocumentController {
 		return "redirect:" + redirect;
 	}
 
-	@PutMapping("/pin/{fileIndex}")
+	@GetMapping("/pin/{fileIndex}")
 	public String makePinned(@PathVariable int fileIndex,
 			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
 			RedirectAttributes redirectAttributes) {
@@ -198,7 +195,7 @@ public class DocumentController {
 		return "redirect:" + redirect;
 	}
 
-	@PutMapping("/unpin/{fileIndex}")
+	@GetMapping("/unpin/{fileIndex}")
 	public String makeUnPinned(@PathVariable int fileIndex,
 			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
 			RedirectAttributes redirectAttributes) {
@@ -220,7 +217,7 @@ public class DocumentController {
 		return "redirect:" + redirect;
 	}
 
-	@PutMapping("/trash/{fileIndex}")
+	@GetMapping("/trash/{fileIndex}")
 	public String trashFile(@PathVariable int fileIndex,
 			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
 			RedirectAttributes redirectAttributes) {
@@ -243,7 +240,7 @@ public class DocumentController {
 		return "redirect:" + redirect;
 	}
 
-	@PutMapping("/untrash/{fileIndex}")
+	@GetMapping("/untrash/{fileIndex}")
 	public String unTrashFile(@PathVariable int fileIndex,
 			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
 			RedirectAttributes redirectAttributes) {
@@ -266,7 +263,7 @@ public class DocumentController {
 		return "redirect:" + redirect;
 	}
 
-	private void loadDocumentCollection() {
+	private static void loadDocumentCollection() {
 		documentsCollection = documentDAO.getDocuments();
 	}
 }
