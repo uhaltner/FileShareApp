@@ -43,14 +43,14 @@ public class DocumentDAO implements IDocumentDAO {
         try
         {
             List<Document> documents = new ArrayList<Document>();
-            query = "SELECT * FROM document WHERE user_id = ?";
+            query = "SELECT * FROM Document WHERE user_id = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, user_id);
             resultSet = preparedStatement.executeQuery();
 
             while(resultSet.next()) {
                 Document rsDocument = new Document(resultSet.getInt("document_id"), resultSet.getString("file_name"),
-                        resultSet.getInt("size"),resultSet.getString("storage_url"),
+                        resultSet.getInt("size_mb"),resultSet.getString("storage_url"),
                         resultSet.getInt("user_id"));
                 documents.add(rsDocument);
             }
@@ -82,28 +82,24 @@ public class DocumentDAO implements IDocumentDAO {
     {
         try
         {
+            this.connection = databaseConnection.getConnection();
+
             String file_name = document.getFilename();
             long size = document.getSize();
             int user_id = document.getOwnerId();
             String description = document.getDescription();
             String storage_url = document.getStorageURL();
 
-            query = "INSERT INTO document (file_name, size, user_id, description, storage_url) VALUES (?, ?, ?, ?, ?)";
+            query = "INSERT INTO Document (file_name, size_mb, user_id, description, storage_url) VALUES (?, ?, ?, ?, ?)";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1,file_name);
             preparedStatement.setLong(2,size);
             preparedStatement.setInt(3,user_id);
             preparedStatement.setString(4,description);
             preparedStatement.setString(5,storage_url);
-            resultSet = preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
 
-            while(resultSet.next())
-            {
-                Document rsDocument = new Document(resultSet.getInt("document_id"), resultSet.getString("file_name"),
-                        resultSet.getInt("size"),resultSet.getString("storage_url"),
-                        resultSet.getInt("user_id"));
-                return rsDocument;
-            }
+            return null;
         }
         catch (SQLException e )
         {
@@ -136,7 +132,7 @@ public class DocumentDAO implements IDocumentDAO {
             boolean isTrashed = document.isTrashed();
             Date trashedDate = document.getTrashedDate();
 
-            query = "UPDATE document SET is_pinned = ?, is_public = ?, is_trash = ?, trash_date = ? WHERE document_id = ?";
+            query = "UPDATE Document SET is_pinned = ?, is_public = ?, is_trash = ?, trash_date = ? WHERE document_id = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setBoolean(1, isPinned);
             preparedStatement.setBoolean(2, isPublic);
@@ -148,7 +144,7 @@ public class DocumentDAO implements IDocumentDAO {
             while(resultSet.next())
             {
                 Document rsDocument = new Document(resultSet.getInt("document_id"), resultSet.getString("file_name"),
-                        resultSet.getInt("size"),resultSet.getString("storage_url"),
+                        resultSet.getInt("size_mb"),resultSet.getString("storage_url"),
                         resultSet.getInt("user_id"));
                 return rsDocument;
             }
@@ -180,7 +176,7 @@ public class DocumentDAO implements IDocumentDAO {
         {
             int documentId = document.getId();
 
-            query = "DELETE FROM document WHERE document_id = ?";
+            query = "DELETE FROM Document WHERE document_id = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, documentId);
             resultSet = preparedStatement.executeQuery();
@@ -188,7 +184,7 @@ public class DocumentDAO implements IDocumentDAO {
             while(resultSet.next())
             {
                 Document rsDocument = new Document(resultSet.getInt("document_id"), resultSet.getString("file_name"),
-                        resultSet.getInt("size"),resultSet.getString("storage_url"),
+                        resultSet.getInt("size_mb"),resultSet.getString("storage_url"),
                         resultSet.getInt("user_id"));
                 return rsDocument;
             }

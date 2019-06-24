@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:form="http://www.w3.org/1999/xhtml" xmlns:c="http://www.w3.org/1999/XSL/Transform">
 <head>
     <meta charset="UTF-8"/>
     <title>Dashboard</title>
@@ -26,7 +27,7 @@
                     </div>
 
                     <div class="modal-body">
-                        <p>Please upload file for the cloud storage</p>
+                        <p>Please click on button to upload a file</p>
                         <div class="custom-file">
                             <input type="file" name="file" class="custom-file-input" id="fileUpload" required>
                             <label class="custom-file-label" for="fileUpload">Choose file...</label>
@@ -126,26 +127,36 @@
 
         <!-- Table-->
         <table class="table align-middle">
-
+            <thead>
+                <tr>
+                    <th>FileName</th>
+                    <th>Size</th>
+                    <th>TimeStamp</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
             <tbody>
-            <!-- list has to be given by dashboard controller -->
-            <tr th:each="doc : ${docList}">
-                <td class="align-middle col-sm-1" th:text="${doc.name}">FileName</td>
-                <td class="align-middle" th:text="${doc.timestamp}">TimeStamp</td>
-                <td>
-                    <a href="/downloadfile" th:href="@{/downloadfile}" th:object="${doc}" class="btn btn-outline-primary">Download</a>
-                </td>
-                <td>
-                    <a href="/sharefile" th:href="@{/sharefile}" th:object="${doc}" class="btn btn-outline-primary">Share</a>
-                </td>
-                <td>
-                    <a href="/deletefile" th:href="@{/deletefile}" th:object="${doc}" class="btn btn-outline-danger">Delete</a>
-                </td>
-                <td>
-                    <a href="/pinfile" th:href="@{/pinfile}" th:object="${doc}" method="post" class="btn btn-outline-primary">Pin</a>
-                </td>
+                <tr th:each="document : ${documents}">
+                    <td th:text="${document.getFilename()}">FileName</td>
+                    <td th:text="${document.getSize()}+ ' bytes'">Size</td>
+                    <td th:text="${document.getCreatedDate()}">TimeStamp</td>
+                    <td>
+                        <a href="JavaScript:Void(0);" class="btn btn-outline-primary">Download</a>
+                    </td>
+                    <td>
+                        <a href="JavaScript:Void(0);" class="btn btn-outline-primary">Share</a>
+                    </td>
+                    <td>
+                        <a href="JavaScript:Void(0);" class="btn btn-outline-danger">Delete</a>
+                    </td>
+                    <td>
+                        <a href="JavaScript:Void(0);" class="btn btn-outline-primary">Pin</a>
+                    </td>
 
-            </tr>
+                </tr>
             </tbody>
         </table>
 
