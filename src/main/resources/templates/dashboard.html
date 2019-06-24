@@ -13,9 +13,39 @@
 
 <div class="container">
 
+    <div class="modal fade" id="uploadFileModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form id="fileUploadForm" name="fileUploadForm" method="post" action="/document" enctype="multipart/form-data">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Upload File</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>Please upload file for the cloud storage</p>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="fileUpload" required>
+                            <label class="custom-file-label" for="fileUpload">Choose file...</label>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-center">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- ROW 1 -->
     <div class="row m-5 ">
-        <div class="col-6 col-md-4"></div>
+        <div class="col-6 col-md-4">
+            Welcome <span th:text="${firstName}"></span>
+        </div>
 
         <!-- Storage Indicator -->
         <div class="col-6 col-md-4">
@@ -83,7 +113,9 @@
 
         <!-- Add File Button-->
         <div class="col-3 col-md-2">
-            <a href="/addfile" th:href="@{/addfile}" class="btn btn-outline-primary">Upload File</a>
+            <button type="button" class="btn float-right" id="uploadFileBtn" style="color: #005cbf" data-toggle="modal" data-target="#uploadFileModal">
+                Upload File
+            </button>
         </div>
 
     </div>
@@ -122,5 +154,13 @@
 
 </div>
 
+<script>
+    $('document').ready(function () {
+        $('#fileUpload').on('change',function(){
+            var fileName = $(this).val();
+            $(this).next('.custom-file-label').html(fileName);
+        });
+    });
+</script>
 </body>
 </html>
