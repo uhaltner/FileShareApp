@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="author" content="Yash Modi">
+    <title>File Share | Login</title>
+    <link rel="stylesheet" href="../static/bootstrap.css" th:href="@{/bootstrap.css}" />
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-align: center;
+            align-items: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #f5f5f5;
+        }
+        .card {
+            box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12) !important;
+        }
+
+        .card:hover {
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.20), 0 3px 15px rgba(0, 0, 0, 0.20) !important;
+        }
+
+        .form-signin {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px;
+            margin: auto;
+        }
+
+        .form-signin .form-control:focus {
+            z-index: 2;
+        }
+
+        #forgotBtn:focus{
+            outline: none;
+            box-shadow: none;
+        }
+        .material-icons{
+            vertical-align: top;
+        }
+        .btn-center {
+            margin: auto;
+        }
+        #signup-form{
+        	display: none;
+        }
+    </style>
+</head>
+
+<body>
+<div class="card form-signin shadow-sm">
+
+   	<div th:if="${login_error}" class="alert alert-danger" role="alert">
+	   Incorrect email address and / or password.
+	</div> 
+		
+    <!--Login form -->
+    <form name="login" method="post" th:action="@{/login}" th:object="${signInForm}" id="signin-form">
+        <h1 class="h4 font-weight-normal" style="margin-bottom: 3rem">Please sign into <br> File Share </h1>
+
+        <div class="form-group row">
+            <div class="col-12">
+                <input type="text" class="form-control col-sm-12" id="email" placeholder="Enter email" th:field="*{email}" required autofocus>
+                <small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</small>
+                
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-12">
+                <input type="password" class="form-control col-sm-12" id="inputPassword" placeholder="Enter password" th:field="*{password}" value="password">
+                <small class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</small>
+                
+             <div>     
+        </div>
+         
+       
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-primary"type="submit" id="signIn">Sign In</button>
+        </div>
+        <br>
+        <div class="float-right">
+            Not a member? <a href="#" id="signUpA">Sign Up</a>
+        </div><br>
+
+        <button type="button" class="btn float-right" id="forgotBtn" style="color: #005cbf" data-toggle="modal" data-target="#forgotPasswordModal">
+            Forgot Password?
+        </button>
+    </form>
+
+    <!--Sign Up form-->
+    <form  action="#" th:action="@{/signup}" th:object="${signupForm}" method="post" name="signUp" id="signup-form">
+    <!-- <form name="signUp" method="post" action="" id="signup-form"> -->
+        <h1 class="h4 font-weight-normal" style="margin-bottom: 3rem">Sign up for <br> File Share</h1>
+
+        <div class="d-inline-flex" style="margin-bottom: 1rem">
+            <input th:field="*{firstName}" type="text" id="signupFirstName" class="form-control width-half" placeholder="First Name"
+                   onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode == 32) || (event.charCode == 46)"
+                   required>
+            <input th:field="*{lastName}" type="text" id="signupLastName" class="form-control width-half" placeholder="Last Name"
+                   onkeypress="return (event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode == 32) || (event.charCode == 46)"
+                   required>
+        </div>
+
+        <input th:field="*{email}" type="email" style="margin-bottom: 1rem" id="signupEmail" class="form-control noSpace" placeholder="Email address" required>
+
+        <input th:field="*{password}" type="password" style="margin-bottom: 1rem" id="Password" class="form-control noSpace" placeholder="Password" required>
+
+        <input th:field="*{confirmPassword}" type="password" style="margin-bottom: 1rem" id="confirmPw" class="form-control noSpace" placeholder="Confirm Password" required>
+
+        <div class="text-center">
+            <button class="btn btn-primary" type="submit">Sign Up</button>
+        </div>
+        <br>
+        <div class="float-right">
+            Already a member? <a href="#" id="signInA">Sign In</a>
+        </div>
+    </form>
+</div>
+
+<!--Forgot Password Modal-->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="forgotPwForm" name="forgotPwForm" method="post">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Forgot Password?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <p>Please enter your email address to reset your password</p>
+                    <input type="email" style="margin-bottom: 1rem" id="forgotEmail" class="form-control noSpace" placeholder="Email address" required>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-center">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+
+    $(document).ready(function() {
+
+        $("#signup-form").hide();
+
+        $( "#signUpA" ).click(function() {
+            $("#signin-form").toggle();
+            $("#signup-form").toggle();
+        });
+
+        $( "#signInA" ).click(function() {
+            $("#signin-form").toggle();
+            $("#signup-form").toggle();
+        });
+
+        $(".noSpace").on("keypress", function (e) {
+            if (e.which === 32) return false;
+        });
+    });
+</script>
+
+</body>
+
+</body>
+</html>

@@ -1,0 +1,150 @@
+package com.group2.FileShare.document;
+
+import com.group2.FileShare.Authentication.AuthenticationSessionManager;
+import com.group2.FileShare.database.DatabaseConnection;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+public class DocumentDAO implements IDocumentDAO {
+
+	private PreparedStatement preparedStatement;
+	private ResultSet resultSet = null;
+	private String query;
+	private final AuthenticationSessionManager sessionManager;
+	private DatabaseConnection databaseConnection;
+
+	public DocumentDAO() {
+		sessionManager = AuthenticationSessionManager.instance();
+
+		try {
+			databaseConnection = DatabaseConnection.getdbConnectionInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public List<Document> getDocuments() {
+		int user_id = sessionManager.getUserId();
+
+		try {
+			List<Document> documents = new ArrayList<Document>();
+			query = "SELECT * FROM Document WHERE user_id = ?";
+			preparedStatement = databaseConnection.getConnection().prepareStatement(query);
+			preparedStatement.setInt(1, user_id);
+			resultSet = preparedStatement.executeQuery();
+
+			while (resultSet.next()) {
+				Document rsDocument = new Document(resultSet.getInt("document_id"), resultSet.getString("file_name"),
+						resultSet.getInt("size_mb"), resultSet.getString("storage_url"), resultSet.getInt("user_id"));
+				rsDocument.setCreatedDate(resultSet.getTimestamp("created_date"));
+				rsDocument.setTrashedDate(resultSet.getTimestamp("trash_date"));
+				rsDocument.setTrashed(resultSet.getBoolean("is_trash"));
+				rsDocument.setPinned(resultSet.getBoolean("is_pinned"));
+				rsDocument.setPublic(resultSet.getBoolean("is_public"));
+				documents.add(rsDocument);
+			}
+
+			return documents;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (null != databaseConnection) {
+					databaseConnection.closeConnection();
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	public Document addDocument(Document document) {
+		try {
+			query = "INSERT INTO Document (file_name, size_mb, user_id, description, storage_url, is_pinned, is_public, is_trash, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			preparedStatement = databaseConnection.getConnection().prepareStatement(query);
+			preparedStatement.setString(1, document.getFilename());
+			preparedStatement.setLong(2, document.getSize());
+			preparedStatement.setInt(3, document.getOwnerId());
+			preparedStatement.setString(4, document.getDescription());
+			preparedStatement.setString(5, document.getStorageURL());
+			preparedStatement.setBoolean(6, document.isPinned());
+			preparedStatement.setBoolean(7, document.isPublic());
+			preparedStatement.setBoolean(8, document.isTrashed());
+			preparedStatement.setTimestamp(9, new java.sql.Timestamp(document.getCreatedDate().getTime()));
+			preparedStatement.executeUpdate();
+
+			return document;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (null != databaseConnection) {
+					databaseConnection.closeConnection();
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	public Document updateDocument(Document document) {
+		try {
+			int docId = document.getId();
+			boolean isPinned = document.isPinned();
+			boolean isPublic = document.isPublic();
+			boolean isTrashed = document.isTrashed();
+			Date trashedDate = document.getTrashedDate();
+			query = "UPDATE Document SET is_pinned = ?, is_public = ?, is_trash = ?, trash_date = ?, modified_date = ? WHERE document_id = ?";
+			preparedStatement = databaseConnection.getConnection().prepareStatement(query);
+			preparedStatement.setBoolean(1, isPinned);
+			preparedStatement.setBoolean(2, isPublic);
+			preparedStatement.setBoolean(3, isTrashed);
+			preparedStatement.setTimestamp(4, new java.sql.Timestamp(trashedDate.getTime()));
+			preparedStatement.setTimestamp(5, new java.sql.Timestamp((new Date()).getTime()));
+			preparedStatement.setInt(6, docId);
+			preparedStatement.executeUpdate();
+			return document;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (null != databaseConnection) {
+					databaseConnection.closeConnection();
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	public Document deleteDocument(Document document) {
+		try {
+			int documentId = document.getId();
+
+			query = "DELETE FROM Document WHERE document_id = ?";
+			preparedStatement = databaseConnection.getConnection().prepareStatement(query);
+			preparedStatement.setInt(1, documentId);
+			preparedStatement.executeUpdate();
+			return document;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (databaseConnection != null) {
+					databaseConnection.closeConnection();
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		return null;
+	}
+}
