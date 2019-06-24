@@ -38,8 +38,7 @@ public class ProfileController {
 
     @PostMapping(value="/profile", params = "action=cancel")
     public String cancelProfile(@ModelAttribute PasswordForm passwordForm){
-
-        return "dashboard";
+        return "redirect:/dashboard";
     }
 
     @PostMapping(value="/profile", params = "action=update")
