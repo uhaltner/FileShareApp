@@ -14,7 +14,7 @@
 <div class="container">
 
     <div class="modal fade" id="uploadFileModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <form id="fileUploadForm" name="fileUploadForm" method="post" action="/document" enctype="multipart/form-data">
 
@@ -28,7 +28,7 @@
                     <div class="modal-body">
                         <p>Please upload file for the cloud storage</p>
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="fileUpload" required>
+                            <input type="file" name="file" class="custom-file-input" id="fileUpload" required>
                             <label class="custom-file-label" for="fileUpload">Choose file...</label>
                         </div>
                     </div>
