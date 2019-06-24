@@ -37,7 +37,7 @@ public class DefaultProperties {
 
 	public String getS3BucketName() {
 		if (System.getProperty("FILESHARE_S3_BUCKET_NAME") == null || System.getProperty("FILESHARE_S3_BUCKET_NAME").isEmpty()) {
-			return defaultProperties.getProperty("JDBC_CONNECTION_STRING");
+			return defaultProperties.getProperty("S3_BUCKET_NAME");
 		} else {
 			return System.getProperty("FILESHARE_S3_BUCKET_NAME");
 		}
