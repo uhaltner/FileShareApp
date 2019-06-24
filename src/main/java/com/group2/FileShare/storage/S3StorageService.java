@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.group2.FileShare.DefaultProperties;
 
 import java.io.File;
 import java.net.URL;
@@ -21,17 +22,9 @@ public class S3StorageService implements IStorage {
 	private long linkValidityMillis = 0;
 
 	private S3StorageService() {
-		String bucket_name;
-		if (System.getProperty("FILESHARE_S3_BUCKET_NAME") == null || System.getProperty("FILESHARE_S3_BUCKET_NAME").isEmpty()) {
-			// TODO should load default bucket_name from configuration class
-			bucket_name = "csci5308-file-share-app";
-		} else {
-			bucket_name = System.getProperty("FILESHARE_S3_BUCKET_NAME");
-		}
-
+		String bucket_name = DefaultProperties.getInstance().getS3BucketName();
 		s3_bucket = createS3Bucket(bucket_name);
-		// TODO should load linkValidityMillis from configuration class
-		linkValidityMillis = 1000 * 60 * 60;
+		linkValidityMillis = DefaultProperties.getInstance().getS3LinkValidityMillis();
 	}
 
 	public static S3StorageService getInstance() {
