@@ -1,6 +1,11 @@
 package com.group2.FileShare.Authentication;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.group2.FileShare.User.User;
 
@@ -11,7 +16,6 @@ public class AuthenticationSessionManager {
 	private static final String FirstNameKey = "FirstName";
 	private static final String LastNameKey = "LastName";
 	private static final String UserKey = "UserKey";
-	private HttpSession user_session;
 	
 	private static AuthenticationSessionManager uniqueInstance = null;
 
@@ -24,28 +28,30 @@ public class AuthenticationSessionManager {
 		return uniqueInstance;
 	}
 	
+	private HttpSession getRequestSession() {
+	   RequestAttributes requestAttributes = RequestContextHolder
+	            .currentRequestAttributes();
+	    ServletRequestAttributes attributes = (ServletRequestAttributes) requestAttributes;
+	    HttpServletRequest request = attributes.getRequest();
+	    HttpSession httpSession = request.getSession(true);
+		return httpSession;
+	}
+	
 	public boolean isUserLoggedIn() {
-		if(user_session == null) {
-			return false;
-		} else {
-			return (user_session.getAttribute(UserIdKey) != null);
-		}
+		return (getRequestSession().getAttribute(UserIdKey) != null);
+
 	}
 	
 	public int getUserId() {
-		return (int) user_session.getAttribute(UserIdKey);
-	}
-	
-	public void setUserId(int value, HttpSession session) {
-		session.setAttribute(UserIdKey, value);
+		return (int) getRequestSession().getAttribute(UserIdKey);
 	}
 	
 	public String getEmail() {
-		return (String) user_session.getAttribute(EmailKey);
+		return (String) getRequestSession().getAttribute(EmailKey);
 	}
 	
 	public String getFirstName() {
-		return (String) user_session.getAttribute(FirstNameKey);
+		return (String) getRequestSession().getAttribute(FirstNameKey);
 	}
 	
 	public void setFirstName(String value, HttpSession session) {
@@ -53,23 +59,22 @@ public class AuthenticationSessionManager {
 	}
 	
 	public String getLastName() {
-		return (String) user_session.getAttribute(LastNameKey);
+		return (String) getRequestSession().getAttribute(LastNameKey);
 	}
 	
 	public void destroySession() {
-		user_session = null;
+		getRequestSession().invalidate();;
 	}
 	
 	public User getUser() {
-		return (User) user_session.getAttribute(UserKey);
+		return (User) getRequestSession().getAttribute(UserKey);
 	}
 	
 	public void setSession(User user, HttpSession session) {
-		user_session = session;
-		user_session.setAttribute(UserIdKey, user.getId());
-		user_session.setAttribute(EmailKey, user.getEmail());
-		user_session.setAttribute(FirstNameKey, user.getFirstName());
-		user_session.setAttribute(LastNameKey, user.getLastName());
-		user_session.setAttribute(UserKey, user);
+		session.setAttribute(UserIdKey, user.getId());
+		session.setAttribute(EmailKey, user.getEmail());
+		session.setAttribute(FirstNameKey, user.getFirstName());
+		session.setAttribute(LastNameKey, user.getLastName());
+		session.setAttribute(UserKey, user);
 	}
 }
