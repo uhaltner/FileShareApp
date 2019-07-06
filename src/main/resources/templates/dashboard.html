@@ -108,8 +108,8 @@
 
         <!-- Search Form -->
         <div class="col-12 col-md-8">
-            <form action="/searchbar" class="form-inline active-cyan-4">
-                <input class="form-control form-control-sm mr-3 w-75" type="text" placeholder="Search..." aria-label="Search">
+            <form action="/dashboard/search/" method="post" class="form-inline active-cyan-4">
+                <input type = "text" name="searchPhrase" class="form-control form-control-sm mr-3 w-75" placeholder="Search..." aria-label="Search">
                 <button type="submit" name="searchtext" class="btn btn-outline-primary">Search</button>
             </form>
         </div>
@@ -122,10 +122,10 @@
                     Filter
                 </a>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="/sort/name" th:href="@{/sort/name}" >Name</a>
-                    <a class="dropdown-item" href="/sort/size">File Size</a>
-                    <a class="dropdown-item" href="/sort/type">File Type</a>
-                    <a class="dropdown-item" href="/sort/date">Date Modified</a>
+                    <a class="dropdown-item" href="/dashboard/sort/name" th:href="@{/dashboard/sort/name}">Name</a>
+                    <a class="dropdown-item" href="/dashboard/sort/size" th:href="@{/dashboard/sort/size}">File Size</a>
+                    <a class="dropdown-item" href="/dashboard/sort/type" th:href="@{/dashboard/sort/type}">File Type</a>
+                    <a class="dropdown-item" href="/dashboard/sort/modified" th:href="@{/dashboard/sort/modified}">Date Modified</a>
                 </div>
             </div>
 
