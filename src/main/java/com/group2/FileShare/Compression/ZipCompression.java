@@ -5,14 +5,18 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.springframework.web.multipart.MultipartFile;
 
+
 public class ZipCompression implements ICompression {
 
-	private String extension = ".zip";
+	private static String extension  = ".zip";
 	
 	@Override
 	public File compressFile(MultipartFile file) {
@@ -49,7 +53,39 @@ public class ZipCompression implements ICompression {
 	}
 	
 	@Override
-	public File deCompressFile(String fileZip) {
+	public File deCompressFile(String fileURL) {
+
+		ZipInputStream zis;
+		try {
+			URL url = new URL(fileURL );
+			byte[] buffer = new byte[1024];
+
+			zis = new ZipInputStream(url.openStream());
+			ZipEntry zipEntry = zis.getNextEntry();
+			String tempDir = System.getProperty("java.io.tmpdir");
+
+			while (zipEntry != null) {
+
+				File newFile =   new File(tempDir , zipEntry.getName());  //File.createTempFile("",zipEntry.getName());
+				FileOutputStream fos = new FileOutputStream(newFile);
+				int len;
+				while ((len = zis.read(buffer)) > 0) {
+					fos.write(buffer, 0, len);
+				}
+				fos.close();
+				zipEntry = zis.getNextEntry();
+				return newFile;
+			}
+			zis.closeEntry();
+			zis.close();
+
+		} catch (FileNotFoundException e) {
+			System.out.println(e.getMessage());
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+
 		return null;
 	}
+
 }
