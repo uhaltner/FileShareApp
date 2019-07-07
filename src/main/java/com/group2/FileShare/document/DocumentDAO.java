@@ -1,11 +1,10 @@
 package com.group2.FileShare.document;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
+import com.group2.FileShare.User.User;
 import com.group2.FileShare.database.DatabaseConnection;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -147,4 +146,52 @@ public class DocumentDAO implements IDocumentDAO {
 		}
 		return null;
 	}
+
+	/** @Author: Ueli Haltner
+	 *  @Description: Returns a list of documents based on the input query.
+	 */
+	public List<Document> getDocumentList(String query, int userId, boolean publicDocumentsOnly) {
+
+		DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
+		List<Document> documentList = new ArrayList<Document>();
+
+		try (Connection conn = db.getConnection();
+			 CallableStatement stmt = conn.prepareCall(query)) {
+
+			stmt.setInt(1, userId);
+			stmt.setBoolean(2,publicDocumentsOnly);
+
+			ResultSet rs = stmt.executeQuery();
+
+			while( rs.next() ) {
+
+				Document rsDocument = new Document(
+						rs.getInt("document_id"),
+						rs.getString("file_name"),
+						rs.getInt("size_mb"),
+						rs.getString("storage_url"),
+						rs.getInt("user_id")
+				);
+
+				rsDocument.setCreatedDate(rs.getTimestamp("created_date"));
+				rsDocument.setTrashedDate(rs.getTimestamp("trash_date"));
+				rsDocument.setTrashed(rs.getBoolean("is_trash"));
+				rsDocument.setPinned(rs.getBoolean("is_pinned"));
+				rsDocument.setPublic(rs.getBoolean("is_public"));
+				rsDocument.setDescription(rs.getString("description"));
+
+				documentList.add(rsDocument);
+
+			}
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+
+		} finally {
+			db.closeConnection();
+		}
+
+		return documentList;
+	}
+
 }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.group2.FileShare.Dashboard.DocumentSorter;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -97,9 +98,15 @@ public class DocumentController {
 				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
 	}
 
-	public static List<Document> getDocumentCollection() {
+	public static List<Document> getDocumentCollection(DocumentSorter documentSorter, int userId, boolean publicDashboard) {
 		if (sessionManager.isUserLoggedIn()) {
-			loadDocumentCollection();
+
+			try {
+				documentsCollection = documentSorter.executeStrategy(userId, publicDashboard);
+			}catch(Exception e){
+				System.out.println(e);
+			}
+
 		}
 		return documentsCollection;
 	}
