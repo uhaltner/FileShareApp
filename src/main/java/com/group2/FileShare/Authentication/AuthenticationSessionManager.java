@@ -33,17 +33,30 @@ public class AuthenticationSessionManager {
 	            .currentRequestAttributes();
 	    ServletRequestAttributes attributes = (ServletRequestAttributes) requestAttributes;
 	    HttpServletRequest request = attributes.getRequest();
-	    HttpSession httpSession = request.getSession(true);
-		return httpSession;
+	    if(request.isRequestedSessionIdValid()) {
+			HttpSession httpSession = request.getSession(false);
+			return httpSession;
+		} else {
+			return null;
+		}
 	}
 	
 	public boolean isUserLoggedIn() {
-		return (getRequestSession().getAttribute(UserIdKey) != null);
-
+		HttpSession session = getRequestSession();
+		if (session == null) {
+			return false;
+		} else {
+			return (session.getAttribute(UserIdKey) != null);
+		}
 	}
 	
 	public int getUserId() {
-		return (int) getRequestSession().getAttribute(UserIdKey);
+		HttpSession session = getRequestSession();
+		if (session != null) {
+			Object id = session.getAttribute(UserIdKey);
+			return (id != null ? (int)id : -1);
+		}
+		return -1;
 	}
 	
 	public String getEmail() {
@@ -52,10 +65,6 @@ public class AuthenticationSessionManager {
 	
 	public String getFirstName() {
 		return (String) getRequestSession().getAttribute(FirstNameKey);
-	}
-	
-	public void setFirstName(String value, HttpSession session) {
-		session.setAttribute(FirstNameKey, value);
 	}
 	
 	public String getLastName() {
