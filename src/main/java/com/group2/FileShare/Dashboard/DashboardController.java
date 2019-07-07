@@ -20,7 +20,11 @@ public class DashboardController {
     private AuthenticationSessionManager sessionManager;
     private DocumentSorter documentSorter;
     private boolean searchRequired = false;
+
     private String searchPhrase = "";
+    private boolean publicDashboard = false;
+
+    private Dashboard currentDashboard = Dashboard.PRIVATE;
     
     @GetMapping("")
     public String dashBoard(HttpSession session, Model model)
@@ -32,7 +36,6 @@ public class DashboardController {
             String firstName = sessionManager.getFirstName();
             String lastName = sessionManager.getLastName();
             int userId = sessionManager.getUserId();
-            boolean publicDashboard = false;
 
             boolean isUserLoggedIn = sessionManager.isUserLoggedIn();
 
@@ -41,29 +44,44 @@ public class DashboardController {
                 documentSorter = new DocumentSorter(new CreatedSortStrategy());
             }
 
+            //crate and generate the document list
             List<Document> documentList = new ArrayList<>();
             documentList = DocumentController.getDocumentCollection(documentSorter, userId, publicDashboard);
 
+            //if the search bar was used, find all documents with the matching search phrase
             if(searchRequired){
                 SearchBarIterator searchBarIterator = new SearchBarIterator();
                 documentList = searchBarIterator.findAll(searchPhrase, documentList);
                 searchRequired = false;
             }
-
+            
             model.addAttribute("documents", documentList);
             model.addAttribute("firstName",firstName);
             model.addAttribute("lastName",lastName);
 
             if (isUserLoggedIn) {
-                return "dashboard";
-            } else {
+
+                //check the current selected dashboard
+                switch (currentDashboard){
+                    case PRIVATE:
+                        return "dashboard";
+
+                    case PUBLIC:
+                        return "public_dashboard";
+
+                    case TRASH:
+                        return "trash_dashboard";
+                }
+
+            } else { //I am unsure about this else statement, seems a bit redundant since returning to landing is the default anyways.
                 return "landing";
             }
         }
         catch (Exception e)
         {
-        e.printStackTrace();
+            e.printStackTrace();
         }
+
         return "landing";
     }
 
@@ -103,5 +121,35 @@ public class DashboardController {
 
         return "redirect: /dashboard";
     }
+
+    @GetMapping("/private")
+    public String privateDashboard(){
+
+        currentDashboard = Dashboard.PRIVATE;
+        publicDashboard = false;
+
+        return "redirect: /dashboard";
+    }
+
+    @GetMapping("/public")
+    public String publicDashboard(){
+
+        currentDashboard = Dashboard.PUBLIC;
+        publicDashboard = true;
+
+        return "redirect: /dashboard";
+    }
+
+    @GetMapping("/trash")
+    public String trashDashboard(){
+
+        currentDashboard = Dashboard.TRASH;
+        publicDashboard = false;
+
+        return "redirect: /dashboard";
+    }
+
+
+
 
 }
