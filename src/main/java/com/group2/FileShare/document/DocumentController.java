@@ -1,32 +1,26 @@
 package com.group2.FileShare.document;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import com.group2.FileShare.Authentication.AuthenticationSessionManager;
+import com.group2.FileShare.Compression.ICompression;
+import com.group2.FileShare.Compression.ZipCompression;
 import com.group2.FileShare.Dashboard.DocumentSorter;
+import com.group2.FileShare.storage.IStorage;
+import com.group2.FileShare.storage.S3StorageService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.group2.FileShare.Authentication.AuthenticationSessionManager;
-import com.group2.FileShare.Compression.ICompression;
-import com.group2.FileShare.Compression.ZipCompression;
-import com.group2.FileShare.storage.IStorage;
-import com.group2.FileShare.storage.S3StorageService;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Controller
 @RequestMapping("/document")
@@ -111,7 +105,7 @@ public class DocumentController {
 		return documentsCollection;
 	}
 
-	@DeleteMapping("/{fileIndex}")
+	@GetMapping("/delete/{fileIndex}")
 	public String handleFileDelete(@PathVariable int fileIndex,
 			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
 			RedirectAttributes redirectAttributes) {
