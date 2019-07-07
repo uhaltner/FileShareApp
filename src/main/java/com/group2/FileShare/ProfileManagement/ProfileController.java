@@ -66,7 +66,7 @@ public class ProfileController {
 
             passwordModel.updatePassword(userId, updatedPassword);
 
-            return "dashboard";
+            return "redirect:/dashboard";
 
         }else{
 
