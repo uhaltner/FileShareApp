@@ -8,13 +8,13 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 @Component
 public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
-	
+
    @Override
     public boolean preHandle(HttpServletRequest request,
             HttpServletResponse response, Object handler) throws Exception {
 
         String reqUri = request.getRequestURI();
-        if(!(reqUri.contains(".css") || reqUri.contains(".js"))) {
+        if(!(reqUri.contains(".css") || reqUri.contains(".js") || reqUri.contains("/shared"))) {
 	        boolean isUserLoggedIn = AuthenticationSessionManager.instance().isUserLoggedIn();
 	        boolean isLogInPage = reqUri.equals("/login");
 	        boolean isSignUpPage = reqUri.equals("/signup");
@@ -24,7 +24,7 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
 	        	 response.sendRedirect("/dashboard");
 	        }
         }
-  
+
         return super.preHandle(request, response, handler);
     }
 }

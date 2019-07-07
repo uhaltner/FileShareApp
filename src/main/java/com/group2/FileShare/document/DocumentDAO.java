@@ -1,7 +1,6 @@
 package com.group2.FileShare.document;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
-import com.group2.FileShare.User.User;
 import com.group2.FileShare.database.DatabaseConnection;
 
 import java.sql.*;
@@ -192,6 +191,76 @@ public class DocumentDAO implements IDocumentDAO {
 		}
 
 		return documentList;
+	}
+
+	public Document getDocument(int document_id) {
+
+		String query = "{ call get_document(?) }";
+
+		DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
+
+		try (Connection conn = db.getConnection();
+			 CallableStatement stmt = conn.prepareCall(query)) {
+
+			stmt.setInt(1, document_id);
+			ResultSet resultSet = stmt.executeQuery();
+
+			while(resultSet.next()) {
+				Document rsDocument = new Document(resultSet.getInt("document_id"), resultSet.getString("file_name"),
+						resultSet.getInt("size_mb"), resultSet.getString("storage_url"), resultSet.getInt("user_id"));
+				rsDocument.setDescription(resultSet.getString("description"));
+				return rsDocument;
+			}
+
+			db.closeConnection();
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+		} finally {
+			try {
+				if (null != databaseConnection) {
+					databaseConnection.closeConnection();
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+
+	public SharedLink getLinkedDocumentRefWith(String accessUrl) {
+
+		String query = "{ call get_shared_document(?) }";
+
+		DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
+
+		try (Connection conn = db.getConnection();
+			 CallableStatement stmt = conn.prepareCall(query)) {
+
+			stmt.setString(1, accessUrl);
+			ResultSet resultSet = stmt.executeQuery();
+
+			while(resultSet.next()) {
+				SharedLink sharedDocumentRefernce = new SharedLink(resultSet.getInt("link_id"), resultSet.getInt("document_id"), resultSet.getString("expiration_date"));
+				return sharedDocumentRefernce;
+			}
+
+			db.closeConnection();
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+		} finally {
+			try {
+				if (null != databaseConnection) {
+					databaseConnection.closeConnection();
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		return null;
 	}
 
 }

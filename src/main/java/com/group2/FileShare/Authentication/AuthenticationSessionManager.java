@@ -42,12 +42,7 @@ public class AuthenticationSessionManager {
 	}
 	
 	public boolean isUserLoggedIn() {
-		HttpSession session = getRequestSession();
-		if (session == null) {
-			return false;
-		} else {
-			return (session.getAttribute(UserIdKey) != null);
-		}
+		return getUserId() != -1;
 	}
 	
 	public int getUserId() {
