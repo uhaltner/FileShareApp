@@ -1,7 +1,6 @@
 package com.group2.FileShare.document;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
-import com.group2.FileShare.User.User;
 import com.group2.FileShare.database.DatabaseConnection;
 
 import java.sql.*;
@@ -100,12 +99,20 @@ public class DocumentDAO implements IDocumentDAO {
 			boolean isPublic = document.isPublic();
 			boolean isTrashed = document.isTrashed();
 			Date trashedDate = document.getTrashedDate();
+
 			query = "UPDATE Document SET is_pinned = ?, is_public = ?, is_trash = ?, trash_date = ?, modified_date = ? WHERE document_id = ?";
 			preparedStatement = databaseConnection.getConnection().prepareStatement(query);
 			preparedStatement.setBoolean(1, isPinned);
 			preparedStatement.setBoolean(2, isPublic);
 			preparedStatement.setBoolean(3, isTrashed);
-			preparedStatement.setTimestamp(4, new java.sql.Timestamp(trashedDate.getTime()));
+
+			if(null == trashedDate)
+			{
+				preparedStatement.setNull(4, java.sql.Types.TIMESTAMP);
+			} else
+				{
+				preparedStatement.setTimestamp(4, new java.sql.Timestamp(trashedDate.getTime()));
+			}
 			preparedStatement.setTimestamp(5, new java.sql.Timestamp((new Date()).getTime()));
 			preparedStatement.setInt(6, docId);
 			preparedStatement.executeUpdate();

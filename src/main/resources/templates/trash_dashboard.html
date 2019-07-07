@@ -143,7 +143,7 @@
                     <td th:text="${document.getTrashedDate()}">[Deleted]</td>
                     <td>
                         <!-- The hrefs have to be connected to the correct document controller actions -->
-                        <a href="JavaScript:Void(0);" th:href="'/document/' + ${i.index}" class="btn btn-outline-primary">Recover</a>
+                        <a href="JavaScript:Void(0);" th:href="'/document/untrash/' + ${i.index}" class="btn btn-outline-primary">Recover</a>
                     </td>
                     <td>
                         <a href="JavaScript:Void(0);" th:href="'/document/' + ${i.index}" class="btn btn-outline-danger">Permanent Delete</a>
