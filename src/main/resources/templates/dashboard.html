@@ -236,7 +236,7 @@
     function initShareModal(documentIndex) {
         $('#fileShareForm #result').html("");
         $("#fileShareForm #result").hide(0);
-        $('#fileShareForm #shareLinkDescription').html("");
+        $('#fileShareForm #shareLinkDescription')[0].value="";
         $('#fileShareForm #makePublic').attr("href", "/document/makepublic/" + documentIndex);
         shareDocumentIndex = documentIndex;
         $('#shareFileID').val(documentIndex);
