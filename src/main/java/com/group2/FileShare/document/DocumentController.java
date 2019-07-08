@@ -105,6 +105,23 @@ public class DocumentController {
 		return documentsCollection;
 	}
 
+	public static List<Document> getDocumentList()
+	{
+		if (sessionManager.isUserLoggedIn())
+		{
+			try
+			{
+				documentsCollection = documentDAO.getDocuments();
+			}
+			catch(Exception e)
+			{
+				System.out.println(e);
+			}
+
+		}
+		return documentsCollection;
+	}
+
 	@GetMapping("/delete/{fileIndex}")
 	public String handleFileDelete(@PathVariable int fileIndex,
 			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
