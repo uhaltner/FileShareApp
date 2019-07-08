@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.Compression.ICompression;
@@ -65,14 +67,34 @@ public class DocumentController {
 		if (storage.uploadFile(compressedFile, storageFileName)) {
 			d = documentDAO.addDocument(d);
 			documentsCollection.add(d);
-			redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + fileName + "!");
+			redirectAttributes.addFlashAttribute("message", "You successfully uploaded file, " +  d.getFilename() + ", !");
 			System.out.println("You successfully uploaded " + fileName + "!");
 		} else {
-			redirectAttributes.addFlashAttribute("error", "File upload failed for " + fileName + "!");
+			redirectAttributes.addFlashAttribute("error", "File upload failed for file, " + fileName + "!");
 			System.err.println("File upload failed for " + fileName + "!");
 		}
 		compressedFile.delete();
 		return "redirect:" + redirect;
+	}
+	
+	@PostMapping("/privateLink")
+	@ResponseBody
+	public String generatePrivateShareLink(@RequestParam("shareFileID") int fileIndex, @RequestParam("shareLinkDescription") String linkedFileDescription,
+			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect) {
+		Document d = null;
+		try {
+			d = documentsCollection.get(fileIndex);
+		} catch (IndexOutOfBoundsException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+		String randomAccessString = java.util.UUID.randomUUID().toString();
+		
+		if (documentDAO.createPrivateShareLink(d.getId(), randomAccessString, linkedFileDescription)) {
+			return randomAccessString;
+		}
+		return null;
 	}
 
 	@GetMapping("/{fileIndex}")
@@ -139,7 +161,7 @@ public class DocumentController {
 	}
 
 	@GetMapping("/makepublic/{fileIndex}")
-	public String makePublic(@PathVariable int fileIndex,
+	public RedirectView makePublic(@PathVariable int fileIndex,
 			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
 			RedirectAttributes redirectAttributes) {
 		Document d = null;
@@ -150,13 +172,13 @@ public class DocumentController {
 		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
-			redirectAttributes.addFlashAttribute("error", "File public access failed for fileIndex" + fileIndex + "!");
+			redirectAttributes.addFlashAttribute("error", "File public access failed for file, " +  d.getFilename() + ", !");
 			System.out.println("File delete failed for fileIndex" + fileIndex + "!");
-			return "redirect:" + redirect;
+			return new RedirectView(redirect);
 		}
-		redirectAttributes.addFlashAttribute("message", "You successfully made file at index" + fileIndex + " public!");
+		redirectAttributes.addFlashAttribute("message", "You successfully made file, " +  d.getFilename() + ", public!");
 		System.out.println("You successfully made file at index" + fileIndex + " public!");
-		return "redirect:" + redirect;
+		return new RedirectView(redirect);
 	}
 
 	@GetMapping("/makeprivate/{fileIndex}")
@@ -171,13 +193,13 @@ public class DocumentController {
 		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
-			redirectAttributes.addFlashAttribute("error", "File private access failed for fileIndex" + fileIndex + "!");
+			redirectAttributes.addFlashAttribute("error", "File private access failed for file, " +  d.getFilename() + "!");
 			System.out.println("File delete failed for fileIndex" + fileIndex + "!");
 			return "redirect:" + redirect;
 		}
 		redirectAttributes.addFlashAttribute("message",
-				"You successfully made file at index" + fileIndex + " private!");
-		System.out.println("You successfully made file at index" + fileIndex + " public!");
+				"You successfully made file, " +  d.getFilename() + ", private!");
+		System.out.println("You successfully made file at index " + fileIndex + " public!");
 		return "redirect:" + redirect;
 	}
 
@@ -193,12 +215,12 @@ public class DocumentController {
 		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
-			redirectAttributes.addFlashAttribute("error", "File pin failed for fileIndex" + fileIndex + "!");
+			redirectAttributes.addFlashAttribute("error", "File pin failed for file, " +  d.getFilename() + ", !");
 			System.out.println("File pin failed for fileIndex" + fileIndex + "!");
 			return "redirect:" + redirect;
 		}
-		redirectAttributes.addFlashAttribute("message", "You successfully made file at index" + fileIndex + " pinned!");
-		System.out.println("You successfully made file at index" + fileIndex + " pinned!");
+		redirectAttributes.addFlashAttribute("message", "You successfully made file, " +  d.getFilename() + ", pinned!");
+		System.out.println("You successfully made " +  d.getFilename() + " pinned!");
 		return "redirect:" + redirect;
 	}
 
@@ -214,13 +236,13 @@ public class DocumentController {
 		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
-			redirectAttributes.addFlashAttribute("error", "File pin failed for fileIndex" + fileIndex + "!");
-			System.out.println("File pin failed for fileIndex" + fileIndex + "!");
+			redirectAttributes.addFlashAttribute("error", "File pin failed for file, " + d.getFilename() + ", !");
+			System.out.println("File pin failed for " +  d.getFilename() + "!");
 			return "redirect:" + redirect;
 		}
 		redirectAttributes.addFlashAttribute("message",
-				"You successfully made file at index" + fileIndex + " unpinned!");
-		System.out.println("You successfully made file at index" + fileIndex + " unpinned!");
+				"You successfully made file, " + fileIndex + ", unpinned!");
+		System.out.println("You successfully made " +  d.getFilename() + " unpinned!");
 		return "redirect:" + redirect;
 	}
 
@@ -237,12 +259,12 @@ public class DocumentController {
 		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
-			redirectAttributes.addFlashAttribute("error", "File trash failed for fileIndex" + fileIndex + "!");
+			redirectAttributes.addFlashAttribute("error", "File trash failed for file, " + fileIndex + ", !");
 			System.out.println("File trash failed for fileIndex" + fileIndex + "!");
 			return "redirect:" + redirect;
 		}
 		redirectAttributes.addFlashAttribute("message",
-				"You successfully made file at index" + fileIndex + " trashed!");
+				"You successfully made file, " +  d.getFilename() + ", trashed!");
 		System.out.println("You successfully made file at index" + fileIndex + " trashed!");
 		return "redirect:" + redirect;
 	}
@@ -260,17 +282,14 @@ public class DocumentController {
 		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
-			redirectAttributes.addFlashAttribute("error", "File recovery failed for fileIndex" + fileIndex + "!");
+			redirectAttributes.addFlashAttribute("error", "File recovery failed for file, " + fileIndex + ", !");
 			System.out.println("File recovery failed for fileIndex" + fileIndex + "!");
 			return "redirect:" + redirect;
 		}
 		redirectAttributes.addFlashAttribute("message",
-				"You successfully made file at index" + fileIndex + " not trashed!");
+				"You successfully made file, " + fileIndex + ", not trashed!");
 		System.out.println("You successfully made file at index" + fileIndex + " not trashed!");
 		return "redirect:" + redirect;
 	}
 
-	private static void loadDocumentCollection() {
-		documentsCollection = documentDAO.getDocuments();
-	}
 }

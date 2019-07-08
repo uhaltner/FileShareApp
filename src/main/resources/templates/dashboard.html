@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../static/bootstrap.css" th:href="@{/bootstrap.css}" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </head>
@@ -29,6 +29,14 @@
 
 
 <div class="container" style="margin-top: 7rem">
+    <div id="messageAlerts" style="position:relative;">
+        <div class="alert alert-success text-center" role="alert" th:if="${message}">
+                <span th:text="${message}"></span>
+        </div>
+        <div class="alert alert-danger text-center" role="alert" th:if="${error}">
+                <span th:text="${error}"></span>
+        </div>
+    </div>
 
     <div class="modal fade" id="uploadFileModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -52,6 +60,39 @@
 
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary btn-center">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="shareFileModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form id="fileShareForm" name="fileShareForm" onsubmit="event.preventDefault(); getShareLink();" enctype="multipart/form-data">
+                    <input type = "text" class="d-none hidden" name="shareFileID" id="shareFileID"/>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Share File</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>File Sharing Options</p>
+                        <h6>Option 1</h6>
+                        <a class="w-100 btn btn-outline-primary" id="makePublic">Make Public</a>
+                        <hr class="mt-5 mb-4 mx-5"/>
+                        <h6 class="mt-3">Option 2</h6>
+                        <div class="form-group">
+                          <label for="shareLinkDescription">Linked File Description <span class="small">(optional)</span> :</label>
+                          <textarea class="form-control" name="shareLinkDescription" id="shareLinkDescription" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="w-100 btn btn-outline-primary" id="generateLink">Generate Private Access Link</button>
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <span id="result" class="w-100 text-center alert alert-success" role="alert">Submit</span>
                     </div>
                 </form>
             </div>
@@ -159,7 +200,7 @@
                         <a href="JavaScript:Void(0);" th:href="'/document/' + ${i.index}" class="btn btn-outline-primary">Download</a>
                     </td>
                     <td>
-                        <a href="JavaScript:Void(0);" class="btn btn-outline-primary">Share</a>
+                        <a href="JavaScript:Void(0);" th:onclick="'initShareModal(' + ${i.index} + ')'" class="btn btn-outline-primary" data-toggle="modal" data-target="#shareFileModal">Share</a>
                     </td>
                     <td>
                         <a href="JavaScript:Void(0);" th:href="'/document/trash/' + ${i.index}"class="btn btn-outline-danger">Trash</a>
@@ -183,7 +224,49 @@
             var fileName = $(this).val();
             $(this).next('.custom-file-label').html(fileName);
         });
+
+        setTimeout((() => {
+            $("#messageAlerts").animate({
+                height: "hide"
+            }, 1000);
+        }), 3000);
     });
+    let shareDocumentIndex;
+
+    function initShareModal(documentIndex) {
+        $('#fileShareForm #result').html("");
+        $("#fileShareForm #result").hide(0);
+        $('#fileShareForm #shareLinkDescription').html("");
+        $('#fileShareForm #makePublic').attr("href", "/document/makepublic/" + documentIndex);
+        shareDocumentIndex = documentIndex;
+        $('#shareFileID').val(documentIndex);
+    }
+
+    function getShareLink(event) {
+        $('#fileShareForm #result').html("");
+
+        let xhttp = new XMLHttpRequest();
+        let formData = $('#fileShareForm').serialize();
+        console.log(formData)
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                let res = this.response;
+                $('#fileShareForm #result').html("Private Share Link: \n" + window.location.origin + "/privateshare/" + res);
+                $("#fileShareForm #result").show(150);
+            } else if (this.readyState == 4 && this.status == 400) {
+                let res = JSON.parse(this.response);
+                $('#fileShareForm #result').html("Error Retrieving Link. PLease try again later.");
+                $("#fileShareForm #result").show(150);
+            }
+        };
+
+        xhttp.open("POST", "/document/privateLink/", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send(formData);
+    }
+
 </script>
+
 </body>
 </html>
