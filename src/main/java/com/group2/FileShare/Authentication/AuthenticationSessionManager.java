@@ -67,7 +67,10 @@ public class AuthenticationSessionManager {
 	}
 	
 	public void destroySession() {
-		getRequestSession().invalidate();;
+		HttpSession session = getRequestSession();
+		if (session != null) {
+			getRequestSession().invalidate();;
+		}
 	}
 	
 	public User getUser() {

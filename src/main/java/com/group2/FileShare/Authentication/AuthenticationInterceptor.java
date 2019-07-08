@@ -14,7 +14,7 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
             HttpServletResponse response, Object handler) throws Exception {
 
         String reqUri = request.getRequestURI();
-        if(!(reqUri.contains(".css") || reqUri.contains(".js") || reqUri.contains("/shared"))) {
+        if(!(reqUri.contains(".css") || reqUri.contains(".js") || reqUri.contains("/shared") || reqUri.equals("/") || reqUri.equals("") )) {
 	        boolean isUserLoggedIn = AuthenticationSessionManager.instance().isUserLoggedIn();
 	        boolean isLogInPage = reqUri.equals("/login");
 	        boolean isSignUpPage = reqUri.equals("/signup");
