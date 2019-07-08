@@ -16,7 +16,7 @@ import java.io.InputStream;
 public class DefaultPropertiesTest {
 
     private String jdbcConnectionStringMock = "jdbc:mysql://db-5308.cs.dal.ca:3306/CSCI5308_2_DEVINT?user=CSCI5308_2_DEVINT_USER&password=CSCI5308_2_DEVINT_2009";
-    private String s3BucketNameMock = "csci5308-file-share-app";
+    private String s3BucketNameMock = "csci5308-file-share-app-dev";
     private long s3LinkValidityMock = 3600000;
     private String dbFile = "default.properties";
 
