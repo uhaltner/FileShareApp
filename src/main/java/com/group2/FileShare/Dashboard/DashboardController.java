@@ -37,8 +37,6 @@ public class DashboardController {
             String lastName = sessionManager.getLastName();
             int userId = sessionManager.getUserId();
 
-            boolean isUserLoggedIn = sessionManager.isUserLoggedIn();
-
             //by default the list is sorted by creation datetime
             if(documentSorter == null) {
                 documentSorter = new DocumentSorter(new CreatedSortStrategy());
@@ -59,30 +57,25 @@ public class DashboardController {
             model.addAttribute("firstName",firstName);
             model.addAttribute("lastName",lastName);
 
-            if (isUserLoggedIn) {
+            //check the current selected dashboard
+            switch (currentDashboard){
+                case PRIVATE:
+                    return "dashboard";
 
-                //check the current selected dashboard
-                switch (currentDashboard){
-                    case PRIVATE:
-                        return "dashboard";
+                case PUBLIC:
+                    return "public_dashboard";
 
-                    case PUBLIC:
-                        return "public_dashboard";
-
-                    case TRASH:
-                        return "trash_dashboard";
-                }
-
-            } else { //I am unsure about this else statement, seems a bit redundant since returning to landing is the default anyways.
-                return "landing";
+                case TRASH:
+                    return "trash_dashboard";
             }
+
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
 
-        return "landing";
+        return "redirect: /signin";
     }
 
     @GetMapping("/sort/name")

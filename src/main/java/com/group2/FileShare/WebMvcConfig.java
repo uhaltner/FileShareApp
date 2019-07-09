@@ -10,11 +10,11 @@ import com.group2.FileShare.Authentication.AuthenticationInterceptor;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-	@Autowired 
+	@Autowired
 	AuthenticationInterceptor interceptor;
-	  
+
 	  public void addInterceptors(InterceptorRegistry registry) {
 	    registry.addInterceptor(interceptor);
-	    
-	  } 
+
+	  }
 }
