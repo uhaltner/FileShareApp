@@ -160,7 +160,7 @@ public class DocumentDAO implements IDocumentDAO {
 	/** @Author: Ueli Haltner
 	 *  @Description: Returns a list of documents based on the input query.
 	 */
-	public List<Document> getDocumentList(String query, int userId, boolean publicDocumentsOnly) {
+	public List<Document> getDocumentList(String query, int userId, boolean publicDocumentsOnly, boolean trashedDocumentsOnly) {
 
 		DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
 		List<Document> documentList = new ArrayList<Document>();
@@ -170,6 +170,7 @@ public class DocumentDAO implements IDocumentDAO {
 
 			stmt.setInt(1, userId);
 			stmt.setBoolean(2,publicDocumentsOnly);
+			stmt.setBoolean(3,trashedDocumentsOnly);
 
 			ResultSet rs = stmt.executeQuery();
 

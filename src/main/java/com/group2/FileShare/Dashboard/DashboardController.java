@@ -1,6 +1,10 @@
 package com.group2.FileShare.Dashboard;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
+import com.group2.FileShare.Dashboard.DashboardStrategy.Dashboard;
+import com.group2.FileShare.Dashboard.DashboardStrategy.PrivateDashboard;
+import com.group2.FileShare.Dashboard.DashboardStrategy.PublicDashboard;
+import com.group2.FileShare.Dashboard.DashboardStrategy.TrashDashboard;
 import com.group2.FileShare.Dashboard.SortStrategy.*;
 import com.group2.FileShare.document.Document;
 import com.group2.FileShare.document.DocumentController;
@@ -19,13 +23,11 @@ public class DashboardController {
 
     private AuthenticationSessionManager sessionManager;
     private DocumentSorter documentSorter;
+    private Dashboard currentDashboard;
+
     private boolean searchRequired = false;
-
     private String searchPhrase = "";
-    private boolean publicDashboard = false;
 
-    private Dashboard currentDashboard = Dashboard.PRIVATE;
-    
     @GetMapping("")
     public String dashBoard(HttpSession session, Model model)
     {
@@ -33,8 +35,6 @@ public class DashboardController {
         {
             sessionManager = AuthenticationSessionManager.instance();
 
-            String firstName = sessionManager.getFirstName();
-            String lastName = sessionManager.getLastName();
             int userId = sessionManager.getUserId();
 
             //by default the list is sorted by creation datetime
@@ -42,9 +42,13 @@ public class DashboardController {
                 documentSorter = new DocumentSorter(new CreatedSortStrategy());
             }
 
+            if(currentDashboard == null){
+                currentDashboard = new Dashboard(new PrivateDashboard());
+            }
+
             //crate and generate the document list
             List<Document> documentList = new ArrayList<>();
-            documentList = DocumentController.getDocumentCollection(documentSorter, userId, publicDashboard);
+            documentList = DocumentController.getDocumentCollection(documentSorter, userId, currentDashboard);
 
             //if the search bar was used, find all documents with the matching search phrase
             if(searchRequired){
@@ -54,20 +58,10 @@ public class DashboardController {
             }
             
             model.addAttribute("documents", documentList);
-            model.addAttribute("firstName",firstName);
-            model.addAttribute("lastName",lastName);
+            model.addAttribute("firstName", sessionManager.getFirstName() );
+            model.addAttribute("lastName", sessionManager.getLastName() );
 
-            //check the current selected dashboard
-            switch (currentDashboard){
-                case PRIVATE:
-                    return "dashboard";
-
-                case PUBLIC:
-                    return "public_dashboard";
-
-                case TRASH:
-                    return "trash_dashboard";
-            }
+            return currentDashboard.getTemplate();
 
         }
         catch (Exception e)
@@ -118,8 +112,7 @@ public class DashboardController {
     @GetMapping("/private")
     public String privateDashboard(){
 
-        currentDashboard = Dashboard.PRIVATE;
-        publicDashboard = false;
+        currentDashboard.changeDashboard(new PrivateDashboard());
 
         return "redirect: /dashboard";
     }
@@ -127,8 +120,7 @@ public class DashboardController {
     @GetMapping("/public")
     public String publicDashboard(){
 
-        currentDashboard = Dashboard.PUBLIC;
-        publicDashboard = true;
+        currentDashboard.changeDashboard(new PublicDashboard());
 
         return "redirect: /dashboard";
     }
@@ -136,8 +128,7 @@ public class DashboardController {
     @GetMapping("/trash")
     public String trashDashboard(){
 
-        currentDashboard = Dashboard.TRASH;
-        publicDashboard = false;
+        currentDashboard.changeDashboard(new TrashDashboard());
 
         return "redirect: /dashboard";
     }

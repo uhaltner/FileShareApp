@@ -136,7 +136,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="document,i : ${documents}" th:if="${document.isTrashed()}">
+                <tr th:each="document,i : ${documents}">
                     <td th:text="${document.getFilename()}">[FileName]</td>
                     <td th:text="${document.getSize()}+ ' bytes'">[Size]</td>
                     <td th:text="${document.getCreatedDate()}">[Created]</td>
