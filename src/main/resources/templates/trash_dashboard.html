@@ -110,7 +110,7 @@
             <tbody>
                 <tr th:each="document,i : ${documents}">
                     <td th:text="${document.getFilename()}">[FileName]</td>
-                    <td th:text="${document.getSize()}+ ' bytes'">[Size]</td>
+                    <td th:text="${document.getSizeString()}">[Size]</td>
                     <td th:text="${document.getCreatedDate()}">[Created]</td>
                     <td th:text="${document.getTrashedDate()}">[Deleted]</td>
                     <td>
