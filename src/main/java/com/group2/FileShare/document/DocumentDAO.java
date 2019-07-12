@@ -103,8 +103,9 @@ public class DocumentDAO implements IDocumentDAO {
 			boolean isPublic = document.isPublic();
 			boolean isTrashed = document.isTrashed();
 			Date trashedDate = document.getTrashedDate();
+			String description = document.getDescription();
       
-			query = "UPDATE Document SET is_pinned = ?, is_public = ?, is_trash = ?, trash_date = ?, modified_date = ? WHERE document_id = ?";
+			query = "UPDATE Document SET is_pinned = ?, is_public = ?, is_trash = ?, trash_date = ?, modified_date = ?, description = ? WHERE document_id = ?";
 
 			preparedStatement = databaseConnection.getConnection().prepareStatement(query);
 			preparedStatement.setBoolean(1, isPinned);
@@ -119,7 +120,8 @@ public class DocumentDAO implements IDocumentDAO {
 				preparedStatement.setTimestamp(4, new java.sql.Timestamp(trashedDate.getTime()));
 			}
 			preparedStatement.setTimestamp(5, new java.sql.Timestamp((new Date()).getTime()));
-			preparedStatement.setInt(6, docId);
+			preparedStatement.setString(6, description);
+			preparedStatement.setInt(7, docId);
 
 			preparedStatement.executeUpdate();
 			return document;
