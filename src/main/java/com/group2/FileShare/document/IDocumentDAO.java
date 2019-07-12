@@ -4,6 +4,7 @@ import java.util.List;
 
 public interface IDocumentDAO {
     List<Document> getDocuments();
+    Document getDocument(int document_id);
     Document addDocument(Document document);
     Document updateDocument(Document document);
     Document deleteDocument(Document document);
