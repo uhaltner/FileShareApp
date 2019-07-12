@@ -1,10 +1,10 @@
 package com.group2.FileShare.database;
 
+import com.group2.FileShare.DefaultProperties;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import com.group2.FileShare.DefaultProperties;
 
 public class DatabaseConnection {
 
@@ -27,11 +27,12 @@ public class DatabaseConnection {
 
     public Connection getConnection() {
         try {
-            if(connection.isClosed())
-            {
+            if (connection.isClosed()) {
+
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 this.connection = DriverManager.getConnection(dbURL);
             }
+
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }catch (SQLException e) {
@@ -43,6 +44,7 @@ public class DatabaseConnection {
     public static DatabaseConnection getdbConnectionInstance() {
         try {
             if (dbConnectionInstance == null) {
+
                 dbConnectionInstance = new DatabaseConnection();
             }
         } catch (Exception e){
@@ -51,6 +53,10 @@ public class DatabaseConnection {
         return dbConnectionInstance;
     }
 
+    public static Connection getConn()
+    {
+        return getdbConnectionInstance().getConnection();
+    }
 
     public void closeConnection()
     {
