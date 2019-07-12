@@ -43,4 +43,9 @@ public class DocumentDAOMock implements IDocumentDAO {
     {
         return null;
     }
+    
+    public boolean createPrivateShareLink(int documentId, String accessURL, String linkedFileDescription)
+    {
+    	return false;
+    }
 }

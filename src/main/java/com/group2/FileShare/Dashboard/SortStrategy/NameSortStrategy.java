@@ -10,11 +10,11 @@ public class NameSortStrategy implements ISortStrategy {
     private static DocumentDAO documentDAO = new DocumentDAO();
 
     @Override
-    public List<Document> getSortedDocuments(int userId, boolean publicDocumentsOnly) {
+    public List<Document> getSortedDocuments(int userId, boolean publicDocumentsOnly, boolean onlyTrashedDocuments) {
 
-        String query = "{ call get_documents_name_filter(?,?) }";
+        String query = "{ call get_documents_name_filter(?,?,?) }";
 
-        return documentDAO.getDocumentList(query, userId, publicDocumentsOnly);
+        return documentDAO.getDocumentList(query, userId, publicDocumentsOnly, onlyTrashedDocuments);
     }
 
 }

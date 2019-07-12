@@ -1,6 +1,10 @@
 package com.group2.FileShare.Dashboard;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
+import com.group2.FileShare.Dashboard.DashboardStrategy.Dashboard;
+import com.group2.FileShare.Dashboard.DashboardStrategy.PrivateDashboard;
+import com.group2.FileShare.Dashboard.DashboardStrategy.PublicDashboard;
+import com.group2.FileShare.Dashboard.DashboardStrategy.TrashDashboard;
 import com.group2.FileShare.Dashboard.SortStrategy.*;
 import com.group2.FileShare.document.DeleteObserver.DateObserver;
 import com.group2.FileShare.document.DeleteObserver.DocumentSubject;
@@ -25,16 +29,15 @@ public class DashboardController {
 
     private AuthenticationSessionManager sessionManager;
     private DocumentSorter documentSorter;
-    private DocumentSubject documentSubject;
+    private DocumentSubject documentSubject; //todo
+    private Dashboard currentDashboard;
+
     private boolean searchRequired = false;
-
     private String searchPhrase = "";
-    private boolean publicDashboard = false;
-
-    private Dashboard currentDashboard = Dashboard.PRIVATE;
-    private static final int NUMBER_OF_DAYS = 30;
-    private Timestamp currentTimestamp;
-    private Date trashedDate;
+  
+    private static final int NUMBER_OF_DAYS = 30; //todo
+    private Timestamp currentTimestamp; //todo
+    private Date trashedDate; //todo
 
     @GetMapping("")
     public String dashBoard(HttpSession session, Model model)
@@ -44,20 +47,20 @@ public class DashboardController {
         {
             sessionManager = AuthenticationSessionManager.instance();
 
-            String firstName = sessionManager.getFirstName();
-            String lastName = sessionManager.getLastName();
             int userId = sessionManager.getUserId();
-
-            boolean isUserLoggedIn = sessionManager.isUserLoggedIn();
 
             //by default the list is sorted by creation datetime
             if(documentSorter == null) {
                 documentSorter = new DocumentSorter(new CreatedSortStrategy());
             }
 
+            if(currentDashboard == null){
+                currentDashboard = new Dashboard(new PrivateDashboard());
+            }
+
             //crate and generate the document list
             List<Document> documentList = new ArrayList<>();
-            documentList = DocumentController.getDocumentCollection(documentSorter, userId, publicDashboard);
+            documentList = DocumentController.getDocumentCollection(documentSorter, userId, currentDashboard);
 
             //if the search bar was used, find all documents with the matching search phrase
             if(searchRequired){
@@ -67,33 +70,18 @@ public class DashboardController {
             }
             
             model.addAttribute("documents", documentList);
-            model.addAttribute("firstName",firstName);
-            model.addAttribute("lastName",lastName);
+            model.addAttribute("firstName", sessionManager.getFirstName() );
+            model.addAttribute("lastName", sessionManager.getLastName() );
 
-            if (isUserLoggedIn) {
+            return currentDashboard.getTemplate();
 
-                //check the current selected dashboard
-                switch (currentDashboard){
-                    case PRIVATE:
-                        return "dashboard";
-
-                    case PUBLIC:
-                        return "public_dashboard";
-
-                    case TRASH:
-                        return "trash_dashboard";
-                }
-
-            } else { //I am unsure about this else statement, seems a bit redundant since returning to landing is the default anyways.
-                return "landing";
-            }
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
 
-        return "landing";
+        return "redirect: /signin";
     }
 
     @GetMapping("/sort/name")
@@ -136,8 +124,7 @@ public class DashboardController {
     @GetMapping("/private")
     public String privateDashboard(){
 
-        currentDashboard = Dashboard.PRIVATE;
-        publicDashboard = false;
+        currentDashboard.changeDashboard(new PrivateDashboard());
 
         return "redirect: /dashboard";
     }
@@ -145,8 +132,7 @@ public class DashboardController {
     @GetMapping("/public")
     public String publicDashboard(){
 
-        currentDashboard = Dashboard.PUBLIC;
-        publicDashboard = true;
+        currentDashboard.changeDashboard(new PublicDashboard());
 
         return "redirect: /dashboard";
     }
@@ -184,8 +170,7 @@ public class DashboardController {
             e.printStackTrace();
         }
 
-        currentDashboard = Dashboard.TRASH;
-        publicDashboard = false;
+        currentDashboard.changeDashboard(new TrashDashboard());
 
         return "redirect: /dashboard";
     }

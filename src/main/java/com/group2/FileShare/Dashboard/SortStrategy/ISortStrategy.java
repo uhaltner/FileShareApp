@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ISortStrategy {
 
-    public List<Document> getSortedDocuments(int userId, boolean publicDocumentsOnly);
+    public List<Document> getSortedDocuments(int userId, boolean onlyPublicDocuments, boolean onlyTrashedDocuments);
 }

@@ -24,7 +24,7 @@ public class SignInController {
 	}
 	
     @GetMapping("/login")
-    public String profileForm(HttpSession session, Model model){
+    public String profileForm(Model model){
 
         model.addAttribute("signInForm", new SignInForm());
         model.addAttribute("signupForm", new SignUpForm());
@@ -48,8 +48,8 @@ public class SignInController {
             	model.addAttribute("login_error", "UserNotFound.signForm");
     		}
         }
-        
-    	model.addAttribute("signupForm", new SignUpForm());
+		model.addAttribute("signInForm", signInForm);
+		model.addAttribute("signupForm", new SignUpForm());
         return "landing";
     }
     

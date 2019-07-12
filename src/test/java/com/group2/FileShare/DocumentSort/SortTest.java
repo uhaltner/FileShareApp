@@ -1,9 +1,8 @@
 package com.group2.FileShare.DocumentSort;
 
-import com.group2.FileShare.Dashboard.DocumentSorter;
+import com.group2.FileShare.Dashboard.SortStrategy.DocumentSorter;
 import com.group2.FileShare.Dashboard.SortStrategy.*;
 import com.group2.FileShare.document.Document;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,10 +23,11 @@ public class SortTest {
 
         int userId = 1;
         boolean isPublic = false;
+        boolean isTrash = false;
         List<Document> documentList = new ArrayList<>();
 
         DocumentSorter sorter = new DocumentSorter(new NameSortStrategy());
-        documentList = sorter.executeStrategy(userId, isPublic);
+        documentList = sorter.executeStrategy(userId, isPublic, isTrash);
 
         assertEquals("Sorted by name document list test", false, documentList.isEmpty());
     }
@@ -37,10 +37,11 @@ public class SortTest {
 
         int userId = 1;
         boolean isPublic = false;
+        boolean isTrash = false;
         List<Document> documentList = new ArrayList<>();
 
         DocumentSorter sorter = new DocumentSorter(new SizeSortStrategy());
-        documentList = sorter.executeStrategy(userId, isPublic);
+        documentList = sorter.executeStrategy(userId, isPublic, isTrash);
 
         assertEquals("Sorted by size document list test", false, documentList.isEmpty());
     }
@@ -50,10 +51,11 @@ public class SortTest {
 
         int userId = 1;
         boolean isPublic = false;
+        boolean isTrash = false;
         List<Document> documentList = new ArrayList<>();
 
         DocumentSorter sorter = new DocumentSorter(new FiletypeSortStrategy());
-        documentList = sorter.executeStrategy(userId, isPublic);
+        documentList = sorter.executeStrategy(userId, isPublic, isTrash);
 
         assertEquals("Sorted by file type document list test", false, documentList.isEmpty());
     }
@@ -63,10 +65,11 @@ public class SortTest {
 
         int userId = 1;
         boolean isPublic = false;
+        boolean isTrash = false;
         List<Document> documentList = new ArrayList<>();
 
         DocumentSorter sorter = new DocumentSorter(new CreatedSortStrategy());
-        documentList = sorter.executeStrategy(userId, isPublic);
+        documentList = sorter.executeStrategy(userId, isPublic, isTrash);
 
         assertEquals("Sorted by created datetime document list test", false, documentList.isEmpty());
     }
@@ -76,10 +79,11 @@ public class SortTest {
 
         int userId = 1;
         boolean isPublic = false;
+        boolean isTrash = false;
         List<Document> documentList = new ArrayList<>();
 
         DocumentSorter sorter = new DocumentSorter(new ModifiedSortStrategy());
-        documentList = sorter.executeStrategy(userId, isPublic);
+        documentList = sorter.executeStrategy(userId, isPublic, isTrash);
 
         assertEquals("Sorted by modified datetime document list test", false, documentList.isEmpty());
     }

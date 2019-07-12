@@ -99,8 +99,9 @@ public class DocumentDAO implements IDocumentDAO {
 			boolean isPublic = document.isPublic();
 			boolean isTrashed = document.isTrashed();
 			Date trashedDate = document.getTrashedDate();
-
+      
 			query = "UPDATE Document SET is_pinned = ?, is_public = ?, is_trash = ?, trash_date = ?, modified_date = ? WHERE document_id = ?";
+
 			preparedStatement = databaseConnection.getConnection().prepareStatement(query);
 			preparedStatement.setBoolean(1, isPinned);
 			preparedStatement.setBoolean(2, isPublic);
@@ -115,6 +116,7 @@ public class DocumentDAO implements IDocumentDAO {
 			}
 			preparedStatement.setTimestamp(5, new java.sql.Timestamp((new Date()).getTime()));
 			preparedStatement.setInt(6, docId);
+
 			preparedStatement.executeUpdate();
 			return document;
 		} catch (SQLException e) {
@@ -157,7 +159,7 @@ public class DocumentDAO implements IDocumentDAO {
 	/** @Author: Ueli Haltner
 	 *  @Description: Returns a list of documents based on the input query.
 	 */
-	public List<Document> getDocumentList(String query, int userId, boolean publicDocumentsOnly) {
+	public List<Document> getDocumentList(String query, int userId, boolean publicDocumentsOnly, boolean trashedDocumentsOnly) {
 
 		DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
 		List<Document> documentList = new ArrayList<Document>();
@@ -167,6 +169,7 @@ public class DocumentDAO implements IDocumentDAO {
 
 			stmt.setInt(1, userId);
 			stmt.setBoolean(2,publicDocumentsOnly);
+			stmt.setBoolean(3,trashedDocumentsOnly);
 
 			ResultSet rs = stmt.executeQuery();
 
@@ -199,6 +202,99 @@ public class DocumentDAO implements IDocumentDAO {
 		}
 
 		return documentList;
+	}
+	 
+	
+	
+	public boolean createPrivateShareLink(int documentId, String accessURL, String linkedFileDescription) {
+
+		DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
+		String query = "{ call create_private_shared_link(?,?,?) }";
+
+		try (Connection conn = db.getConnection();
+			 CallableStatement stmt = conn.prepareCall(query)) {
+
+			stmt.setInt(1, documentId);
+			stmt.setString(2,accessURL);
+			stmt.setString(3,linkedFileDescription);
+			stmt.executeUpdate();
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+			return false;
+		} finally {
+			db.closeConnection();
+		}
+		return true;
+	}
+
+	public Document getDocument(int document_id) {
+
+		String query = "{ call get_document(?) }";
+
+		DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
+
+		try (Connection conn = db.getConnection();
+			 CallableStatement stmt = conn.prepareCall(query)) {
+
+			stmt.setInt(1, document_id);
+			ResultSet resultSet = stmt.executeQuery();
+
+			while(resultSet.next()) {
+				Document rsDocument = new Document(resultSet.getInt("document_id"), resultSet.getString("file_name"),
+						resultSet.getInt("size_mb"), resultSet.getString("storage_url"), resultSet.getInt("user_id"));
+				rsDocument.setDescription(resultSet.getString("description"));
+				return rsDocument;
+			}
+
+			db.closeConnection();
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+		} finally {
+			try {
+				if (null != databaseConnection) {
+					databaseConnection.closeConnection();
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+
+	public SharedLink getLinkedDocumentRefWith(String accessUrl) {
+
+		String query = "{ call get_shared_document(?) }";
+
+		DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
+
+		try (Connection conn = db.getConnection();
+			 CallableStatement stmt = conn.prepareCall(query)) {
+
+			stmt.setString(1, accessUrl);
+			ResultSet resultSet = stmt.executeQuery();
+
+			while(resultSet.next()) {
+				SharedLink sharedDocumentRefernce = new SharedLink(resultSet.getInt("link_id"), resultSet.getInt("document_id"), resultSet.getString("expiration_date"));
+				return sharedDocumentRefernce;
+			}
+
+			db.closeConnection();
+
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+		} finally {
+			try {
+				if (null != databaseConnection) {
+					databaseConnection.closeConnection();
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		return null;
 	}
 
 }
