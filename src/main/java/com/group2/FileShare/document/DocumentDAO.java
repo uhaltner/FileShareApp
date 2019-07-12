@@ -2,6 +2,9 @@ package com.group2.FileShare.document;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.database.DatabaseConnection;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,6 +18,7 @@ public class DocumentDAO implements IDocumentDAO {
 	private String query;
 	private final AuthenticationSessionManager sessionManager;
 	private DatabaseConnection databaseConnection;
+	private static final Logger logger = LogManager.getLogger(DocumentDAO.class);
 
 	public DocumentDAO() {
 		sessionManager = AuthenticationSessionManager.instance();
@@ -79,14 +83,14 @@ public class DocumentDAO implements IDocumentDAO {
 
 			return document;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.log(Level.ALL, "Could not execute query:", query);
 		} finally {
 			try {
 				if (null != databaseConnection) {
 					databaseConnection.closeConnection();
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				logger.log(Level.ALL, "Unable to close the connection", ex);
 			}
 		}
 		return null;

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <Properties>
+        <Property name="LOG_PATTERN">
+            %d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${hostName} --- [%15.15t] %-40.40c{1.} : %m%n%ex
+        </Property>
+    </Properties>
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+        <JDBC name="SQLAppender" tableName="APP_LOGS">
+            <ConnectionFactory
+                    class="com.group2.FileShare.database.DatabaseConnection" method="getConn" />
+            <Column name="LOG_ID" pattern="%u" />
+            <Column name="ENTRY_DATE" isEventTimestamp="true" />
+            <Column name="LOGGER" pattern="%logger" />
+            <Column name="LOG_LEVEL" pattern="%level" />
+            <Column name="MESSAGE" pattern="%m" />
+
+        </JDBC>
+
+    </Appenders>
+    <Loggers>
+        <Logger name="com.group2.FileShare.document" level="all" additivity="false">
+            <AppenderRef ref="ConsoleAppender" />
+        </Logger>
+        <Logger name="com.group2.FileShare.document" level="all" additivity="false">
+            <AppenderRef ref="SQLAppender" />
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="ConsoleAppender" />
+            <AppenderRef ref="SQLAppender" />
+        </Root>
+    </Loggers>
+</Configuration>
