@@ -103,8 +103,9 @@ public class DocumentDAO implements IDocumentDAO {
 			boolean isPublic = document.isPublic();
 			boolean isTrashed = document.isTrashed();
 			Date trashedDate = document.getTrashedDate();
+			String description = document.getDescription();
       
-			query = "UPDATE Document SET is_pinned = ?, is_public = ?, is_trash = ?, trash_date = ?, modified_date = ? WHERE document_id = ?";
+			query = "UPDATE Document SET is_pinned = ?, is_public = ?, is_trash = ?, trash_date = ?, modified_date = ?, description = ? WHERE document_id = ?";
 
 			preparedStatement = databaseConnection.getConnection().prepareStatement(query);
 			preparedStatement.setBoolean(1, isPinned);
@@ -119,7 +120,8 @@ public class DocumentDAO implements IDocumentDAO {
 				preparedStatement.setTimestamp(4, new java.sql.Timestamp(trashedDate.getTime()));
 			}
 			preparedStatement.setTimestamp(5, new java.sql.Timestamp((new Date()).getTime()));
-			preparedStatement.setInt(6, docId);
+			preparedStatement.setString(6, description);
+			preparedStatement.setInt(7, docId);
 
 			preparedStatement.executeUpdate();
 			return document;
@@ -210,17 +212,16 @@ public class DocumentDAO implements IDocumentDAO {
 	 
 	
 	
-	public boolean createPrivateShareLink(int documentId, String accessURL, String linkedFileDescription) {
+	public boolean createPrivateShareLink(int documentId, String accessURL) {
 
 		DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
-		String query = "{ call create_private_shared_link(?,?,?) }";
+		String query = "{ call create_private_shared_link(?,?) }";
 
 		try (Connection conn = db.getConnection();
 			 CallableStatement stmt = conn.prepareCall(query)) {
 
 			stmt.setInt(1, documentId);
 			stmt.setString(2,accessURL);
-			stmt.setString(3,linkedFileDescription);
 			stmt.executeUpdate();
 		} catch (SQLException ex) {
 			System.out.println(ex.getMessage());
