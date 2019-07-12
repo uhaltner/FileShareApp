@@ -165,9 +165,9 @@ public class DashboardController {
 
             for (int i=0; i< documentListSize; i++)
             {
-                boolean temp = documentList.get(i).isTrashed();
+                boolean isDocumentTrashed = documentList.get(i).isTrashed();
 
-                if(temp)
+                if(isDocumentTrashed)
                 {
                     trashedDate = documentList.get(i).getTrashedDate();
                     long timeDifference = currentTimestamp.getTime() - trashedDate.getTime();
