@@ -127,20 +127,26 @@ public class DocumentController {
 		}
 		return documentsCollection;
 	}
+	
+
+	public static Document getGuestDocument(int documentId) {
+		Document d = null;
+		try {
+			d = documentDAO.getDocument(documentId);
+			documentsCollection.removeAll(documentsCollection);
+			documentsCollection.add(d);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return d;
+	}
 
 	public static List<Document> getDocumentList()
 	{
-		if (sessionManager.isUserLoggedIn())
-		{
-			try
-			{
-				documentsCollection = documentDAO.getDocuments();
-			}
-			catch(Exception e)
-			{
-				System.out.println(e);
-			}
-
+		try {
+			documentsCollection = documentDAO.getDocuments();
+		} catch (Exception e) {
+			System.out.println(e);
 		}
 		return documentsCollection;
 	}
