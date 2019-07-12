@@ -48,4 +48,9 @@ public class DocumentDAOMock implements IDocumentDAO {
     {
     	return false;
     }
+
+	@Override
+	public Document getDocument(int document_id) {
+		return null;
+	}
 }
