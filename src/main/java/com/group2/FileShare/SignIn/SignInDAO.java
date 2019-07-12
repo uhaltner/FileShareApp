@@ -28,14 +28,22 @@ public class SignInDAO implements ISignInDAO {
             	String retrievedPassword = rs.getString("password");
             	if (passwordEncoder.matches(signInForm.getPassword(), retrievedPassword)) {
             		User user = new User(rs.getInt("user_id"), rs.getString("email"), rs.getString("first_name"), rs.getString("last_name"));
+
+                    db.closeConnection();
           	    	return user;
             	}
   	        }
 
-            db.closeConnection();
-
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+        } finally {
+            try {
+                if (db != null) {
+                    db.closeConnection();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
         return null;

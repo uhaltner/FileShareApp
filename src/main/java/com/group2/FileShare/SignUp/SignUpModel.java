@@ -42,6 +42,14 @@ public class SignUpModel {
 
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+        } finally {
+            try {
+                if (db != null) {
+                    db.closeConnection();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
         return true;
@@ -83,6 +91,14 @@ public class SignUpModel {
 
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+        } finally {
+            try {
+                if (db != null) {
+                    db.closeConnection();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
         return 0;
