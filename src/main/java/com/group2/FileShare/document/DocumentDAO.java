@@ -210,17 +210,16 @@ public class DocumentDAO implements IDocumentDAO {
 	 
 	
 	
-	public boolean createPrivateShareLink(int documentId, String accessURL, String linkedFileDescription) {
+	public boolean createPrivateShareLink(int documentId, String accessURL) {
 
 		DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
-		String query = "{ call create_private_shared_link(?,?,?) }";
+		String query = "{ call create_private_shared_link(?,?) }";
 
 		try (Connection conn = db.getConnection();
 			 CallableStatement stmt = conn.prepareCall(query)) {
 
 			stmt.setInt(1, documentId);
 			stmt.setString(2,accessURL);
-			stmt.setString(3,linkedFileDescription);
 			stmt.executeUpdate();
 		} catch (SQLException ex) {
 			System.out.println(ex.getMessage());

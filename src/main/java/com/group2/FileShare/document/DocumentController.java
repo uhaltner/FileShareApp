@@ -74,7 +74,7 @@ public class DocumentController {
 	
 	@PostMapping("/privateLink")
 	@ResponseBody
-	public String generatePrivateShareLink(@RequestParam("shareFileID") int fileIndex, @RequestParam("shareLinkDescription") String linkedFileDescription,
+	public String generatePrivateShareLink(@RequestParam("shareFileID") int fileIndex,
 			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect) {
 		Document d = null;
 		try {
@@ -86,7 +86,7 @@ public class DocumentController {
 		}
 		String randomAccessString = java.util.UUID.randomUUID().toString();
 		
-		if (documentDAO.createPrivateShareLink(d.getId(), randomAccessString, linkedFileDescription)) {
+		if (documentDAO.createPrivateShareLink(d.getId(), randomAccessString)) {
 			return randomAccessString;
 		}
 		return null;
