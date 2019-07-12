@@ -6,15 +6,21 @@ import com.group2.FileShare.Dashboard.DashboardStrategy.PrivateDashboard;
 import com.group2.FileShare.Dashboard.DashboardStrategy.PublicDashboard;
 import com.group2.FileShare.Dashboard.DashboardStrategy.TrashDashboard;
 import com.group2.FileShare.Dashboard.SortStrategy.*;
+import com.group2.FileShare.document.DeleteObserver.DateObserver;
+import com.group2.FileShare.document.DeleteObserver.DocumentSubject;
 import com.group2.FileShare.document.Document;
 import com.group2.FileShare.document.DocumentController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -23,14 +29,20 @@ public class DashboardController {
 
     private AuthenticationSessionManager sessionManager;
     private DocumentSorter documentSorter;
+    private DocumentSubject documentSubject; //todo
     private Dashboard currentDashboard;
 
     private boolean searchRequired = false;
     private String searchPhrase = "";
+  
+    private static final int NUMBER_OF_DAYS = 30; //todo
+    private Timestamp currentTimestamp; //todo
+    private Date trashedDate; //todo
 
     @GetMapping("")
     public String dashBoard(HttpSession session, Model model)
     {
+
         try
         {
             sessionManager = AuthenticationSessionManager.instance();
@@ -126,14 +138,41 @@ public class DashboardController {
     }
 
     @GetMapping("/trash")
-    public String trashDashboard(){
+    public String trashDashboard()
+    {
+        List<Document> documentList;
+
+        try
+        {
+            documentList = DocumentController.getDocumentList();
+            int documentListSize = documentList.size();
+            new DateObserver(documentSubject);
+            currentTimestamp = new Timestamp(System.currentTimeMillis());
+
+            for (int i=0; i< documentListSize; i++)
+            {
+                boolean isDocumentTrashed = documentList.get(i).isTrashed();
+
+                if(isDocumentTrashed)
+                {
+                    trashedDate = documentList.get(i).getTrashedDate();
+                    long timeDifference = currentTimestamp.getTime() - trashedDate.getTime();
+
+                    if(timeDifference > NUMBER_OF_DAYS*24*60*60*1000)
+                    {
+                        documentSubject.notifyObservers(documentList.get(i));
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
         currentDashboard.changeDashboard(new TrashDashboard());
 
         return "redirect: /dashboard";
     }
-
-
-
 
 }

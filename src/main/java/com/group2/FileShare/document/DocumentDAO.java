@@ -99,25 +99,24 @@ public class DocumentDAO implements IDocumentDAO {
 			boolean isPublic = document.isPublic();
 			boolean isTrashed = document.isTrashed();
 			Date trashedDate = document.getTrashedDate();
-			if (null==trashedDate) {
-				query = "UPDATE Document SET is_pinned = ?, is_public = ?, is_trash = ?, modified_date = ? WHERE document_id = ?";
-			} else {
-				query = "UPDATE Document SET is_pinned = ?, is_public = ?, is_trash = ?, trash_date = ?, modified_date = ? WHERE document_id = ?";
-			}
-			
+      
+			query = "UPDATE Document SET is_pinned = ?, is_public = ?, is_trash = ?, trash_date = ?, modified_date = ? WHERE document_id = ?";
+
 			preparedStatement = databaseConnection.getConnection().prepareStatement(query);
 			preparedStatement.setBoolean(1, isPinned);
 			preparedStatement.setBoolean(2, isPublic);
 			preparedStatement.setBoolean(3, isTrashed);
-			if (null==trashedDate) {
-				preparedStatement.setTimestamp(4, new java.sql.Timestamp((new Date()).getTime()));
-				preparedStatement.setInt(5, docId);
-			} else {
+
+			if(null == trashedDate)
+			{
+				preparedStatement.setNull(4, java.sql.Types.TIMESTAMP);
+			} else
+				{
 				preparedStatement.setTimestamp(4, new java.sql.Timestamp(trashedDate.getTime()));
-				preparedStatement.setTimestamp(5, new java.sql.Timestamp((new Date()).getTime()));
-				preparedStatement.setInt(6, docId);
 			}
-			
+			preparedStatement.setTimestamp(5, new java.sql.Timestamp((new Date()).getTime()));
+			preparedStatement.setInt(6, docId);
+
 			preparedStatement.executeUpdate();
 			return document;
 		} catch (SQLException e) {
