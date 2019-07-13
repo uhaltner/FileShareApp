@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../static/bootstrap.css" th:href="@{/bootstrap.css}" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </head>
@@ -29,7 +29,14 @@
 
 
 <div class="container" style="margin-top: 7rem">
-
+    <div id="messageAlerts" style="position:relative;">
+        <div class="alert alert-success text-center" role="alert" th:if="${message}">
+                <span th:text="${message}"></span>
+        </div>
+        <div class="alert alert-danger text-center" role="alert" th:if="${error}">
+                <span th:text="${error}"></span>
+        </div>
+    </div>
     <!-- ROW 1 -->
     <div class="row">
         <div class="col-md-6">
@@ -110,7 +117,7 @@
             <tbody>
                 <tr th:each="document,i : ${documents}">
                     <td th:text="${document.getFilename()}">[FileName]</td>
-                    <td th:text="${document.getSize()}+ ' bytes'">[Size]</td>
+                    <td th:text="${document.getSizeString()}">[Size]</td>
                     <td th:text="${document.getCreatedDate()}">[Created]</td>
                     <td th:text="${document.getTrashedDate()}">[Deleted]</td>
                     <td>
@@ -126,5 +133,16 @@
 
     </div>
 </div>
+
+<script>
+    $('document').ready(function () {
+        setTimeout((() => {
+            $("#messageAlerts").animate({
+                height: "hide"
+            }, 1000);
+        }), 3000);
+    });
+</script>
+
 </body>
 </html>

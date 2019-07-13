@@ -152,7 +152,7 @@ public class DocumentController {
 	}
 
 	@GetMapping("/delete/{fileIndex}")
-	public String handleFileDelete(@PathVariable int fileIndex,
+	public RedirectView handleFileDelete(@PathVariable int fileIndex,
 			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
 			RedirectAttributes redirectAttributes) {
 		Document d = null;
@@ -161,8 +161,8 @@ public class DocumentController {
 		} catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
-			redirectAttributes.addFlashAttribute("error", "File upload failed! Please try again later.");
-			return "redirect:" + redirect;
+			redirectAttributes.addFlashAttribute("error", "File delete failed! Please try again later.");
+			return new RedirectView(redirect);
 		}
 		String filename = d.getFilename();
 		String filePath = d.getStorageURL();
@@ -175,7 +175,7 @@ public class DocumentController {
 			redirectAttributes.addFlashAttribute("error", "File delete failed for " + filename + "!");
 			System.out.println("File delete failed for " + filename + "!");
 		}
-		return "redirect:" + redirect;
+		return new RedirectView(redirect);
 	}
 
 	@PostMapping("/makepublic")

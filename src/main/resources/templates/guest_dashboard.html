@@ -69,7 +69,7 @@
             <p><i class="material-icons" style="vertical-align: bottom; font-size: 80px;" >insert_drive_file</i></p>
             <p th:text="${document.getFilename()}"></p>
             <p th:text="${document.getDescription()}"></p>
-            <p th:text="${document.getSize()}"></p>
+            <p th:text="${document.getSizeString()}"></p>
             <p th:text="${document.getCreatedDate()}"></p>
             <a href="JavaScript:Void(0);" th:href="'/document/' + ${document.getId()}" class="btn btn-outline-primary">Download</a>
         </div>
