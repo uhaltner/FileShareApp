@@ -49,11 +49,11 @@ public class DatabaseConnection
         }
         catch (ClassNotFoundException e)
         {
-            logger.log(Level.ERROR, "Connection not established due to Class not found in DatabaseConnection :", e);
+            logger.log(Level.ERROR, "Connection not established due to Class not found in getConnection() :", e);
         }
         catch (SQLException e)
         {
-            logger.log(Level.ERROR, "Connection not established due to SQL in DatabaseConnection :", e);
+            logger.log(Level.ERROR, "Connection not established due to SQL in getConnection() :", e);
         }
         return this.connection;
     }
@@ -69,7 +69,7 @@ public class DatabaseConnection
             }
         } catch (Exception e)
         {
-            logger.log(Level.ERROR, "Error while creating Database connection instance :", e);
+            logger.log(Level.ERROR, "Error while creating Database connection instance at getdbConnectionInstance():", e);
 
         }
         return dbConnectionInstance;
@@ -91,7 +91,7 @@ public class DatabaseConnection
         }
         catch (SQLException e)
         {
-            logger.log(Level.ERROR, "Error while closing database connection :", e);
+            logger.log(Level.ERROR, "Error while closing database connection at closeConnection():", e);
         }
     }
 

@@ -40,7 +40,7 @@
             <AppenderRef ref="FileAppender" />
         </Logger>
 
-        <Root level="info">
+        <Root level="all">
             <AppenderRef ref="ConsoleAppender" />
             <AppenderRef ref="SQLAppender" />
             <AppenderRef ref="FileAppender" />
