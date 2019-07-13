@@ -11,17 +11,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <style>
-        #container {
-            width: 60%;
-            height: 60%;
-
-            position: absolute;
-            top:0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-
-            margin: auto;
+        .container {
+            margin-top: 200px !important;
         }
     </style>
 </head>
@@ -66,12 +57,13 @@
         </div>
 
         <div th:if="${document}" class="mt-2 mt-md-0">
-            <p><i class="material-icons" style="vertical-align: bottom; font-size: 80px;" >insert_drive_file</i></p>
+            <p><i class="material-icons" style="vertical-align: bottom; font-size: 120px;" >insert_drive_file</i></p>
             <p th:text="${document.getFilename()}"></p>
+            <strong>Description</strong>
             <p th:text="${document.getDescription()}"></p>
+            <strong>Size</strong>
             <p th:text="${document.getSizeString()}"></p>
-            <p th:text="${document.getCreatedDate()}"></p>
-            <a href="JavaScript:Void(0);" th:href="'/document/' + ${document.getId()}" class="btn btn-outline-primary">Download</a>
+            <a href="JavaScript:Void(0);" th:href="'/document/0'" class="btn btn-outline-primary">Download</a>
         </div>
 
     </div>

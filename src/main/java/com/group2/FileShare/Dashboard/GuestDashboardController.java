@@ -1,6 +1,7 @@
 package com.group2.FileShare.Dashboard;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
+import com.group2.FileShare.document.DocumentController;
 import com.group2.FileShare.document.SharedLink;
 import com.group2.FileShare.document.Document;
 import com.group2.FileShare.document.DocumentDAO;
@@ -46,7 +47,7 @@ public class GuestDashboardController {
                     Date currentDate = new Date();
                     if(expDate.after(currentDate)) {
 
-                        Document document = documentDAO.getDocument(sharedDocRef.getDocument_id());
+                        Document document = DocumentController.getGuestDocument(sharedDocRef.getDocument_id());
                         if(document != null) {
                             model.addAttribute("document", document);
                         } else {
