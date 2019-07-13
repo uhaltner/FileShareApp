@@ -81,7 +81,7 @@
                     <div class="modal-body">
                         <p>File Sharing Options</p>
                         <h6>Option 1</h6>
-                        <div class="form-group">
+                        <div class="form-group updateFileDescription">
                           <label for="updateFileDescription">Update File Description <span class="small">(optional)</span> :</label>
                           <textarea class="form-control" name="updateFileDescription" id="updateFileDescription" rows="3"></textarea>
                         </div>
@@ -193,7 +193,7 @@
             <tbody>
                 <tr th:each="document,i : ${documents}">
                     <td th:text="${document.getFilename()}">FileName</td>
-                    <td th:text="${document.getSize()}+ ' bytes'">Size</td>
+                    <td th:text="${document.getSizeString()}">Size</td>
                     <td th:text="${document.getCreatedDate()}">TimeStamp</td>
                     <td>
                         <a href="JavaScript:Void(0);" th:href="'/document/' + ${i.index}" class="btn btn-outline-primary">Download</a>
@@ -242,11 +242,11 @@
         $('#fileIndex').val(documentIndex);
         if(isPublic) {
             $('#fileShareForm').attr("action", "/document/makeprivate/");
-            $('#fileShareForm #updateFileDescription').hide();
+            $('#fileShareForm .form-group.updateFileDescription').hide();
             $('#fileShareForm #togglePublic').html("Make Private");
         } else {
             $('#fileShareForm').attr("action", "/document/makepublic/");
-            $('#fileShareForm #updateFileDescription').show();
+            $('#fileShareForm .form-group.updateFileDescription').show();
             $('#fileShareForm #togglePublic').html("Make Public");
         }
     }

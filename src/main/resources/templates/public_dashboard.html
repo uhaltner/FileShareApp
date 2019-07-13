@@ -138,7 +138,7 @@
                 <tr th:each="document,i : ${documents}">
                     <td th:text="${document.getFilename()}">[FileName]</td>
                     <td th:text="${document.getDescription()}">[Description]</td>
-                    <td th:text="${document.getSize()}+ ' bytes'">[Size]</td>
+                    <td th:text="${document.getSizeString()}">[Size]</td>
                     <td th:text="${document.getCreatedDate()}">[Created]</td>
                     <td>
                         <a href="JavaScript:Void(0);" th:href="'/document/' + ${i.index}" class="btn btn-outline-primary">Download</a>
