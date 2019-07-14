@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Iterator;
 
 import com.group2.FileShare.Dashboard.DocumentSorter;
 import org.springframework.core.io.Resource;
@@ -132,6 +133,32 @@ public class DocumentController {
 		}
 		return documentsCollection;
 	}
+	
+	public static List<Document> findAll(String phrase){
+		Document document;
+		String fileName;
+		String upperCaseFileName;
+		String upperCasePhrase;
+        Iterator<Document> iter = documentsCollection.iterator();
+        List<Document> matchList = new ArrayList<>();
+
+        //add each document that contains the phrase to a new list
+        while(iter.hasNext()){
+
+            document = (Document) iter.next();
+            fileName=  document.getFilename();
+
+            upperCaseFileName = fileName.toUpperCase();
+            upperCasePhrase = phrase.toUpperCase();
+
+            if (upperCaseFileName.contains(upperCasePhrase)){
+                matchList.add(document);
+            }
+        }
+        documentsCollection = matchList;
+
+        return documentsCollection;
+    }
 
 	@DeleteMapping("/{fileIndex}")
 	public String handleFileDelete(@PathVariable int fileIndex,
