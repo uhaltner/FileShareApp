@@ -1,0 +1,20 @@
+2019-07-13 21:41:36.870 [main] INFO  com.group2.FileShare.FileShareApplication - Starting FileShareApplication on DESKTOP-3D15LEE with PID 4576 (F:\MACSterm3\QualityAssurance\Group2\target\classes started by Yash in F:\MACSterm3\QualityAssurance\Group2)
+2019-07-13 21:41:37.797 [main] INFO  com.group2.FileShare.FileShareApplication - No active profile set, falling back to default profiles: default
+2019-07-13 21:41:39.417 [main] INFO  org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)
+2019-07-13 21:41:39.645 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2019-07-13 21:41:40.205 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2019-07-13 21:41:40.436 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.19]
+2019-07-13 21:41:40.919 [main] INFO  org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2019-07-13 21:41:41.160 [main] INFO  org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization completed in 3062 ms
+2019-07-13 21:41:43.032 [main] INFO  org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: b248e687-7b84-48f4-a0a7-8e9a715b445e
+
+2019-07-13 21:41:43.687 [main] INFO  org.springframework.security.web.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@12ad1b2a, org.springframework.security.web.context.SecurityContextPersistenceFilter@1eff3cfb, org.springframework.security.web.header.HeaderWriterFilter@5b7aa898, org.springframework.security.web.authentication.logout.LogoutFilter@31142d58, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@6dc1dc69, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4694f434, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@3134153d, org.springframework.security.web.session.SessionManagementFilter@5731d3a, org.springframework.security.web.access.ExceptionTranslationFilter@3e906375]
+2019-07-13 21:41:44.065 [main] INFO  org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+2019-07-13 21:41:44.676 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2019-07-13 21:41:45.018 [main] INFO  org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path ''
+2019-07-13 21:41:45.310 [main] INFO  com.group2.FileShare.FileShareApplication - Started FileShareApplication in 9.019 seconds (JVM running for 10.699)
+2019-07-13 21:41:55.656 [http-nio-8080-exec-1] INFO  org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2019-07-13 21:41:55.903 [http-nio-8080-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2019-07-13 21:41:56.288 [http-nio-8080-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 21 ms

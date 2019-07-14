@@ -76,7 +76,7 @@
 
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a class="nav-link" href="/dashboard/private" th:href="@{/dashboard/private}">Private Files</a>
+                    <a class="nav-link" href="/dashboard/private" th:href="@{/dashboard/private}">My Files</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="/dashboard/public" th:href="@{/dashboard/public}">Public Files</a>
@@ -135,10 +135,10 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="document,i : ${documents}" th:if="${!document.isTrashed()}">
+                <tr th:each="document,i : ${documents}">
                     <td th:text="${document.getFilename()}">[FileName]</td>
                     <td th:text="${document.getDescription()}">[Description]</td>
-                    <td th:text="${document.getSize()}+ ' bytes'">[Size]</td>
+                    <td th:text="${document.getSizeString()}">[Size]</td>
                     <td th:text="${document.getCreatedDate()}">[Created]</td>
                     <td>
                         <a href="JavaScript:Void(0);" th:href="'/document/' + ${i.index}" class="btn btn-outline-primary">Download</a>

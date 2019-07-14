@@ -1,8 +1,10 @@
 package com.group2.FileShare.document;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
-import com.group2.FileShare.User.User;
 import com.group2.FileShare.database.DatabaseConnection;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,35 +13,44 @@ import java.util.List;
 
 public class DocumentDAO implements IDocumentDAO {
 
-	private PreparedStatement preparedStatement;
 	private ResultSet resultSet = null;
 	private String query;
 	private final AuthenticationSessionManager sessionManager;
 	private DatabaseConnection databaseConnection;
+	private static final Logger logger = LogManager.getLogger(DocumentDAO.class);
 
-	public DocumentDAO() {
+	public DocumentDAO()
+	{
 		sessionManager = AuthenticationSessionManager.instance();
 
 		try {
 			databaseConnection = DatabaseConnection.getdbConnectionInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
+		}
+		catch (Exception e) {
+			logger.log(Level.ERROR, "Failed to create database instance at DocumentDAO(): ", e);
 		}
 	}
 
-	public List<Document> getDocuments() {
+	public List<Document> getDocuments()
+	{
 		int user_id = sessionManager.getUserId();
+		List<Document> documents = new ArrayList<Document>();
 
-		try {
-			List<Document> documents = new ArrayList<Document>();
-			query = "SELECT * FROM Document WHERE user_id = ?";
-			preparedStatement = databaseConnection.getConnection().prepareStatement(query);
-			preparedStatement.setInt(1, user_id);
-			resultSet = preparedStatement.executeQuery();
+		try
+		{
+			query = "{ call get_documents(?) }";
+			CallableStatement statement = databaseConnection.getConnection().prepareCall(query);
+			statement.setInt(1, user_id);
+			resultSet = statement.executeQuery();
 
-			while (resultSet.next()) {
-				Document rsDocument = new Document(resultSet.getInt("document_id"), resultSet.getString("file_name"),
-						resultSet.getInt("size_mb"), resultSet.getString("storage_url"), resultSet.getInt("user_id"));
+			while (resultSet.next())
+			{
+				Document rsDocument = new Document(resultSet.getInt("document_id"),
+						resultSet.getString("file_name"),
+						resultSet.getInt("size_mb"),
+						resultSet.getString("storage_url"),
+						resultSet.getInt("user_id"));
+
 				rsDocument.setCreatedDate(resultSet.getTimestamp("created_date"));
 				rsDocument.setTrashedDate(resultSet.getTimestamp("trash_date"));
 				rsDocument.setTrashed(resultSet.getBoolean("is_trash"));
@@ -47,89 +58,105 @@ public class DocumentDAO implements IDocumentDAO {
 				rsDocument.setPublic(resultSet.getBoolean("is_public"));
 				documents.add(rsDocument);
 			}
-
 			return documents;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (null != databaseConnection) {
+		}
+		catch (SQLException e) {
+			logger.log(Level.ERROR, "Failed to fetch all documents with query:" +query +" of user: "+user_id +" at getDocuments()" , e);
+		}
+		finally
+		{
+			try
+			{
+				if ( null != databaseConnection ) {
 					databaseConnection.closeConnection();
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			}
+			catch (Exception ex) {
+				logger.log(Level.ERROR, "Failed to close database connection at getDocuments()", ex);
 			}
 		}
 		return null;
 	}
 
-	public Document addDocument(Document document) {
+	public Document addDocument(Document document)
+	{
 		try {
-			query = "INSERT INTO Document (file_name, size_mb, user_id, description, storage_url, is_pinned, is_public, is_trash, created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			preparedStatement = databaseConnection.getConnection().prepareStatement(query);
-			preparedStatement.setString(1, document.getFilename());
-			preparedStatement.setLong(2, document.getSize());
-			preparedStatement.setInt(3, document.getOwnerId());
-			preparedStatement.setString(4, document.getDescription());
-			preparedStatement.setString(5, document.getStorageURL());
-			preparedStatement.setBoolean(6, document.isPinned());
-			preparedStatement.setBoolean(7, document.isPublic());
-			preparedStatement.setBoolean(8, document.isTrashed());
-			preparedStatement.setTimestamp(9, new java.sql.Timestamp(document.getCreatedDate().getTime()));
-			preparedStatement.executeUpdate();
+			query = "{ call add_document( ?, ?, ?, ?, ?, ?, ?, ?, ?) }";
+			CallableStatement statement = databaseConnection.getConnection().prepareCall(query);
+			statement.setString(1, document.getFilename());
+			statement.setLong(2, document.getSize());
+			statement.setInt(3, document.getOwnerId());
+			statement.setString(4, document.getDescription());
+			statement.setString(5, document.getStorageURL());
+			statement.setBoolean(6, document.isPinned());
+			statement.setBoolean(7, document.isPublic());
+			statement.setBoolean(8, document.isTrashed());
+			statement.setTimestamp(9, new java.sql.Timestamp(document.getCreatedDate().getTime()));
+			statement.executeUpdate();
 
 			return document;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (null != databaseConnection) {
+		}
+		catch (SQLException e) {
+			logger.log(Level.ERROR, "Failed to insert document with query:" +query +" of user: "+document.getOwnerId() +" at addDocument()" , e);
+		}
+		finally
+		{
+			try
+			{
+				if ( null != databaseConnection ) {
 					databaseConnection.closeConnection();
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			}
+			catch (Exception ex) {
+				logger.log(Level.ERROR, "Failed to close database connection at addDocument()", ex);
 			}
 		}
 		return null;
 	}
 
-	public Document updateDocument(Document document) {
+	public Document updateDocument(Document document)
+	{
 		try {
 			int docId = document.getId();
 			boolean isPinned = document.isPinned();
 			boolean isPublic = document.isPublic();
 			boolean isTrashed = document.isTrashed();
 			Date trashedDate = document.getTrashedDate();
-			if (null==trashedDate) {
-				query = "UPDATE Document SET is_pinned = ?, is_public = ?, is_trash = ?, modified_date = ? WHERE document_id = ?";
-			} else {
-				query = "UPDATE Document SET is_pinned = ?, is_public = ?, is_trash = ?, trash_date = ?, modified_date = ? WHERE document_id = ?";
+			String description = document.getDescription();
+      
+			query = "{ call update_document( ?, ?, ?, ?, ?, ?, ?) }";
+
+			CallableStatement statement = databaseConnection.getConnection().prepareCall(query);
+			statement.setBoolean(1, isPinned);
+			statement.setBoolean(2, isPublic);
+			statement.setBoolean(3, isTrashed);
+
+			if( null == trashedDate ) {
+				statement.setNull(4, java.sql.Types.TIMESTAMP);
 			}
-			
-			preparedStatement = databaseConnection.getConnection().prepareStatement(query);
-			preparedStatement.setBoolean(1, isPinned);
-			preparedStatement.setBoolean(2, isPublic);
-			preparedStatement.setBoolean(3, isTrashed);
-			if (null==trashedDate) {
-				preparedStatement.setTimestamp(4, new java.sql.Timestamp((new Date()).getTime()));
-				preparedStatement.setInt(5, docId);
-			} else {
-				preparedStatement.setTimestamp(4, new java.sql.Timestamp(trashedDate.getTime()));
-				preparedStatement.setTimestamp(5, new java.sql.Timestamp((new Date()).getTime()));
-				preparedStatement.setInt(6, docId);
+			else {
+				statement.setTimestamp(4, new java.sql.Timestamp(trashedDate.getTime()));
 			}
-			
-			preparedStatement.executeUpdate();
+			statement.setTimestamp(5, new java.sql.Timestamp((new Date()).getTime()));
+			statement.setString(6, description);
+			statement.setInt(7, docId);
+
+			statement.executeUpdate();
 			return document;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
+		}
+		catch (SQLException e) {
+			logger.log(Level.ERROR, "Failed to update document with query:" +query +" of document: "+ document.getId() +" at updateDocument()" , e);
+		}
+		finally
+		{
+			try
+			{
 				if (null != databaseConnection) {
 					databaseConnection.closeConnection();
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			}
+			catch (Exception ex) {
+				logger.log(Level.ERROR, "Failed to close database connection at updateDocument()", ex);
 			}
 		}
 		return null;
@@ -139,20 +166,25 @@ public class DocumentDAO implements IDocumentDAO {
 		try {
 			int documentId = document.getId();
 
-			query = "DELETE FROM Document WHERE document_id = ?";
-			preparedStatement = databaseConnection.getConnection().prepareStatement(query);
-			preparedStatement.setInt(1, documentId);
-			preparedStatement.executeUpdate();
+			query = "{ call delete_document(?) }";
+			CallableStatement statement = databaseConnection.getConnection().prepareCall(query);
+			statement.setInt(1, documentId);
+			statement.executeUpdate();
 			return document;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
+		}
+		catch (SQLException e) {
+			logger.log(Level.ERROR, "Failed to delete document with query:" +query +" of document: "+ document.getId() +" at deleteDocument()" , e);
+		}
+		finally
+		{
+			try
+			{
 				if (databaseConnection != null) {
 					databaseConnection.closeConnection();
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			}
+			catch (Exception ex) {
+				logger.log(Level.ERROR, "Failed to close database connection at deleteDocument()", ex);
 			}
 		}
 		return null;
@@ -161,21 +193,21 @@ public class DocumentDAO implements IDocumentDAO {
 	/** @Author: Ueli Haltner
 	 *  @Description: Returns a list of documents based on the input query.
 	 */
-	public List<Document> getDocumentList(String query, int userId, boolean publicDocumentsOnly) {
-
-		DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
+	public List<Document> getDocumentList(String query, int userId, boolean publicDocumentsOnly, boolean trashedDocumentsOnly)
+	{
 		List<Document> documentList = new ArrayList<Document>();
 
-		try (Connection conn = db.getConnection();
+		try (Connection conn = databaseConnection.getConnection();
 			 CallableStatement stmt = conn.prepareCall(query)) {
 
 			stmt.setInt(1, userId);
 			stmt.setBoolean(2,publicDocumentsOnly);
+			stmt.setBoolean(3,trashedDocumentsOnly);
 
 			ResultSet rs = stmt.executeQuery();
 
-			while( rs.next() ) {
-
+			while( rs.next() )
+			{
 				Document rsDocument = new Document(
 						rs.getInt("document_id"),
 						rs.getString("file_name"),
@@ -192,40 +224,129 @@ public class DocumentDAO implements IDocumentDAO {
 				rsDocument.setDescription(rs.getString("description"));
 
 				documentList.add(rsDocument);
-
 			}
-
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-
-		} finally {
-			db.closeConnection();
+		}
+		catch (SQLException ex) {
+			logger.log(Level.ERROR, "Failed to get document list with query:" +query +" of user: "+ userId +" at createPrivateShareLink()" , ex);
+		}
+		finally
+		{
+			try {
+				if (databaseConnection != null) {
+					databaseConnection.closeConnection();
+				}
+			}
+			catch (Exception ex) {
+				logger.log(Level.ERROR, "Failed to close database connection at getDocumentList()", ex);
+			}
 		}
 
 		return documentList;
 	}
-	 
 	
 	
-	public boolean createPrivateShareLink(int documentId, String accessURL, String linkedFileDescription) {
+	public boolean createPrivateShareLink(int documentId, String accessURL)
+	{
+		query = "{ call create_private_shared_link(?,?) }";
 
-		DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
-		String query = "{ call create_private_shared_link(?,?,?) }";
-
-		try (Connection conn = db.getConnection();
+		try (Connection conn = databaseConnection.getConnection();
 			 CallableStatement stmt = conn.prepareCall(query)) {
 
 			stmt.setInt(1, documentId);
 			stmt.setString(2,accessURL);
-			stmt.setString(3,linkedFileDescription);
 			stmt.executeUpdate();
-		} catch (SQLException ex) {
-			System.out.println(ex.getMessage());
-			return false;
-		} finally {
-			db.closeConnection();
+		}
+		catch (SQLException ex) {
+			logger.log(Level.ERROR, "Failed to create provate share link of document with query:" +query +" of document: "+ documentId +" at createPrivateShareLink()" , ex);
+			return false;										//todo
+		}
+		finally
+		{
+			try {
+				if (databaseConnection != null) {
+					databaseConnection.closeConnection();
+				}
+			}
+			catch (Exception ex) {
+				logger.log(Level.ERROR, "Failed to close database connection at createPrivateShareLink()", ex);
+			}
 		}
 		return true;
+	}
+
+	public Document getDocument(int document_id) {
+
+		query = "{ call get_document(?) }";
+
+		try (Connection conn = databaseConnection.getConnection();
+			 CallableStatement stmt = conn.prepareCall(query)) {
+
+			stmt.setInt(1, document_id);
+			resultSet = stmt.executeQuery();
+
+			while(resultSet.next())
+			{
+				Document rsDocument = new Document(resultSet.getInt("document_id"),
+						resultSet.getString("file_name"),
+						resultSet.getInt("size_mb"),
+						resultSet.getString("storage_url"),
+						resultSet.getInt("user_id"));
+				rsDocument.setDescription(resultSet.getString("description"));
+				return rsDocument;
+			}
+
+		}
+		catch (SQLException ex) {
+			logger.log(Level.ERROR, "Failed to get document with query:" +query +" of document: "+ document_id +" at getDocument()" , ex);
+		}
+		finally
+		{
+			try {
+				if (null != databaseConnection) {
+					databaseConnection.closeConnection();
+				}
+			}
+			catch (Exception ex) {
+				logger.log(Level.ERROR, "Failed to close database connection at getDocument()", ex);
+			}
+		}
+		return null;
+	}
+
+
+	public SharedLink getLinkedDocumentRefWith(String accessUrl) {
+
+		query = "{ call get_shared_document(?) }";
+
+		try (Connection conn = databaseConnection.getConnection();
+			 CallableStatement stmt = conn.prepareCall(query)) {
+
+			stmt.setString(1, accessUrl);
+			resultSet = stmt.executeQuery();
+
+			while(resultSet.next()) {
+				SharedLink sharedDocumentRefernce = new SharedLink(resultSet.getInt("link_id"),
+						resultSet.getInt("document_id"),
+						resultSet.getString("expiration_date"));
+				return sharedDocumentRefernce;
+			}
+
+		} catch (SQLException ex) {
+			logger.log(Level.ERROR, "Failed to get shared document with query:" +query +" of document access URL: "+ accessUrl +" at getLinkedDocumentRefWith()" , ex);
+		}
+		finally
+		{
+			try {
+				if (null != databaseConnection) {
+					databaseConnection.closeConnection();
+				}
+			}
+			catch (Exception ex) {
+				logger.log(Level.ERROR, "Failed to close database connection at getLinkedDocumentRefWith()", ex);
+			}
+		}
+
+		return null;
 	}
 
 }

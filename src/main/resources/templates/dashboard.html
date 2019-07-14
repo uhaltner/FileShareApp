@@ -69,8 +69,8 @@
     <div class="modal fade" id="shareFileModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <form id="fileShareForm" name="fileShareForm" onsubmit="event.preventDefault(); getShareLink();" enctype="multipart/form-data">
-                    <input type = "text" class="d-none hidden" name="shareFileID" id="shareFileID"/>
+                <form id="fileShareForm" name="fileShareForm" enctype="multipart/form-data" method="POST">
+                    <input type = "text" class="d-none hidden" name="fileIndex" id="fileIndex"/>
                     <div class="modal-header">
                         <h5 class="modal-title">Share File</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -81,15 +81,14 @@
                     <div class="modal-body">
                         <p>File Sharing Options</p>
                         <h6>Option 1</h6>
-                        <a class="w-100 btn btn-outline-primary" id="makePublic">Make Public</a>
+                        <div class="form-group updateFileDescription">
+                          <label for="updateFileDescription">Update File Description <span class="small">(optional)</span> :</label>
+                          <textarea class="form-control" name="updateFileDescription" id="updateFileDescription" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="w-100 btn btn-outline-primary" id="togglePublic">Make Public</button>
                         <hr class="mt-5 mb-4 mx-5"/>
                         <h6 class="mt-3">Option 2</h6>
-                        <div class="form-group">
-                          <label for="shareLinkDescription">Linked File Description <span class="small">(optional)</span> :</label>
-                          <textarea class="form-control" name="shareLinkDescription" id="shareLinkDescription" rows="3"></textarea>
-                        </div>
-                        <button type="submit" class="w-100 btn btn-outline-primary" id="generateLink">Generate Private Access Link</button>
-                        
+                        <button type="button" onclick="event.preventDefault(); getShareLink();" class="w-100 btn btn-outline-primary" id="generateLink">Generate Private Access Link</button>
                     </div>
                     <div class="modal-footer">
                         <span id="result" class="w-100 text-center alert alert-success" role="alert">Submit</span>
@@ -131,7 +130,7 @@
 
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a class="nav-link active" href="/dashboard/private" th:href="@{/dashboard/private}">Private Files</a>
+                    <a class="nav-link active" href="/dashboard/private" th:href="@{/dashboard/private}">My Files</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/dashboard/public" th:href="@{/dashboard/public}">Public Files</a>
@@ -192,15 +191,15 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="document,i : ${documents}" th:if="${!document.isTrashed()}">
+                <tr th:each="document,i : ${documents}">
                     <td th:text="${document.getFilename()}">FileName</td>
-                    <td th:text="${document.getSize()}+ ' bytes'">Size</td>
+                    <td th:text="${document.getSizeString()}">Size</td>
                     <td th:text="${document.getCreatedDate()}">TimeStamp</td>
                     <td>
                         <a href="JavaScript:Void(0);" th:href="'/document/' + ${i.index}" class="btn btn-outline-primary">Download</a>
                     </td>
                     <td>
-                        <a href="JavaScript:Void(0);" th:onclick="'initShareModal(' + ${i.index} + ')'" class="btn btn-outline-primary" data-toggle="modal" data-target="#shareFileModal">Share</a>
+                        <a href="JavaScript:Void(0);" th:data-file-description="${document.getDescription()}" th:data-is-public="${document.isPublic()}" th:data-document-index="${i.index}" onclick="initShareModal(this)" class="btn btn-outline-primary" data-toggle="modal" data-target="#shareFileModal">Sharing...</a>
                     </td>
                     <td>
                         <a href="JavaScript:Void(0);" th:href="'/document/trash/' + ${i.index}"class="btn btn-outline-danger">Trash</a>
@@ -231,28 +230,36 @@
             }, 1000);
         }), 3000);
     });
-    let shareDocumentIndex;
 
-    function initShareModal(documentIndex) {
+    function initShareModal(target) {
+        let documentIndex = target.dataset.documentIndex;
+        let fileDescription = target.dataset.fileDescription;
+        let isPublic = target.dataset.isPublic === "true";
         $('#fileShareForm #result').html("");
         $("#fileShareForm #result").hide(0);
-        $('#fileShareForm #shareLinkDescription').html("");
-        $('#fileShareForm #makePublic').attr("href", "/document/makepublic/" + documentIndex);
-        shareDocumentIndex = documentIndex;
-        $('#shareFileID').val(documentIndex);
+        $('#fileShareForm #updateFileDescription')[0].value=fileDescription;
+        $('#fileShareForm #togglePublic').attr("data-document-index", documentIndex);
+        $('#fileIndex').val(documentIndex);
+        if(isPublic) {
+            $('#fileShareForm').attr("action", "/document/makeprivate/");
+            $('#fileShareForm .form-group.updateFileDescription').hide();
+            $('#fileShareForm #togglePublic').html("Make Private");
+        } else {
+            $('#fileShareForm').attr("action", "/document/makepublic/");
+            $('#fileShareForm .form-group.updateFileDescription').show();
+            $('#fileShareForm #togglePublic').html("Make Public");
+        }
     }
 
     function getShareLink(event) {
         $('#fileShareForm #result').html("");
-
         let xhttp = new XMLHttpRequest();
         let formData = $('#fileShareForm').serialize();
-        console.log(formData)
 
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
                 let res = this.response;
-                $('#fileShareForm #result').html("Private Share Link: \n" + window.location.origin + "/privateshare/" + res);
+                $('#fileShareForm #result').html("Private Share Link: \n" + window.location.origin + "/shared/" + res);
                 $("#fileShareForm #result").show(150);
             } else if (this.readyState == 4 && this.status == 400) {
                 let res = JSON.parse(this.response);

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../static/bootstrap.css" th:href="@{/bootstrap.css}" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </head>
@@ -29,35 +29,14 @@
 
 
 <div class="container" style="margin-top: 7rem">
-
-    <div class="modal fade" id="uploadFileModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <form id="fileUploadForm" name="fileUploadForm" method="post" action="/document" enctype="multipart/form-data">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title">Upload File</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-
-                    <div class="modal-body">
-                        <p>Please click on button to upload a file</p>
-                        <div class="custom-file">
-                            <input type="file" name="file" class="custom-file-input" id="fileUpload" required>
-                            <label class="custom-file-label" for="fileUpload">Choose file...</label>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary btn-center">Submit</button>
-                    </div>
-                </form>
-            </div>
+    <div id="messageAlerts" style="position:relative;">
+        <div class="alert alert-success text-center" role="alert" th:if="${message}">
+                <span th:text="${message}"></span>
+        </div>
+        <div class="alert alert-danger text-center" role="alert" th:if="${error}">
+                <span th:text="${error}"></span>
         </div>
     </div>
-
     <!-- ROW 1 -->
     <div class="row">
         <div class="col-md-6">
@@ -76,7 +55,7 @@
 
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a class="nav-link" href="/dashboard/private" th:href="@{/dashboard/private}">Private Files</a>
+                    <a class="nav-link" href="/dashboard/private" th:href="@{/dashboard/private}">My Files</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/dashboard/public" th:href="@{/dashboard/public}">Public Files</a>
@@ -136,34 +115,34 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="document,i : ${documents}" th:if="${document.isTrashed()}">
+                <tr th:each="document,i : ${documents}">
                     <td th:text="${document.getFilename()}">[FileName]</td>
-                    <td th:text="${document.getSize()}+ ' bytes'">[Size]</td>
+                    <td th:text="${document.getSizeString()}">[Size]</td>
                     <td th:text="${document.getCreatedDate()}">[Created]</td>
                     <td th:text="${document.getTrashedDate()}">[Deleted]</td>
                     <td>
                         <!-- The hrefs have to be connected to the correct document controller actions -->
-                        <a href="JavaScript:Void(0);" th:href="'/document/' + ${i.index}" class="btn btn-outline-primary">Recover</a>
+                        <a href="JavaScript:Void(0);" th:href="'/document/untrash/' + ${i.index}" class="btn btn-outline-primary">Recover</a>
                     </td>
                     <td>
-                        <a href="JavaScript:Void(0);" th:href="'/document/' + ${i.index}" class="btn btn-outline-danger">Permanent Delete</a>
+                        <a href="JavaScript:Void(0);" th:href="'/document/delete/' + ${i.index}" class="btn btn-outline-danger">Permanent Delete</a>
                     </td>
                 </tr>
             </tbody>
         </table>
 
     </div>
-
-
 </div>
 
 <script>
     $('document').ready(function () {
-        $('#fileUpload').on('change',function(){
-            var fileName = $(this).val();
-            $(this).next('.custom-file-label').html(fileName);
-        });
+        setTimeout((() => {
+            $("#messageAlerts").animate({
+                height: "hide"
+            }, 1000);
+        }), 3000);
     });
 </script>
+
 </body>
 </html>

@@ -48,6 +48,19 @@ public class Document {
 	public long getSize() {
 		return size;
 	}
+	
+
+	public String getSizeString() {
+		if (size < 1000) {
+			return (""+size+" bytes");
+		}else if (size < 1000000) {
+			return (""+ Math.round(((double) size)/1000 * 10)/10.0 +" KB");
+		}else if (size < 1000000000) {
+			return (""+ Math.round(((double) size)/1000000 * 10)/10.0 +" MB");
+		}else {
+			return (""+ Math.round(((double) size)/1000000000 * 10)/10.0 +" GB");
+		}
+	}
 
 	public void setSize(long size) {
 		this.size = size;
