@@ -1,12 +1,5 @@
 package com.group2.FileShare.document;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Iterator;
-
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.Compression.ICompression;
 import com.group2.FileShare.Compression.ZipCompression;
@@ -27,6 +20,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 @Controller
 @RequestMapping("/document")
@@ -195,11 +195,12 @@ public class DocumentController {
 
             document = (Document) iter.next();
             fileName=  document.getFilename();
+			boolean isDocumentPinned = document.isPinned();
 
             upperCaseFileName = fileName.toUpperCase();
             upperCasePhrase = phrase.toUpperCase();
 
-            if (upperCaseFileName.contains(upperCasePhrase)){
+            if (upperCaseFileName.contains(upperCasePhrase) && !isDocumentPinned){
                 matchList.add(document);
             }
         }
@@ -207,6 +208,59 @@ public class DocumentController {
 
         return documentsCollection;
     }
+
+	public static List<Document> getUnPinnedDocumentCollection(List<Document> documentList){
+		List<Document> unpinDocumentList;
+		unpinDocumentList = new ArrayList<>();
+		try
+		{
+			int documentListSize = documentList.size();
+
+			for (int i=0; i< documentListSize; i++)
+			{
+				boolean isDocumentPinned = documentList.get(i).isPinned();
+
+				if(!isDocumentPinned)
+				{
+					unpinDocumentList.add(documentList.get(i));
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			logger.log(Level.ERROR, "Error while getting pinned document list at getPinnedDocumentList():", e);
+		}
+
+		documentsCollection = unpinDocumentList;
+		return documentsCollection;
+	}
+
+	public static List<Document> getPinnedDocumentCollection(List<Document> documentList){
+		List<Document> pinDocumentList;
+		pinDocumentList = new ArrayList<>();
+		try
+		{
+			int documentListSize = documentList.size();
+
+			for (int i=0; i< documentListSize; i++)
+			{
+				boolean isDocumentPinned = documentList.get(i).isPinned();
+				boolean isDocumentPublic = documentList.get(i).isPublic();
+
+				if(isDocumentPinned && !isDocumentPublic)
+				{
+					pinDocumentList.add(documentList.get(i));
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			logger.log(Level.ERROR, "Error while getting pinned document list at getPinnedDocumentList():", e);
+		}
+
+		documentsCollection = pinDocumentList;
+		return documentsCollection;
+	}
 
 	@GetMapping("/delete/{fileIndex}")
 	public RedirectView handleFileDelete(@PathVariable int fileIndex,

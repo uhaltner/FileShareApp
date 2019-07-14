@@ -62,6 +62,11 @@ public class DashboardController {
             List<Document> documentList = new ArrayList<>();
             documentList = DocumentController.getDocumentCollection(documentSorter, userId, currentDashboard);
 
+            List<Document> pinnedDocumentList = new ArrayList<>();
+            pinnedDocumentList = DocumentController.getPinnedDocumentCollection(documentList);
+
+            documentList = DocumentController.getUnPinnedDocumentCollection(documentList);
+
             //if the search bar was used, find all documents with the matching search phrase
             if(searchRequired){
                 documentList = DocumentController.findAll(searchPhrase);
@@ -69,6 +74,7 @@ public class DashboardController {
             }
             
             model.addAttribute("documents", documentList);
+            model.addAttribute("pinnedDocuments", pinnedDocumentList);
             model.addAttribute("firstName", sessionManager.getFirstName() );
             model.addAttribute("lastName", sessionManager.getLastName() );
 
