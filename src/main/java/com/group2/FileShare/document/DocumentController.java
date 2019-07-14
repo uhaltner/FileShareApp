@@ -1,5 +1,11 @@
 package com.group2.FileShare.document;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Iterator;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.Compression.ICompression;
@@ -21,12 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Controller
 @RequestMapping("/document")
@@ -181,6 +181,32 @@ public class DocumentController {
 		}
 		return documentsCollection;
 	}
+	
+	public static List<Document> findAll(String phrase){
+		Document document;
+		String fileName;
+		String upperCaseFileName;
+		String upperCasePhrase;
+        Iterator<Document> iter = documentsCollection.iterator();
+        List<Document> matchList = new ArrayList<>();
+
+        //add each document that contains the phrase to a new list
+        while(iter.hasNext()){
+
+            document = (Document) iter.next();
+            fileName=  document.getFilename();
+
+            upperCaseFileName = fileName.toUpperCase();
+            upperCasePhrase = phrase.toUpperCase();
+
+            if (upperCaseFileName.contains(upperCasePhrase)){
+                matchList.add(document);
+            }
+        }
+        documentsCollection = matchList;
+
+        return documentsCollection;
+    }
 
 	@GetMapping("/delete/{fileIndex}")
 	public RedirectView handleFileDelete(@PathVariable int fileIndex,

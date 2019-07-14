@@ -64,8 +64,7 @@ public class DashboardController {
 
             //if the search bar was used, find all documents with the matching search phrase
             if(searchRequired){
-                SearchBarIterator searchBarIterator = new SearchBarIterator();
-                documentList = searchBarIterator.findAll(searchPhrase, documentList);
+                documentList = DocumentController.findAll(searchPhrase);
                 searchRequired = false;
             }
             
