@@ -170,6 +170,7 @@ public class DocumentDAO implements IDocumentDAO {
 			CallableStatement statement = databaseConnection.getConnection().prepareCall(query);
 			statement.setInt(1, documentId);
 			statement.executeUpdate();
+			logger.log(Level.INFO, "Successfully deleted document: "+ document.getId() +" at deleteDocument()");
 			return document;
 		}
 		catch (SQLException e) {

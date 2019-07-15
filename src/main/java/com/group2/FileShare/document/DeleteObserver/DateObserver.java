@@ -2,9 +2,13 @@ package com.group2.FileShare.document.DeleteObserver;
 
 import com.group2.FileShare.document.Document;
 import com.group2.FileShare.document.DocumentDAO;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DateObserver extends Observer
 {
+    private static final Logger logger = LogManager.getLogger(DocumentDAO.class);
 
     public DateObserver(DocumentSubject subject)
     {
@@ -22,7 +26,7 @@ public class DateObserver extends Observer
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            logger.log(Level.ERROR, "Failed to delete document at update(): ", e);
         }
 
     }
