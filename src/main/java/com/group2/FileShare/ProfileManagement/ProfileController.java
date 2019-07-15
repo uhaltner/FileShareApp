@@ -1,10 +1,15 @@
 package com.group2.FileShare.ProfileManagement;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
-import com.group2.FileShare.ProfileManagement.PasswordRules.*;
+import com.group2.FileShare.ProfileManagement.PasswordRules.PasswordRuleSet;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpSession;
 
@@ -13,6 +18,8 @@ public class ProfileController {
 
     private AuthenticationSessionManager sessionManager;
     private boolean profile_error = false;
+    private static final Logger logger = LogManager.getLogger(ProfileController.class);
+
 
     @GetMapping("/profile")
     public String profileForm(HttpSession session, Model model){
@@ -30,6 +37,7 @@ public class ProfileController {
 
         if(profile_error == true){
             model.addAttribute("profile_error", "Invalid password, please try again.");
+            logger.log(Level.WARN, "[User:"+sessionManager.getUserId()+"] failed to validate password");
             profile_error = false;
         }
 
@@ -55,11 +63,13 @@ public class ProfileController {
         String updatedPasswordConfirm = passwordForm.getConfirmPassword();
 
         //Check validity of password
-        try{
+        try
+        {
             validPassword = passwordValidator.validatePassword(updatedPassword, updatedPasswordConfirm, PasswordRuleSet.getRules());
 
-        }catch(Exception e) {
-            System.err.println(e);
+        }
+        catch(Exception e) {
+            logger.log(Level.ERROR, "Failed to validate password at updateProfile(): ", e);
         }
 
         if(validPassword){
