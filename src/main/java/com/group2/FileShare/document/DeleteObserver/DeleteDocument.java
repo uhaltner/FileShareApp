@@ -14,7 +14,7 @@ import java.util.List;
 public class DeleteDocument
 {
     private static DocumentSubject documentSubject;
-    private static final int NUMBER_OF_DAYS = 30;
+    private static final long NUMBER_OF_DAYS = 30;
     private static Timestamp currentTimestamp;
     private static Date trashedDate;
     private static final Logger logger = LogManager.getLogger(DocumentDAO.class);
