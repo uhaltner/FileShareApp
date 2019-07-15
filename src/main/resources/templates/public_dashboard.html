@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:form="http://www.w3.org/1999/xhtml" xmlns:c="http://www.w3.org/1999/XSL/Transform">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="../static/bootstrap.css" th:href="@{/bootstrap.css}" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+
+        <a class="navbar-brand" style="margin-right: auto" href="/dashboard">File Share</a>
+
+        <div class="form-inline mt-2 mt-md-0">
+            <a href="/profile" th:href="@{/profile}"
+               class="btn btn-large btn-primary m-2">Profile <i class="material-icons" style="vertical-align: bottom;">account_circle</i></a>
+        </div>
+
+        &emsp;<a class="navbar-brand" style="font-size: 1rem" href="/signout" th:href="@{/signout}">Sign Out</a>
+    </nav>
+</header>
+
+
+<div class="container" style="margin-top: 7rem">
+
+    <div class="modal fade" id="uploadFileModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form id="fileUploadForm" name="fileUploadForm" method="post" action="/document" enctype="multipart/form-data">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Upload File</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>Please click on button to upload a file</p>
+                        <div class="custom-file">
+                            <input type="file" name="file" class="custom-file-input" id="fileUpload" required>
+                            <label class="custom-file-label" for="fileUpload">Choose file...</label>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-center">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROW 1 -->
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Welcome <span th:text="${firstName}">[First Name]</span></h4>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+    </div>
+
+    <!-- ROW 2 -->
+    <div class="row align-items-center text-left mt-4">
+
+        <!-- Dashboard tabs -->
+        <div class="col-sm-8">
+
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard/private" th:href="@{/dashboard/private}">My Files</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/dashboard/public" th:href="@{/dashboard/public}">Public Files</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard/trash" th:href="@{/dashboard/trash}">Trash Files</a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- ROW 3 -->
+    <div class="row mt-4">
+
+        <!-- Search Form -->
+        <div class="col-12 col-md-8">
+            <form action="/dashboard/search/" method="post" class="form-inline active-cyan-4">
+                <input type = "text" name="searchPhrase" class="form-control form-control-sm mr-3 w-75" placeholder="Search..." aria-label="Search">
+                <button type="submit" name="searchtext" class="btn btn-outline-primary">Search</button>
+            </form>
+        </div>
+
+        <!-- Dropdown Filter -->
+        <div class="col-3 col-md-2">
+
+            <div class="dropdown">
+                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Filter
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/dashboard/sort/name" th:href="@{/dashboard/sort/name}">Name</a>
+                    <a class="dropdown-item" href="/dashboard/sort/size" th:href="@{/dashboard/sort/size}">File Size</a>
+                    <a class="dropdown-item" href="/dashboard/sort/type" th:href="@{/dashboard/sort/type}">File Type</a>
+                    <a class="dropdown-item" href="/dashboard/sort/modified" th:href="@{/dashboard/sort/modified}">Date Modified</a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ROW 4 -->
+    <div class="row mt-4">
+
+        <!-- Table-->
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Description</th>
+                    <th>Size</th>
+                    <th>Timestamp</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="document,i : ${documents}">
+                    <td th:text="${document.getFilename()}">[FileName]</td>
+                    <td th:text="${document.getDescription()}">[Description]</td>
+                    <td th:text="${document.getSizeString()}">[Size]</td>
+                    <td th:text="${document.getCreatedDate()}">[Created]</td>
+                    <td>
+                        <a href="JavaScript:Void(0);" th:href="'/document/' + ${i.index}" class="btn btn-outline-primary">Download</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+
+</div>
+
+<script>
+    $('document').ready(function () {
+        $('#fileUpload').on('change',function(){
+            var fileName = $(this).val();
+            $(this).next('.custom-file-label').html(fileName);
+        });
+    });
+</script>
+</body>
+</html>

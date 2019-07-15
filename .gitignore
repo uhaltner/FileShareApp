@@ -55,3 +55,5 @@ Temporary Items
 .apdisk
 /bin/
 .metadata
+
+/logs/
