@@ -22,7 +22,7 @@ public class ProfileController {
 
 
     @GetMapping("/profile")
-    public String profileForm(HttpSession session, Model model){
+    public String profileForm(Model model){
 
         sessionManager = AuthenticationSessionManager.instance();
 

@@ -48,7 +48,7 @@ public class SignInController {
 
         	if(user != null) {
     			authSessionManager.setSession(user, session);
-				logger.log(Level.INFO, "User: "+authSessionManager.getUserId() +"  login successfully");
+				logger.log(Level.INFO, "User: "+ user.getId() +"  login successfully");
     		    return "redirect:/dashboard";
     		} else {
             	model.addAttribute("login_error", "UserNotFound.signForm");

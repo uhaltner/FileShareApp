@@ -81,15 +81,27 @@ public class AuthenticationSessionManager
     }
 
     public String getEmail() {
-        return (String) getRequestSession().getAttribute(EmailKey);
+        HttpSession session = getRequestSession();
+        if(session != null) {
+            return (String) session.getAttribute(EmailKey);
+        }
+        return "";
     }
 
     public String getFirstName() {
-        return (String) getRequestSession().getAttribute(FirstNameKey);
+        HttpSession session = getRequestSession();
+        if(session != null) {
+            return (String) session.getAttribute(FirstNameKey);
+        }
+        return "";
     }
 
     public String getLastName() {
-        return (String) getRequestSession().getAttribute(LastNameKey);
+        HttpSession session = getRequestSession();
+        if(session != null) {
+            return (String) session.getAttribute(LastNameKey);
+        }
+        return "";
     }
 
     public void destroySession()
@@ -99,7 +111,7 @@ public class AuthenticationSessionManager
             HttpSession session = getRequestSession();
             if (session != null)
             {
-                getRequestSession().invalidate();
+                session.invalidate();
             }
         }
         catch (Exception e) {
@@ -109,7 +121,12 @@ public class AuthenticationSessionManager
     }
 
     public User getUser() {
-        return (User) getRequestSession().getAttribute(UserKey);
+        HttpSession session = getRequestSession();
+        if (session != null)
+        {
+            session.getAttribute(UserKey);
+        }
+        return null;
     }
 
     public void setSession(User user, HttpSession session) {

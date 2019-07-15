@@ -35,7 +35,7 @@ public class DashboardController {
 
 
     @GetMapping("")
-    public String dashBoard(HttpSession session, Model model)
+    public String dashBoard(Model model)
     {
 
         try
