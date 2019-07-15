@@ -2,16 +2,15 @@ package com.group2.FileShare.SignUp;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.ProfileManagement.PasswordRules.PasswordRuleSet;
-import com.group2.FileShare.SignIn.SignInForm;
 import com.group2.FileShare.ProfileManagement.PasswordValidator;
 import com.group2.FileShare.User.User;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
@@ -27,7 +26,7 @@ public class SignUpController {
 //    }
 
     @RequestMapping(value = "/signup", method = POST)
-    public String signUpUser(@ModelAttribute SignUpForm signupForm, HttpSession session, Model model){
+    public String signUpUser(@ModelAttribute SignUpForm signupForm, HttpSession session, RedirectAttributes redirectAttributes){
 
         PasswordValidator passwordValidator = new PasswordValidator();
         SignUpModel signupModel = new SignUpModel();
@@ -39,6 +38,7 @@ public class SignUpController {
         String formEmail = signupForm.getEmail();
         String formRawPassword = signupForm.getPassword();
         String formRawConfirmPassword = signupForm.getConfirmPassword();
+        String emailError = "Email already taken! Please try again with different email address";
 
         if( signupModel.userExist(formEmail) == false ){
 
@@ -55,6 +55,11 @@ public class SignUpController {
                 return "redirect:/dashboard";
             }
 
+        }
+        else
+            {
+            redirectAttributes.addFlashAttribute("EmailError",emailError);
+            return "redirect:/login";
         }
 
         return "redirect:/login";

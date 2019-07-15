@@ -2,6 +2,9 @@ package com.group2.FileShare.SignUp;
 
 import com.group2.FileShare.ProfileManagement.PasswordEncoder;
 import com.group2.FileShare.database.DatabaseConnection;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -10,13 +13,14 @@ import java.sql.SQLException;
 
 public class SignUpModel {
 
-    public boolean userExist(String email){
+    private String query;
+    private ResultSet rs;
+    private static final Logger logger = LogManager.getLogger(SignUpModel.class);
 
-
+    public boolean userExist(String email)
+    {
         //select the stored procedure
-        String query = "{ call user_exists(?) }";
-
-        ResultSet rs;
+        query = "{ call user_exists(?) }";
         boolean userExists = true;
 
         //establish database connection
@@ -37,11 +41,22 @@ public class SignUpModel {
             }
 
             db.closeConnection();
-
             return userExists;
 
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            logger.log(Level.ERROR, "Failed to check if user exist with query:" +query +" of user email: "+ email +" at userExist()" , ex);
+        }
+        finally
+        {
+            try
+            {
+                if ( null != db ) {
+                    db.closeConnection();
+                }
+            }
+            catch (Exception ex) {
+                logger.log(Level.ERROR, "Failed to close database connection at userExist()", ex);
+            }
         }
 
         return true;
@@ -54,9 +69,7 @@ public class SignUpModel {
         String hashedPassword = passwordEncoder.hashPassword(rawPassword);
 
         //select the stored procedure
-        String query = "{ call create_profile(?,?,?,?) }";
-
-        ResultSet rs;
+        query = "{ call create_profile(?,?,?,?) }";
         int userId = 0;
 
         //establish database connection
@@ -78,11 +91,22 @@ public class SignUpModel {
             }
 
             db.closeConnection();
-
             return userId;
 
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            logger.log(Level.ERROR, "Failed to create user profile with query:" +query +" of user email: "+ email +" at createProfile()" , ex);
+        }
+        finally
+        {
+            try
+            {
+                if ( null != db ) {
+                    db.closeConnection();
+                }
+            }
+            catch (Exception ex) {
+                logger.log(Level.ERROR, "Failed to close database connection at createProfile()", ex);
+            }
         }
 
         return 0;

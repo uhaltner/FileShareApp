@@ -4,10 +4,25 @@
     <meta charset="UTF-8"/>
     <title>User Profile</title>
     <link rel="stylesheet" href="../static/bootstrap.css" th:href="@{/bootstrap.css}" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
 
-<div class="container">
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+
+        <a class="navbar-brand" style="margin-right: auto" href="/dashboard">File Share</a>
+
+        <div class="form-inline mt-2 mt-md-0">
+            <a href="/dashboard" class="btn btn-large btn-primary m-2">
+                    <i class="material-icons" style="vertical-align: bottom">arrow_back_ios</i> Dashboard</a>
+        </div>
+
+        &emsp;<a class="navbar-brand" style="font-size: 1rem" href="/signout" th:href="@{/signout}">Sign Out</a>
+    </nav>
+</header>
+
+<div class="container" style="margin-top: 7rem">
 
     <div class="text-center m-5">
         <h1>Profile</h1>
