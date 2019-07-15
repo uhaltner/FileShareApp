@@ -1,12 +1,17 @@
 package com.group2.FileShare.ProfileManagement;
 
 import com.group2.FileShare.database.DatabaseConnection;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class PasswordModel {
+
+    private static final Logger logger = LogManager.getLogger(PasswordModel.class);
 
     public void updatePassword(int userId, String rawNewPassword){
 
@@ -30,8 +35,9 @@ public class PasswordModel {
 
             db.closeConnection();
 
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+        }
+        catch (SQLException ex) {
+            logger.log(Level.ERROR, "Failed to update password for the [user:"+userId+"] at updatePassword(): ", ex);
         }
     }
 
