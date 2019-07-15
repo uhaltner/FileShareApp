@@ -1,87 +1,122 @@
 package com.group2.FileShare.Authentication;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
+import com.group2.FileShare.User.User;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.group2.FileShare.User.User;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
-public class AuthenticationSessionManager {
+public class AuthenticationSessionManager
+{
 
-	private static final String UserIdKey = "UserId";
-	private static final String EmailKey = "Email";
-	private static final String FirstNameKey = "FirstName";
-	private static final String LastNameKey = "LastName";
-	private static final String UserKey = "UserKey";
-	
-	private static AuthenticationSessionManager uniqueInstance = null;
+    private static final String UserIdKey = "UserId";
+    private static final String EmailKey = "Email";
+    private static final String FirstNameKey = "FirstName";
+    private static final String LastNameKey = "LastName";
+    private static final String UserKey = "UserKey";
+    private static final Logger logger = LogManager.getLogger(AuthenticationSessionManager.class);
 
-	public static AuthenticationSessionManager instance()
-	{
-		if (null == uniqueInstance)
-		{
-			uniqueInstance = new AuthenticationSessionManager();
-		}
-		return uniqueInstance;
-	}
-	
-	private HttpSession getRequestSession() {
-	   RequestAttributes requestAttributes = RequestContextHolder
-	            .currentRequestAttributes();
-	    ServletRequestAttributes attributes = (ServletRequestAttributes) requestAttributes;
-	    HttpServletRequest request = attributes.getRequest();
-	    if(request.isRequestedSessionIdValid()) {
-			HttpSession httpSession = request.getSession(false);
-			return httpSession;
-		} else {
-			return null;
-		}
-	}
-	
-	public boolean isUserLoggedIn() {
-		return getUserId() != -1;
-	}
-	
-	public int getUserId() {
-		HttpSession session = getRequestSession();
-		if (session != null) {
-			Object id = session.getAttribute(UserIdKey);
-			return (id != null ? (int)id : -1);
-		}
-		return -1;
-	}
-	
-	public String getEmail() {
-		return (String) getRequestSession().getAttribute(EmailKey);
-	}
-	
-	public String getFirstName() {
-		return (String) getRequestSession().getAttribute(FirstNameKey);
-	}
-	
-	public String getLastName() {
-		return (String) getRequestSession().getAttribute(LastNameKey);
-	}
-	
-	public void destroySession() {
-		HttpSession session = getRequestSession();
-		if (session != null) {
-			getRequestSession().invalidate();;
-		}
-	}
-	
-	public User getUser() {
-		return (User) getRequestSession().getAttribute(UserKey);
-	}
-	
-	public void setSession(User user, HttpSession session) {
-		session.setAttribute(UserIdKey, user.getId());
-		session.setAttribute(EmailKey, user.getEmail());
-		session.setAttribute(FirstNameKey, user.getFirstName());
-		session.setAttribute(LastNameKey, user.getLastName());
-		session.setAttribute(UserKey, user);
-	}
+    private static AuthenticationSessionManager uniqueInstance = null;
+
+    public static AuthenticationSessionManager instance()
+    {
+        if (null == uniqueInstance)
+        {
+            uniqueInstance = new AuthenticationSessionManager();
+        }
+        return uniqueInstance;
+    }
+
+    private HttpSession getRequestSession()
+    {
+        try
+        {
+            RequestAttributes requestAttributes = RequestContextHolder
+                    .currentRequestAttributes();
+            ServletRequestAttributes attributes = (ServletRequestAttributes) requestAttributes;
+            HttpServletRequest request = attributes.getRequest();
+
+            if(request.isRequestedSessionIdValid())
+            {
+                HttpSession httpSession = request.getSession(false);
+                return httpSession;
+            }
+            else {
+                return null;
+            }
+        }
+        catch (Exception e) {
+            logger.log(Level.ERROR, "Failed to get session request at getRequestSession(): ", e);
+        }
+        return null;
+    }
+
+    public boolean isUserLoggedIn() {
+        return getUserId() != -1;
+    }
+
+    public int getUserId()
+    {
+        try
+        {
+            HttpSession session = getRequestSession();
+
+            if (session != null)
+            {
+                Object id = session.getAttribute(UserIdKey);
+                return (id != null ? (int)id : -1);
+            }
+            return -1;
+        }
+        catch (Exception e) {
+            logger.log(Level.ERROR, "Failed to get user ID  from session at getUserId(): ", e);
+        }
+
+        return -1;
+    }
+
+    public String getEmail() {
+        return (String) getRequestSession().getAttribute(EmailKey);
+    }
+
+    public String getFirstName() {
+        return (String) getRequestSession().getAttribute(FirstNameKey);
+    }
+
+    public String getLastName() {
+        return (String) getRequestSession().getAttribute(LastNameKey);
+    }
+
+    public void destroySession()
+    {
+        try
+        {
+            HttpSession session = getRequestSession();
+            if (session != null)
+            {
+                getRequestSession().invalidate();
+            }
+        }
+        catch (Exception e) {
+            logger.log(Level.ERROR, "Failed to destroy session at destroySession(): ", e);
+        }
+
+    }
+
+    public User getUser() {
+        return (User) getRequestSession().getAttribute(UserKey);
+    }
+
+    public void setSession(User user, HttpSession session) {
+        session.setAttribute(UserIdKey, user.getId());
+        session.setAttribute(EmailKey, user.getEmail());
+        session.setAttribute(FirstNameKey, user.getFirstName());
+        session.setAttribute(LastNameKey, user.getLastName());
+        session.setAttribute(UserKey, user);
+    }
 }

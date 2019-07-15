@@ -1,7 +1,6 @@
 package com.group2.FileShare.document.DeleteObserver;
 
 import com.group2.FileShare.document.Document;
-import com.group2.FileShare.document.DocumentDAO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +12,7 @@ public class DocumentSubject
 {
 
     private List<Observer> observers = new ArrayList<Observer>();
-    private static final Logger logger = LogManager.getLogger(DocumentDAO.class);
+    private static final Logger logger = LogManager.getLogger(DocumentSubject.class);
 
     public void attach(Observer observer)
     {
