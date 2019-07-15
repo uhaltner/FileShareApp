@@ -40,7 +40,7 @@ public class DeleteDocument
                     trashedDate = documentList.get(i).getTrashedDate();
                     long timeDifference = currentTimestamp.getTime() - trashedDate.getTime();
 
-                    if(timeDifference > NUMBER_OF_DAYS)
+                    if(timeDifference > NUMBER_OF_DAYS*24*60*60*1000)
                     {
                         documentSubject.notifyObservers(documentList.get(i));
                     }
