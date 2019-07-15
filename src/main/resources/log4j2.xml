@@ -56,6 +56,10 @@
             <AppenderRef ref="FileAppender" />
         </Logger>
 
+        <Logger name="com.group2.FileShare.ProfileManagement" level="all" additivity="false">
+            <AppenderRef ref="FileAppender" />
+        </Logger>
+
         <Root level="info">
             <AppenderRef ref="ConsoleAppender" />
             <AppenderRef ref="SQLAppender" />

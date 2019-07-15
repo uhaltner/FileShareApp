@@ -32,7 +32,7 @@ public class PasswordModel {
             stmt.setString(2, hashedPassword);
 
             stmt.executeQuery();
-
+            logger.log(Level.INFO, "[user:"+userId+"] successfully updated the password");
             db.closeConnection();
 
         }
