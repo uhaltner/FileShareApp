@@ -143,6 +143,48 @@
 
     </div>
 
+    <div class="row mt-4">
+
+        <!-- Table-->
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Size</th>
+                    <th>Time Stamp</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="document,i : ${documents}">
+                    <div th:if="${document.isPinned()}">
+                        <td th:text="${document.getFilename()}">FileName</td>
+                        <td th:text="${document.getSizeString()}">Size</td>
+                        <td th:text="${document.getCreatedDate()}">TimeStamp</td>
+                        <td>
+                            <a href="JavaScript:Void(0);" th:href="'/document/' + ${i.index}" class="btn btn-outline-primary">Download</a>
+                        </td>
+                        <td>
+                            <a href="JavaScript:Void(0);" th:data-file-description="${document.getDescription()}"
+                               th:data-is-public="${document.isPublic()}" th:data-document-index="${i.index}"
+                               onclick="initShareModal(this)" class="btn btn-outline-primary"
+                               data-toggle="modal" data-target="#shareFileModal">Sharing</a>
+                        </td>
+                        <td>
+                            <a href="JavaScript:Void(0);" th:href="'/document/trash/' + ${i.index}" class="btn btn-outline-danger">Trash</a>
+                        </td>
+                        <td>
+                            <a href="JavaScript:Void(0);" th:href="'/document/unpin/' + ${i.index}" class="btn btn-outline-primary">Unpin</a>
+                        </td>
+                    </div>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
     <!-- ROW 3 -->
     <div class="row mt-4">
 
@@ -192,22 +234,26 @@
             </thead>
             <tbody>
                 <tr th:each="document,i : ${documents}">
-                    <td th:text="${document.getFilename()}">FileName</td>
-                    <td th:text="${document.getSizeString()}">Size</td>
-                    <td th:text="${document.getCreatedDate()}">TimeStamp</td>
-                    <td>
-                        <a href="JavaScript:Void(0);" th:href="'/document/' + ${i.index}" class="btn btn-outline-primary">Download</a>
-                    </td>
-                    <td>
-                        <a href="JavaScript:Void(0);" th:data-file-description="${document.getDescription()}" th:data-is-public="${document.isPublic()}" th:data-document-index="${i.index}" onclick="initShareModal(this)" class="btn btn-outline-primary" data-toggle="modal" data-target="#shareFileModal">Sharing...</a>
-                    </td>
-                    <td>
-                        <a href="JavaScript:Void(0);" th:href="'/document/trash/' + ${i.index}"class="btn btn-outline-danger">Trash</a>
-                    </td>
-                    <td>
-                        <a href="JavaScript:Void(0);" class="btn btn-outline-primary">Pin</a>
-                    </td>
-
+                    <div th:if="${!document.isPinned()}">
+                        <td th:text="${document.getFilename()}">FileName</td>
+                        <td th:text="${document.getSizeString()}">Size</td>
+                        <td th:text="${document.getCreatedDate()}">TimeStamp</td>
+                        <td>
+                            <a href="JavaScript:Void(0);" th:href="'/document/' + ${i.index}" class="btn btn-outline-primary">Download</a>
+                        </td>
+                        <td>
+                            <a href="JavaScript:Void(0);" th:data-file-description="${document.getDescription()}"
+                               th:data-is-public="${document.isPublic()}" th:data-document-index="${i.index}"
+                               onclick="initShareModal(this)" class="btn btn-outline-primary"
+                               data-toggle="modal" data-target="#shareFileModal">Sharing</a>
+                        </td>
+                        <td>
+                            <a href="JavaScript:Void(0);" th:href="'/document/trash/' + ${i.index}" class="btn btn-outline-danger">Trash</a>
+                        </td>
+                        <td>
+                            <a href="JavaScript:Void(0);" th:href="'/document/pin/' + ${i.index}" class="btn btn-outline-primary">Pin</a>
+                        </td>
+                    </div>
                 </tr>
             </tbody>
         </table>
