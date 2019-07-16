@@ -11,17 +11,18 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class SignUpModel {
+public class SignUpDAO implements ISignUpDAO{
 
     private String query;
     private ResultSet rs;
-    private static final Logger logger = LogManager.getLogger(SignUpModel.class);
+    private static final Logger logger = LogManager.getLogger(SignUpDAO.class);
 
+    @Override
     public boolean userExist(String email)
     {
         //select the stored procedure
         query = "{ call user_exists(?) }";
-        boolean userExists = true;
+        boolean userExists = false;
 
         //establish database connection
         DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
@@ -59,10 +60,12 @@ public class SignUpModel {
             }
         }
 
-        return true;
+        return userExists;
     }
 
-    public int createProfile(String firstName, String lastName, String email, String rawPassword){
+    @Override
+    public int createProfile(String firstName, String lastName, String email, String rawPassword)
+    {
 
         //hash encode the password
         PasswordEncoder passwordEncoder = new PasswordEncoder();
@@ -111,6 +114,5 @@ public class SignUpModel {
 
         return 0;
     }
-
 
 }
