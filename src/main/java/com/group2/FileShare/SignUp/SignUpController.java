@@ -16,20 +16,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @Controller
 public class SignUpController {
 
-//    @RequestMapping(value = "/signup", method = GET)
-//    public String profileForm(HttpSession session, Model model){
-//
-//        model.addAttribute("signInForm", new SignInForm());
-//        model.addAttribute("signupForm", new SignUpForm());
-//
-//        return "landing";
-//    }
-
     @RequestMapping(value = "/signup", method = POST)
     public String signUpUser(@ModelAttribute SignUpForm signupForm, HttpSession session, RedirectAttributes redirectAttributes){
 
         PasswordValidator passwordValidator = new PasswordValidator();
-        SignUpModel signupModel = new SignUpModel();
+        SignUpDAO signupModel = new SignUpDAO();
 
         boolean validPassword = false;
 

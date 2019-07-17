@@ -9,12 +9,13 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class PasswordModel {
+public class PasswordModel implements IPasswordDAO {
 
     private static final Logger logger = LogManager.getLogger(PasswordModel.class);
 
-    public void updatePassword(int userId, String rawNewPassword){
-
+    @Override
+    public void updatePassword(int userId, String rawNewPassword)
+    {
         //hash encode the password
         PasswordEncoder passwordEncoder = new PasswordEncoder();
         String hashedPassword = passwordEncoder.hashPassword(rawNewPassword);
@@ -41,6 +42,32 @@ public class PasswordModel {
         }
     }
 
+    public void updateRecoveryPassword(String userEmail, String rawNewPassword)
+    {
+        //hash encode the password
+        PasswordEncoder passwordEncoder = new PasswordEncoder();
+        String hashedPassword = passwordEncoder.hashPassword(rawNewPassword);
 
+        //select the stored procedure
+        String query = "{ call update_recovery_password(?,?) }";
+
+        //establish database connection
+        DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
+
+        try (Connection conn = db.getConnection();
+             CallableStatement stmt = conn.prepareCall(query)) {
+
+            stmt.setString(1, userEmail);
+            stmt.setString(2, hashedPassword);
+
+            stmt.executeQuery();
+
+            db.closeConnection();
+
+        }
+        catch (SQLException ex) {
+            logger.log(Level.ERROR, "Failed to update password for the [email:"+userEmail+"] at updateRecoveryPassword(): ", ex);
+        }
+    }
 
 }

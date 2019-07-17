@@ -191,7 +191,7 @@
     <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form id="forgotPwForm" name="forgotPwForm" method="post">
+                <form id="forgotPwForm" name="forgotPwForm" action="#" th:action="@{/forgotpassword}" method="GET">
 
                     <div class="modal-header">
                         <h5 class="modal-title">Forgot Password?</h5>
@@ -202,7 +202,7 @@
 
                     <div class="modal-body">
                         <p>Please enter your email address to reset your password</p>
-                        <input type="email" style="margin-bottom: 1rem" id="forgotEmail" class="form-control noSpace" placeholder="Email address" required>
+                        <input name="emailInput" type="email" style="margin-bottom: 1rem" id="forgotEmail" class="form-control noSpace" placeholder="Email address" required>
                     </div>
 
                     <div class="modal-footer">

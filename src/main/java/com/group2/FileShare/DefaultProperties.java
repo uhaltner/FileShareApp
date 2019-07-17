@@ -47,4 +47,41 @@ public class DefaultProperties {
 		return Long.parseLong(defaultProperties.getProperty("S3_LINK_VALIDITY_MILLIS"));
 	}
 
+	public String getMailHost(){
+		return defaultProperties.getProperty("mail_host");
+	}
+
+	public int getMailPort(){
+		return Integer.parseInt(defaultProperties.getProperty("mail_port"));
+	}
+
+	public String getMailUsername(){
+		return defaultProperties.getProperty("mail_username");
+	}
+
+	public String getMailPassword(){
+		return defaultProperties.getProperty("mail_password");
+	}
+
+	public String getMailSmtpSSLTrust(){
+		return defaultProperties.getProperty("mail_properties_mail_smtp_ssl_trust");
+	}
+
+	public String getMailSmtpAuth(){
+		return defaultProperties.getProperty("mail_properties_mail_smtp_auth");
+	}
+
+	public String getMailSmtpStartTlsEnable(){
+		return defaultProperties.getProperty("mail_properties_mail_smtp_starttls_enable");
+	}
+
+	public String getMailTransportProtocol(){
+		return defaultProperties.getProperty("mail_transport_protocol");
+	}
+
+	public String getMailDebug(){
+		return defaultProperties.getProperty("mail_debug");
+	}
+
+
 }
