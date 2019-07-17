@@ -66,7 +66,7 @@ public class PasswordDAO implements IPasswordDAO {
 
         }
         catch (SQLException ex) {
-            logger.log(Level.ERROR, "Failed to update password for the [user:"+userEmail+"] at updateRecoveryPassword(): ", ex);
+            logger.log(Level.ERROR, "Failed to update password for the [email:"+userEmail+"] at updateRecoveryPassword(): ", ex);
         }
     }
 
