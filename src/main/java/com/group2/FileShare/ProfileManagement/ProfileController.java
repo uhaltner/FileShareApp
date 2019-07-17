@@ -45,7 +45,7 @@ public class ProfileController {
     public String updateProfile(@ModelAttribute PasswordForm passwordForm){
 
         PasswordValidator passwordValidator = new PasswordValidator();
-        PasswordDAO passwordModel = new PasswordDAO();
+        PasswordModel passwordModel = new PasswordModel();
 
         boolean validPassword = false;
 

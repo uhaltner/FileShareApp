@@ -9,9 +9,9 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class PasswordDAO implements IPasswordDAO {
+public class PasswordModel implements IPasswordDAO {
 
-    private static final Logger logger = LogManager.getLogger(PasswordDAO.class);
+    private static final Logger logger = LogManager.getLogger(PasswordModel.class);
 
     @Override
     public void updatePassword(int userId, String rawNewPassword)
