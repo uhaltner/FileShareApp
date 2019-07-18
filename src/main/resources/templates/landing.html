@@ -93,24 +93,39 @@
 
 <body>
 
-<div class="container" style="margin-top: 5rem">
+<div class="container" style="margin-top: 3rem">
 
     <div id="messageAlerts" style="position:relative;">
 
-        <div class="alert alert-warning text-center" role="alert" th:if="${EmailError}">
+        <div class="row">
+            <div class="col-md-6 offset-3">
+                <div class="alert alert-warning text-center" role="alert" th:if="${EmailError}">
 
-            <span th:text="${EmailError}"></span>
+                    <span th:text="${EmailError}"></span>
 
-            <script>
-                $(document).ready(function()
-                {
-                    $("#signup-form").show();
-                    $("#signin-form").hide();
+                    <script>
+                        $(document).ready(function()
+                        {
+                            $("#signup-form").show();
+                            $("#signin-form").hide();
 
-                });
-            </script>
+                        });
+                    </script>
+                </div>
+            </div>
         </div>
+
+        <div class="row">
+            <div class="col-md-6 offset-3">
+                <div class="alert alert-warning text-center" role="alert" th:if="${PasswordResetNotification}">
+                    <span th:text="${PasswordResetNotification}"></span>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+
 
     <div class="card form-signin shadow-sm">
 

@@ -9,8 +9,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,7 +20,7 @@ public class PasswordRecoveryController {
     private static final Logger logger = LogManager.getLogger(PasswordRecoveryController.class);
 
     @GetMapping("/forgotpassword")
-    public String passwordRecovery(HttpServletRequest request, Model model) {
+    public String passwordRecovery(HttpServletRequest request, RedirectAttributes redirectAttributes) {
 
         String email = request.getParameter("emailInput");
         String rawNewPassword = "";
@@ -39,38 +39,37 @@ public class PasswordRecoveryController {
                //update new password in database
                passwordDAO.updateRecoveryPassword(email, rawNewPassword);
 
-           }catch (Exception e) {
+           }
+           catch (Exception e)
+           {
                logger.log(Level.ERROR, "Email: "+ email +" Problem updating recovery password in database.",e);
-
-               //todo: notify UI there is a problem with email recovery, try again later.
-               //model.addAttribute("PasswordResetNotification","Your password can not be reset at this time, please try again later");
+               redirectAttributes.addFlashAttribute("PasswordResetNotification","Your password can not be reset at this time, please try again later");
 
                return "redirect:/login";
            }
 
-           try{
+           try {
                 //send email;
                 new MailService().sendEmail(recoveryMail);
 
-           }catch (Exception e){
+           }
+           catch (Exception e)
+           {
                logger.log(Level.ERROR, "Email: "+ email +" Problem sending password recovery email.", e);
-
-               //todo: notify UI there is a problem with email recovery, try again later.
-               //model.addAttribute("PasswordResetNotification","Your password can not be reset at this time, please try again later");
+               redirectAttributes.addFlashAttribute("PasswordResetNotification","Your password can not be reset at this time, please try again later");
 
                return "redirect:/login";
            }
-           logger.log(Level.INFO, "Email: "+ email +" has reset their password.");
 
-           //todo: notify UI that password has been successfully reset, please check your email
-           //model.addAttribute("PasswordResetNotification","Your password has been reset, please check your email");
+           logger.log(Level.INFO, "Email: "+ email +" has successfully reset their password.");
+           redirectAttributes.addFlashAttribute("PasswordResetNotification","Your password has been reset, please check your email");
 
+       }
+       else
+           {
 
-       }else{
            logger.log(Level.WARN, "Email: "+ email +" does not exist, failed password recovery attempt");
-
-           //todo: notify UI that user does not exist
-           //model.addAttribute("PasswordResetNotification","This email does not exist, please try again");
+           redirectAttributes.addFlashAttribute("PasswordResetNotification","This email does not exist, please try again");
        }
 
         return "redirect:/login";

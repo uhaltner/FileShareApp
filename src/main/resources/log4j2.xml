@@ -57,7 +57,7 @@
         </Logger>
 
         <Logger name="com.group2.FileShare.ProfileManagement" level="all" additivity="false">
-            <AppenderRef ref="FileAppender" />
+            <AppenderRef ref="SQLAppender" />
         </Logger>
 
         <Root level="info">
