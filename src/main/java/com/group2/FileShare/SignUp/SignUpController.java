@@ -1,6 +1,7 @@
 package com.group2.FileShare.SignUp;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
+import com.group2.FileShare.ProfileManagement.PasswordRules.IPasswordRuleSet;
 import com.group2.FileShare.ProfileManagement.PasswordRules.PasswordRuleSet;
 import com.group2.FileShare.ProfileManagement.PasswordValidator;
 import com.group2.FileShare.User.User;
@@ -20,7 +21,9 @@ public class SignUpController {
     public String signUpUser(@ModelAttribute SignUpForm signupForm, HttpSession session, RedirectAttributes redirectAttributes){
 
         PasswordValidator passwordValidator = new PasswordValidator();
+        IPasswordRuleSet passwordRuleSet = new PasswordRuleSet();
         SignUpDAO signupModel = new SignUpDAO();
+
 
         boolean validPassword = false;
 
@@ -33,7 +36,7 @@ public class SignUpController {
 
         if( signupModel.userExist(formEmail) == false ){
 
-            validPassword = passwordValidator.validatePassword( formRawPassword, formRawConfirmPassword, PasswordRuleSet.getRules() );
+            validPassword = passwordValidator.validatePassword( formRawPassword, formRawConfirmPassword, passwordRuleSet.getRules() );
 
             if(validPassword) {
 

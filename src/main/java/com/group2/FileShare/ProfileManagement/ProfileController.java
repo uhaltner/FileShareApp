@@ -1,6 +1,7 @@
 package com.group2.FileShare.ProfileManagement;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
+import com.group2.FileShare.ProfileManagement.PasswordRules.IPasswordRuleSet;
 import com.group2.FileShare.ProfileManagement.PasswordRules.PasswordRuleSet;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -54,6 +55,7 @@ public class ProfileController {
 
         PasswordValidator passwordValidator = new PasswordValidator();
         PasswordModel passwordModel = new PasswordModel();
+        IPasswordRuleSet passwordRuleSet = new PasswordRuleSet();
 
         boolean validPassword = false;
 
@@ -65,7 +67,7 @@ public class ProfileController {
         //Check validity of password
         try
         {
-            validPassword = passwordValidator.validatePassword(updatedPassword, updatedPasswordConfirm, PasswordRuleSet.getRules());
+            validPassword = passwordValidator.validatePassword(updatedPassword, updatedPasswordConfirm, passwordRuleSet.getRules());
 
         }
         catch(Exception e) {
