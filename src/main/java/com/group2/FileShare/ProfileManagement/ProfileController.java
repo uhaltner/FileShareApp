@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import javax.servlet.http.HttpSession;
-
 @Controller
 public class ProfileController {
 
@@ -54,7 +52,7 @@ public class ProfileController {
     public String updateProfile(@ModelAttribute PasswordForm passwordForm){
 
         PasswordValidator passwordValidator = new PasswordValidator();
-        PasswordModel passwordModel = new PasswordModel();
+        PasswordDAO passwordDAO = new PasswordDAO();
         IPasswordRuleSet passwordRuleSet = new PasswordRuleSet();
 
         boolean validPassword = false;
@@ -76,7 +74,7 @@ public class ProfileController {
 
         if(validPassword){
 
-            passwordModel.updatePassword(userId, updatedPassword);
+            passwordDAO.updatePassword(userId, updatedPassword);
 
             return "redirect:/dashboard";
 
