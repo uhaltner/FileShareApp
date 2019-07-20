@@ -33,7 +33,7 @@ public class PasswordRecoveryController {
 
            //generate new password
            rawNewPassword = passwordGenerator.generate();
-           IMail recoveryMail = new PasswordRecoveryMailMessage(email,rawNewPassword);
+           IMail recoveryMail = new PasswordRecoveryMail(email,rawNewPassword);
 
            try {
                //update new password in database
