@@ -32,14 +32,12 @@ public class PasswordRuleDAO implements IPasswordRuleDAO{
                 rulePassed = rs.getBoolean(1);
             }
 
-            db.closeConnection();
-
-            return rulePassed;
-
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+        }finally {
+            db.closeConnection();
         }
 
-        return false;
+        return rulePassed;
     }
 }
