@@ -25,13 +25,9 @@ public class ProfileController {
 
         sessionManager = AuthenticationSessionManager.instance();
 
-        String firstName = sessionManager.getFirstName();
-        String lastName = sessionManager.getLastName();
-        String email = sessionManager.getEmail();
-
-        model.addAttribute("userFirstName", firstName);
-        model.addAttribute("userLastName", lastName);
-        model.addAttribute("userEmail", email);
+        model.addAttribute("userFirstName", sessionManager.getFirstName());
+        model.addAttribute("userLastName", sessionManager.getLastName());
+        model.addAttribute("userEmail", sessionManager.getEmail());
         model.addAttribute("passwordForm", new PasswordForm());
 
         if(profile_error == true){
@@ -51,40 +47,28 @@ public class ProfileController {
     @PostMapping(value="/profile", params = "action=update")
     public String updateProfile(@ModelAttribute PasswordForm passwordForm){
 
-        PasswordValidator passwordValidator = new PasswordValidator();
-        PasswordDAO passwordDAO = new PasswordDAO();
+        IPasswordValidator passwordValidator = new PasswordValidator();
+        IPasswordDAO passwordDAO = new PasswordDAO();
         IPasswordRuleSet passwordRuleSet = new PasswordRuleSet();
-
-        boolean validPassword = false;
 
         int userId = sessionManager.getUserId();
 
         String updatedPassword = passwordForm.getPassword();
         String updatedPasswordConfirm = passwordForm.getConfirmPassword();
 
-        //Check validity of password
-        try
-        {
-            validPassword = passwordValidator.validatePassword(updatedPassword, updatedPasswordConfirm, passwordRuleSet.getRules());
+        boolean validPassword = false;
 
-        }
-        catch(Exception e) {
-            logger.log(Level.ERROR, "Failed to validate password at updateProfile(): ", e);
-        }
+        //Check validity of password
+        validPassword = passwordValidator.validatePassword(updatedPassword, updatedPasswordConfirm, passwordRuleSet.getRules());
 
         if(validPassword){
-
             passwordDAO.updatePassword(userId, updatedPassword);
-
             return "redirect:/dashboard";
 
         }else{
-
             profile_error = true;
             return "redirect:/profile";
         }
-
     }
-
-
+    
 }

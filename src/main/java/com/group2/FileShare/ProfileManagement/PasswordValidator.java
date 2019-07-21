@@ -7,19 +7,30 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 
-public class PasswordValidator {
+public class PasswordValidator implements IPasswordValidator {
 
     private static final Logger logger = LogManager.getLogger(PasswordValidator.class);
 
     public boolean validatePassword(String password, String passwordConfirm, ArrayList<IPasswordRule> passwordRuleList){
 
-        if( !isEmpty(password, passwordConfirm) &&
-                password.equals(passwordConfirm) &&
-                verifyRules(password, passwordRuleList) ){
-            return true;
-        }else{
-            return false;
+        boolean validationResult = false;
+
+        try{
+
+            if( !isEmpty(password, passwordConfirm) &&
+                    password.equals(passwordConfirm) &&
+                    verifyRules(password, passwordRuleList) )
+            {
+                validationResult = true;
+            }else{
+                validationResult = false;
+            }
+
+        }catch (Exception e){
+            logger.log(Level.ERROR, "Failed to validate password at validatePassword(): ", e);
         }
+
+        return validationResult;
 
     }
 
@@ -48,7 +59,6 @@ public class PasswordValidator {
 
         return true;
     }
-
 
 
 }
