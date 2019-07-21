@@ -20,44 +20,27 @@ public class SignUpDAO implements ISignUpDAO{
     @Override
     public boolean userExist(String email)
     {
-        //select the stored procedure
+
         query = "{ call user_exists(?) }";
         boolean userExists = false;
 
-        //establish database connection
         DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
 
         try (Connection conn = db.getConnection();
              CallableStatement stmt = conn.prepareCall(query)) {
 
-            //add email to query
             stmt.setString(1, email);
 
-            //get the results
             rs = stmt.executeQuery();
 
-            //parse results
             if(rs.next()) {
                  userExists = rs.getBoolean(1);
             }
 
-            db.closeConnection();
-            return userExists;
-
         } catch (SQLException ex) {
             logger.log(Level.ERROR, "Failed to check if user exist with query:" +query +" of user email: "+ email +" at userExist()" , ex);
-        }
-        finally
-        {
-            try
-            {
-                if ( null != db ) {
-                    db.closeConnection();
-                }
-            }
-            catch (Exception ex) {
-                logger.log(Level.ERROR, "Failed to close database connection at userExist()", ex);
-            }
+        } finally {
+            db.closeConnection();
         }
 
         return userExists;
@@ -73,7 +56,7 @@ public class SignUpDAO implements ISignUpDAO{
 
         //select the stored procedure
         query = "{ call create_profile(?,?,?,?) }";
-        int userId = 0;
+        int userId = -1;
 
         //establish database connection
         DatabaseConnection db = DatabaseConnection.getdbConnectionInstance();
@@ -88,31 +71,17 @@ public class SignUpDAO implements ISignUpDAO{
 
             rs = stmt.executeQuery();
 
-            //parse results
             if(rs.next()) {
                 userId = rs.getInt(1);
             }
 
-            db.closeConnection();
-            return userId;
-
         } catch (SQLException ex) {
             logger.log(Level.ERROR, "Failed to create user profile with query:" +query +" of user email: "+ email +" at createProfile()" , ex);
-        }
-        finally
-        {
-            try
-            {
-                if ( null != db ) {
-                    db.closeConnection();
-                }
-            }
-            catch (Exception ex) {
-                logger.log(Level.ERROR, "Failed to close database connection at createProfile()", ex);
-            }
+        } finally {
+            db.closeConnection();
         }
 
-        return 0;
+        return userId;
     }
 
 }

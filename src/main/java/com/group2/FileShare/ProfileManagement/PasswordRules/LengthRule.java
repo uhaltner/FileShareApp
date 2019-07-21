@@ -1,17 +1,15 @@
 package com.group2.FileShare.ProfileManagement.PasswordRules;
 
-public class LengthRule implements IPasswordRule {
+public class LengthRule extends PasswordRuleAbstract {
 
     public LengthRule(){
-
+        super();
     }
-
 
     @Override
     public boolean isValid(String password) {
 
         String query = "{ call password_length_rule(?) }";
-
-        return PasswordRuleModel.checkRule(query, password);
+        return passwordRuleDAO.checkRule(query, password);
     }
 }

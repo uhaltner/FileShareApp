@@ -1,9 +1,14 @@
 package com.group2.FileShare.SignUp;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
+import com.group2.FileShare.ProfileManagement.IPasswordValidator;
+import com.group2.FileShare.ProfileManagement.PasswordRules.IPasswordRuleSet;
 import com.group2.FileShare.ProfileManagement.PasswordRules.PasswordRuleSet;
 import com.group2.FileShare.ProfileManagement.PasswordValidator;
 import com.group2.FileShare.User.User;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,47 +21,82 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @Controller
 public class SignUpController {
 
+    private static final Logger logger = LogManager.getLogger(SignUpController.class);
+
     @RequestMapping(value = "/signup", method = POST)
     public String signUpUser(@ModelAttribute SignUpForm signupForm, HttpSession session, RedirectAttributes redirectAttributes){
 
-        PasswordValidator passwordValidator = new PasswordValidator();
-        SignUpDAO signupModel = new SignUpDAO();
+        IPasswordValidator passwordValidator = new PasswordValidator();
+        IPasswordRuleSet passwordRuleSet = new PasswordRuleSet();
+        ISignUpDAO signUpDAO = new SignUpDAO();
 
         boolean validPassword = false;
+        String returnTemplate = "redirect:/login";
 
-        String formFirstName = signupForm.getFirstName();
-        String formLastName = signupForm.getLastName();
-        String formEmail = signupForm.getEmail();
-        String formRawPassword = signupForm.getPassword();
-        String formRawConfirmPassword = signupForm.getConfirmPassword();
-        String emailError = "Email already taken! Please try again with different email address";
+        try{
 
-        if( signupModel.userExist(formEmail) == false ){
+            if(userExists(signupForm,signUpDAO) == false){
 
-            validPassword = passwordValidator.validatePassword( formRawPassword, formRawConfirmPassword, PasswordRuleSet.getRules() );
+                validPassword = validatePassword(passwordValidator, signupForm, passwordRuleSet);
 
-            if(validPassword) {
+                if(validPassword)
+                {
+                    int userId = createUser(signUpDAO, signupForm);
 
-                int userId = signupModel.createProfile(formFirstName, formLastName, formEmail, formRawPassword);
+                    if(userId != -1){
+                        setSessionUser(userId, session, signupForm);
+                        logger.log(Level.INFO, "New user created in signUpUser() with userId: " + userId);
+                        returnTemplate = "redirect:/dashboard";
 
-                User user = new User(userId, formEmail, formFirstName, formLastName);
+                    }else{
+                        logger.log(Level.WARN, "New user could not be created in signUpUser() ");
+                    }
 
-                AuthenticationSessionManager.instance().setSession(user, session);
+                }else{
+                    redirectAttributes.addFlashAttribute("EmailError","Entered password is not valid, please try again.");
+                }
 
-                return "redirect:/dashboard";
+            }else{
+                redirectAttributes.addFlashAttribute("EmailError","Email already taken! Please try again with different email address.");
             }
 
-        }
-        else
-            {
-            redirectAttributes.addFlashAttribute("EmailError",emailError);
-            return "redirect:/login";
+        }catch (Exception e){
+            logger.log(Level.ERROR, "Issue creating new user in signUpUser()",e);
+            redirectAttributes.addFlashAttribute("EmailError","We are having troubles creating your account, please try again later.");
         }
 
-        return "redirect:/login";
+        return returnTemplate;
     }
 
 
+    private void setSessionUser(int userId, HttpSession session, SignUpForm signUpForm){
 
+        User user = new User(userId, signUpForm.getEmail(), signUpForm.getFirstName(), signUpForm.getLastName());
+        AuthenticationSessionManager.instance().setSession(user, session);
+
+        return;
+    }
+
+    private boolean userExists(SignUpForm signUpForm, ISignUpDAO signUpDAO){
+        return signUpDAO.userExist(signUpForm.getEmail());
+    }
+
+    private boolean validatePassword(IPasswordValidator passwordValidator, SignUpForm signUpForm, IPasswordRuleSet passwordRuleSet){
+
+        String formRawPassword = signUpForm.getPassword();
+        String formRawConfirmPassword = signUpForm.getConfirmPassword();
+
+        return passwordValidator.validatePassword( formRawPassword, formRawConfirmPassword, passwordRuleSet.getRules() );
+    }
+
+    private int createUser(ISignUpDAO signUpDAO, SignUpForm signUpForm){
+
+        String formFirstName = signUpForm.getFirstName();
+        String formLastName = signUpForm.getLastName();
+        String formEmail = signUpForm.getEmail();
+        String formRawPassword = signUpForm.getPassword();
+
+        return signUpDAO.createProfile(formFirstName, formLastName, formEmail, formRawPassword);
+    }
 
 }

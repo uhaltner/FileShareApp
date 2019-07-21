@@ -2,7 +2,7 @@ package com.group2.FileShare.ProfileManagement.PasswordRecovery;
 
 import com.group2.FileShare.MailService;
 import com.group2.FileShare.ProfileManagement.IPasswordDAO;
-import com.group2.FileShare.ProfileManagement.PasswordModel;
+import com.group2.FileShare.ProfileManagement.PasswordDAO;
 import com.group2.FileShare.SignUp.ISignUpDAO;
 import com.group2.FileShare.SignUp.SignUpDAO;
 import org.apache.logging.log4j.Level;
@@ -26,14 +26,14 @@ public class PasswordRecoveryController {
         String rawNewPassword = "";
 
         ISignUpDAO signUpDAO = new SignUpDAO();
-        IPasswordDAO passwordDAO = new PasswordModel();
+        IPasswordDAO passwordDAO = new PasswordDAO();
         IPasswordGenerator passwordGenerator = new PasswordGenerator();
 
        if(signUpDAO.userExist(email)){
 
            //generate new password
            rawNewPassword = passwordGenerator.generate();
-           IMail recoveryMail = new PasswordRecoveryMailMessage(email,rawNewPassword);
+           IMail recoveryMail = new PasswordRecoveryMail(email,rawNewPassword);
 
            try {
                //update new password in database
