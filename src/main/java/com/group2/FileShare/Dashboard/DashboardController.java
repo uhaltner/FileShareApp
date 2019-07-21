@@ -9,6 +9,9 @@ import com.group2.FileShare.Dashboard.SortStrategy.*;
 import com.group2.FileShare.document.DeleteObserver.DeleteDocument;
 import com.group2.FileShare.document.Document;
 import com.group2.FileShare.document.DocumentController;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,57 +28,37 @@ import java.util.List;
 public class DashboardController {
 
     private AuthenticationSessionManager sessionManager;
-    private DocumentSorter documentSorter;
+    private DocumentSorter documentSorter = new DocumentSorter(new CreatedSortStrategy());
+    private Dashboard currentDashboard = new Dashboard(new PrivateDashboard());
+    private SearchBarHandler searchBarHandler = new SearchBarHandler();
 
-    private Dashboard currentDashboard;
-
-    private boolean searchRequired = false;
-    private String searchPhrase = "";
-  
-
+    private static final Logger logger = LogManager.getLogger(DashboardController.class);
 
     @GetMapping("")
     public String dashBoard(Model model)
     {
+        List<Document> documentList = new ArrayList<>();
 
-        try
-        {
-            sessionManager = AuthenticationSessionManager.instance();
+        sessionManager = AuthenticationSessionManager.instance();
+        int userId = sessionManager.getUserId();
 
-            int userId = sessionManager.getUserId();
-
-            //by default the list is sorted by creation datetime
-            if(documentSorter == null) {
-                documentSorter = new DocumentSorter(new CreatedSortStrategy());
-            }
-
-            if(currentDashboard == null){
-                currentDashboard = new Dashboard(new PrivateDashboard());
-            }
-
-            //crate and generate the document list
-            List<Document> documentList = new ArrayList<>();
+        try {
             documentList = DocumentController.getDocumentCollection(documentSorter, userId, currentDashboard);
 
-            //if the search bar was used, find all documents with the matching search phrase
-            if(searchRequired){
-                documentList = DocumentController.findAll(searchPhrase);
-                searchRequired = false;
+            if(searchBarHandler.isSearchRequired()){
+                documentList = DocumentController.findAll(searchBarHandler.getSearchPhrase());
+                searchBarHandler.reset();
             }
-            
-            model.addAttribute("documents", documentList);
-            model.addAttribute("firstName", sessionManager.getFirstName() );
-            model.addAttribute("lastName", sessionManager.getLastName() );
 
-            return currentDashboard.getTemplate();
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+        }catch(Exception e) {
+            logger.log(Level.ERROR, "Error occurred in Dashboard controller for user: " + userId , e);
         }
 
-        return "redirect: /signin";
+        model.addAttribute("documents", documentList);
+        model.addAttribute("firstName", sessionManager.getFirstName() );
+        model.addAttribute("lastName", sessionManager.getLastName() );
+
+        return currentDashboard.getTemplate();
     }
 
     @GetMapping("/sort/name")
@@ -109,8 +92,8 @@ public class DashboardController {
     @PostMapping("/search")
     public String searchPhrase(HttpServletRequest request) {
 
-        this.searchRequired = true;
-        this.searchPhrase = request.getParameter("searchPhrase");
+        searchBarHandler.setSearchRequired(true);
+        searchBarHandler.setSearchPhrase(request.getParameter("searchPhrase"));
 
         return "redirect: /dashboard";
     }

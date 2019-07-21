@@ -45,19 +45,33 @@ public class PasswordValidator implements IPasswordValidator {
 
     public boolean verifyRules(String password, ArrayList<IPasswordRule> passwordRuleList){
 
-        if(passwordRuleList.isEmpty()) {
-            logger.log(Level.WARN, "An empty password rule list has been checked at verifyRules()");
-        }else{
-            for(int i = 0; i < passwordRuleList.size(); i++){
-                IPasswordRule rule = passwordRuleList.get(i);
-                if(!rule.isValid(password)){
-                    return false;
+        boolean validity = false;
+
+        try{
+            //if no rules are provided to check against, the result is a pass as there are no limitations to the password.
+            if(passwordRuleList.isEmpty()) {
+                logger.log(Level.WARN, "An empty password rule list has been checked at verifyRules()");
+                validity = true;
+            }else{
+
+                for(int i = 0; i < passwordRuleList.size(); i++){
+
+                    IPasswordRule rule = passwordRuleList.get(i);
+
+                    if(rule.isValid(password)){
+                        validity = true;
+                    }else{
+                        validity = false;
+                        break;
+                    }
                 }
             }
 
+        }catch (Exception e){
+            logger.log(Level.ERROR, "Error in checking verifying ruleset in verifyRules()", e);
         }
 
-        return true;
+        return validity;
     }
 
 

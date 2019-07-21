@@ -141,6 +141,9 @@ public class DocumentController {
 				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
 	}
 
+	/**@Author Ueli Haltner
+	 * @return List of documents based on the sorting strategy used and the dashboard
+	 */
 	public static List<Document> getDocumentCollection(IDocumentSorter documentSorter, int userId, IDashboard dashboard)
 	{
 		if (sessionManager.isUserLoggedIn())

@@ -184,11 +184,11 @@
                        required>
             </div>
 
-            <input th:field="*{email}" data-toggle="tooltip" data-placement="right"
-                   title="Password should contain: at least 8 characters, one UPPERcase, one Lowercase"
-                   type="email" style="margin-bottom: 1rem" id="signupEmail" class="form-control noSpace" placeholder="Email address" required>
+            <input th:field="*{email}" type="email" style="margin-bottom: 1rem" id="signupEmail" class="form-control noSpace" placeholder="Email address" required>
 
-            <input th:field="*{password}" type="password" style="margin-bottom: 1rem" id="Password" class="form-control noSpace" placeholder="Password" required>
+            <input th:field="*{password}" data-toggle="tooltip" data-placement="right" data-html="true"
+                   title="Requires: <br> Minimum 8 characters <br> One Lowercase letter (a-z) <br> One Uppercase letter (A-Z) <br> One Number (0-9)"
+                   type="password" style="margin-bottom: 1rem" id="Password" class="form-control noSpace" placeholder="Password" required>
 
             <input th:field="*{confirmPassword}" type="password" style="margin-bottom: 1rem" id="confirmPw" class="form-control noSpace" placeholder="Confirm Password" required>
 

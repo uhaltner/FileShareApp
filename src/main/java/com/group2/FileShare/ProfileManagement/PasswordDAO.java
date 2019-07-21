@@ -34,12 +34,16 @@ public class PasswordDAO implements IPasswordDAO {
 
             stmt.executeQuery();
             logger.log(Level.INFO, "[user:"+userId+"] successfully updated the password");
-            db.closeConnection();
+
 
         }
         catch (SQLException ex) {
             logger.log(Level.ERROR, "Failed to update password for the [user:"+userId+"] at updatePassword(): ", ex);
+        }finally {
+            db.closeConnection();
         }
+
+        return;
     }
 
     public void updateRecoveryPassword(String userEmail, String rawNewPassword)
@@ -61,13 +65,14 @@ public class PasswordDAO implements IPasswordDAO {
             stmt.setString(2, hashedPassword);
 
             stmt.executeQuery();
-
-            db.closeConnection();
-
         }
         catch (SQLException ex) {
             logger.log(Level.ERROR, "Failed to update password for the [email:"+userEmail+"] at updateRecoveryPassword(): ", ex);
+        }finally {
+            db.closeConnection();
         }
+
+        return;
     }
 
 }
