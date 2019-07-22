@@ -1,5 +1,6 @@
 package com.group2.FileShare.Dashboard;
 
+import com.group2.FileShare.DefaultProperties;
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.Dashboard.DashboardStrategy.Dashboard;
 import com.group2.FileShare.Dashboard.DashboardStrategy.PrivateDashboard;
@@ -9,6 +10,9 @@ import com.group2.FileShare.Dashboard.SortStrategy.*;
 import com.group2.FileShare.document.DeleteObserver.DeleteDocument;
 import com.group2.FileShare.document.Document;
 import com.group2.FileShare.document.DocumentController;
+import com.group2.FileShare.document.DocumentDAO;
+import com.group2.FileShare.document.IDocumentDAO;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +34,7 @@ public class DashboardController {
     private DocumentSorter documentSorter = new DocumentSorter(new CreatedSortStrategy());
     private Dashboard currentDashboard = new Dashboard(new PrivateDashboard());
     private SearchBarHandler searchBarHandler = new SearchBarHandler();
+    private IDocumentDAO documentDAO = new DocumentDAO();
 
     private static final Logger logger = LogManager.getLogger(DashboardController.class);
 
@@ -38,6 +42,7 @@ public class DashboardController {
     public String dashBoard(Model model)
     {
         List<Document> documentList = new ArrayList<>();
+        double storageUsage =  Math.round((double) documentDAO.getTotalFileSize() / (double) DefaultProperties.getInstance().getStorageSizeLimitInBytes() * 100 * 10)/10.0;
 
         sessionManager = AuthenticationSessionManager.instance();
         int userId = sessionManager.getUserId();
@@ -57,6 +62,7 @@ public class DashboardController {
         model.addAttribute("documents", documentList);
         model.addAttribute("firstName", sessionManager.getFirstName() );
         model.addAttribute("lastName", sessionManager.getLastName() );
+        model.addAttribute("storageUsage", storageUsage);
 
         return currentDashboard.getTemplate();
     }
