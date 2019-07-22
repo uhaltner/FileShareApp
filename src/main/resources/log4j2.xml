@@ -44,8 +44,20 @@
             <AppenderRef ref="SQLAppender" />
         </Logger>
 
+        <Logger name="com.group2.FileShare.Compression" level="all" additivity="false">
+            <AppenderRef ref="SQLAppender" />
+        </Logger>
+
+        <Logger name="com.group2.FileShare.Authentication" level="all" additivity="false">
+            <AppenderRef ref="SQLAppender" />
+        </Logger>
+
         <Logger name="com.group2.FileShare.database" level="all" additivity="false">
             <AppenderRef ref="FileAppender" />
+        </Logger>
+
+        <Logger name="com.group2.FileShare.ProfileManagement" level="all" additivity="false">
+            <AppenderRef ref="SQLAppender" />
         </Logger>
 
         <Root level="info">

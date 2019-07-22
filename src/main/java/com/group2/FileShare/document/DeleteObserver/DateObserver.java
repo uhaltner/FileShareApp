@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 public class DateObserver extends Observer
 {
-    private static final Logger logger = LogManager.getLogger(DocumentDAO.class);
+    private static final Logger logger = LogManager.getLogger(DateObserver.class);
 
     public DateObserver(DocumentSubject subject)
     {

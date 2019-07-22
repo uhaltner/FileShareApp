@@ -1,0 +1,6 @@
+<public_access>
+    <label key=".css"></label>
+    <label key=".js"></label>
+    <label key="/shared"></label>
+    <label key="/download"></label>
+</public_access>

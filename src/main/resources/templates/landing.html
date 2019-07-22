@@ -93,24 +93,39 @@
 
 <body>
 
-<div class="container" style="margin-top: 5rem">
+<div class="container" style="margin-top: 3rem">
 
     <div id="messageAlerts" style="position:relative;">
 
-        <div class="alert alert-warning text-center" role="alert" th:if="${EmailError}">
+        <div class="row">
+            <div class="col-md-6 offset-3">
+                <div class="alert alert-warning text-center" role="alert" th:if="${EmailError}">
 
-            <span th:text="${EmailError}"></span>
+                    <span th:text="${EmailError}"></span>
 
-            <script>
-                $(document).ready(function()
-                {
-                    $("#signup-form").show();
-                    $("#signin-form").hide();
+                    <script>
+                        $(document).ready(function()
+                        {
+                            $("#signup-form").show();
+                            $("#signin-form").hide();
 
-                });
-            </script>
+                        });
+                    </script>
+                </div>
+            </div>
         </div>
+
+        <div class="row">
+            <div class="col-md-6 offset-3">
+                <div class="alert alert-warning text-center" role="alert" th:if="${PasswordResetNotification}">
+                    <span th:text="${PasswordResetNotification}"></span>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+
 
     <div class="card form-signin shadow-sm">
 
@@ -169,11 +184,11 @@
                        required>
             </div>
 
-            <input th:field="*{email}" data-toggle="tooltip" data-placement="right"
-                   title="Password should contain: at least 8 characters, one UPPERcase, one Lowercase"
-                   type="email" style="margin-bottom: 1rem" id="signupEmail" class="form-control noSpace" placeholder="Email address" required>
+            <input th:field="*{email}" type="email" style="margin-bottom: 1rem" id="signupEmail" class="form-control noSpace" placeholder="Email address" required>
 
-            <input th:field="*{password}" type="password" style="margin-bottom: 1rem" id="Password" class="form-control noSpace" placeholder="Password" required>
+            <input th:field="*{password}" data-toggle="tooltip" data-placement="right" data-html="true"
+                   title="Requires: <br> Minimum 8 characters <br> One Lowercase letter (a-z) <br> One Uppercase letter (A-Z) <br> One Number (0-9)"
+                   type="password" style="margin-bottom: 1rem" id="Password" class="form-control noSpace" placeholder="Password" required>
 
             <input th:field="*{confirmPassword}" type="password" style="margin-bottom: 1rem" id="confirmPw" class="form-control noSpace" placeholder="Confirm Password" required>
 
@@ -191,7 +206,7 @@
     <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form id="forgotPwForm" name="forgotPwForm" method="post">
+                <form id="forgotPwForm" name="forgotPwForm" action="#" th:action="@{/forgotpassword}" method="GET">
 
                     <div class="modal-header">
                         <h5 class="modal-title">Forgot Password?</h5>
@@ -202,7 +217,7 @@
 
                     <div class="modal-body">
                         <p>Please enter your email address to reset your password</p>
-                        <input type="email" style="margin-bottom: 1rem" id="forgotEmail" class="form-control noSpace" placeholder="Email address" required>
+                        <input name="emailInput" type="email" style="margin-bottom: 1rem" id="forgotEmail" class="form-control noSpace" placeholder="Email address" required>
                     </div>
 
                     <div class="modal-footer">

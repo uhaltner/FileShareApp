@@ -190,7 +190,43 @@ public class DocumentDAO implements IDocumentDAO {
 		}
 		return null;
 	}
+	
+	public Long getTotalFileSize() {
+		int user_id = sessionManager.getUserId();
+		Long total_filesize = 0l;
 
+		try
+		{
+			query = "{ call get_total_filesize(?) }";
+			CallableStatement statement = databaseConnection.getConnection().prepareCall(query);
+			statement.setInt(1, user_id);
+			resultSet = statement.executeQuery();
+
+			while (resultSet.next())
+			{
+				total_filesize = resultSet.getLong("total_filesize");
+			}
+			return total_filesize;
+		}
+		catch (SQLException e) {
+			logger.log(Level.ERROR, "Failed to get the total filesize with query:" +query +" for user: "+user_id +" at getTotalFileSize()" , e);
+		}
+		finally
+		{
+			try
+			{
+				if ( null != databaseConnection ) {
+					databaseConnection.closeConnection();
+				}
+			}
+			catch (Exception ex) {
+				logger.log(Level.ERROR, "Failed to close database connection at getTotalFileSize()", ex);
+			}
+		}
+		return null;
+	}
+
+	
 	/** @Author: Ueli Haltner
 	 *  @Description: Returns a list of documents based on the input query.
 	 */
@@ -258,8 +294,8 @@ public class DocumentDAO implements IDocumentDAO {
 			stmt.executeUpdate();
 		}
 		catch (SQLException ex) {
-			logger.log(Level.ERROR, "Failed to create provate share link of document with query:" +query +" of document: "+ documentId +" at createPrivateShareLink()" , ex);
-			return false;										//todo
+			logger.log(Level.ERROR, "Failed to create private share link of document with query:" +query +" of document: "+ documentId +" at createPrivateShareLink()" , ex);
+			return false;										
 		}
 		finally
 		{

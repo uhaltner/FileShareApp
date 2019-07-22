@@ -53,4 +53,9 @@ public class DocumentDAOMock implements IDocumentDAO {
 	public Document getDocument(int document_id) {
 		return null;
 	}
+
+	@Override
+	public Long getTotalFileSize() {
+		return null;
+	}
 }

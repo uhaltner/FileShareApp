@@ -1,41 +1,78 @@
 package com.group2.FileShare.ProfileManagement;
 
 import com.group2.FileShare.ProfileManagement.PasswordRules.IPasswordRule;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 
-public class PasswordValidator {
+public class PasswordValidator implements IPasswordValidator {
 
-    public boolean validatePassword(String password, String passwordConfirm, ArrayList<IPasswordRule> RuleList){
+    private static final Logger logger = LogManager.getLogger(PasswordValidator.class);
 
-        //is either password empty or null
+    public boolean validatePassword(String password, String passwordConfirm, ArrayList<IPasswordRule> passwordRuleList){
+
+        boolean validationResult = false;
+
+        try{
+
+            if( !isEmpty(password, passwordConfirm) &&
+                    password.equals(passwordConfirm) &&
+                    verifyRules(password, passwordRuleList) )
+            {
+                validationResult = true;
+            }else{
+                validationResult = false;
+            }
+
+        }catch (Exception e){
+            logger.log(Level.ERROR, "Failed to validate password at validatePassword(): ", e);
+        }
+
+        return validationResult;
+
+    }
+
+    private boolean isEmpty(String password, String passwordConfirm){
+
         if(password == null || passwordConfirm == null || passwordConfirm.isEmpty() || password.isEmpty()){
-
+            return true;
+        }else{
             return false;
         }
+    }
 
-        //if the passwords are the same
-        if(password.equals(passwordConfirm) == false){
-            return false;
-        }
+    public boolean verifyRules(String password, ArrayList<IPasswordRule> passwordRuleList){
 
-        //check all password rules if the list is not empty
-        if(!RuleList.isEmpty()){
+        boolean validity = false;
 
-            for(int i = 0; i < RuleList.size(); i++){
+        try{
+            //if no rules are provided to check against, the result is a pass as there are no limitations to the password.
+            if(passwordRuleList.isEmpty()) {
+                logger.log(Level.WARN, "An empty password rule list has been checked at verifyRules()");
+                validity = true;
+            }else{
 
-                IPasswordRule rule = RuleList.get(i);
+                for(int i = 0; i < passwordRuleList.size(); i++){
 
-                if(!rule.isValid(password)){
-                    return false;
+                    IPasswordRule rule = passwordRuleList.get(i);
+
+                    if(rule.isValid(password)){
+                        validity = true;
+                    }else{
+                        validity = false;
+                        break;
+                    }
                 }
             }
 
+        }catch (Exception e){
+            logger.log(Level.ERROR, "Error in checking verifying ruleset in verifyRules()", e);
         }
 
-
-        //if all succeed, return true
-        return true;
+        return validity;
     }
+
 
 }
