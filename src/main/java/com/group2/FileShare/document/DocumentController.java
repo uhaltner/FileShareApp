@@ -1,17 +1,13 @@
 package com.group2.FileShare.document;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Iterator;
-
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.Compression.ICompression;
 import com.group2.FileShare.Compression.ZipCompression;
 import com.group2.FileShare.Dashboard.DashboardStrategy.IDashboard;
 import com.group2.FileShare.Dashboard.SortStrategy.IDocumentSorter;
+import com.group2.FileShare.Validator.FileValidator;
+import com.group2.FileShare.Validator.IValidator;
+import com.group2.FileShare.Validator.StorageLimitValidator;
 import com.group2.FileShare.storage.IStorage;
 import com.group2.FileShare.storage.S3StorageService;
 import org.apache.logging.log4j.Level;
@@ -28,6 +24,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
 @Controller
 @RequestMapping("/document")
 public class DocumentController {
@@ -37,6 +40,8 @@ public class DocumentController {
 	private final String compressionExtension;
 	private static AuthenticationSessionManager sessionManager;
 	private static IDocumentDAO documentDAO;
+	private static IValidator fileValidator;
+	private static IValidator storageLimitValidator;
 	private static final Logger logger = LogManager.getLogger(DocumentController.class);
 
 	DocumentController() {
@@ -46,6 +51,8 @@ public class DocumentController {
 		compressionExtension = ".zip";
 		sessionManager = AuthenticationSessionManager.instance();
 		documentDAO = new DocumentDAO();
+		fileValidator = new FileValidator();
+		storageLimitValidator = new StorageLimitValidator();
 	}
 
 	@PostMapping("")
@@ -53,6 +60,16 @@ public class DocumentController {
 			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
 			RedirectAttributes redirectAttributes)
 	{
+		
+		try {
+			fileValidator.validate(file);
+			storageLimitValidator.validate(file);
+		} catch (Exception e) {
+			logger.log(Level.ERROR, e.getMessage());
+			redirectAttributes.addFlashAttribute("error", e.getMessage());
+			return "redirect:" + redirect;
+		}
+
 		try {
 			Document d = new Document();
 			d.setFilename(file.getOriginalFilename());
@@ -61,7 +78,6 @@ public class DocumentController {
 			d.setCreatedDate(new Date());
 			d.setOwnerId(sessionManager.getUserId());
 			d.setStorageURL();
-			// TODO check Document with Document validator ????
 			File compressedFile = compression.compressFile(file);
 			String storageFileName = d.getStorageURL();
 			String fileName = d.getFilename();
@@ -141,6 +157,9 @@ public class DocumentController {
 				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
 	}
 
+	/**@Author Ueli Haltner
+	 * @return List of documents based on the sorting strategy used and the dashboard
+	 */
 	public static List<Document> getDocumentCollection(IDocumentSorter documentSorter, int userId, IDashboard dashboard)
 	{
 		if (sessionManager.isUserLoggedIn())
@@ -189,17 +208,19 @@ public class DocumentController {
 		String upperCasePhrase;
         Iterator<Document> iter = documentsCollection.iterator();
         List<Document> matchList = new ArrayList<>();
+		Boolean isPinned;
 
         //add each document that contains the phrase to a new list
         while(iter.hasNext()){
 
             document = (Document) iter.next();
             fileName=  document.getFilename();
+			isPinned = document.isPinned();
 
             upperCaseFileName = fileName.toUpperCase();
             upperCasePhrase = phrase.toUpperCase();
 
-            if (upperCaseFileName.contains(upperCasePhrase)){
+            if (upperCaseFileName.contains(upperCasePhrase) || isPinned){
                 matchList.add(document);
             }
         }
