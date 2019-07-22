@@ -5,6 +5,9 @@ import com.group2.FileShare.Compression.ICompression;
 import com.group2.FileShare.Compression.ZipCompression;
 import com.group2.FileShare.Dashboard.DashboardStrategy.IDashboard;
 import com.group2.FileShare.Dashboard.SortStrategy.IDocumentSorter;
+import com.group2.FileShare.Validator.FileValidator;
+import com.group2.FileShare.Validator.IValidator;
+import com.group2.FileShare.Validator.StorageLimitValidator;
 import com.group2.FileShare.storage.IStorage;
 import com.group2.FileShare.storage.S3StorageService;
 import org.apache.logging.log4j.Level;
@@ -37,6 +40,8 @@ public class DocumentController {
 	private final String compressionExtension;
 	private static AuthenticationSessionManager sessionManager;
 	private static IDocumentDAO documentDAO;
+	private static IValidator fileValidator;
+	private static IValidator storageLimitValidator;
 	private static final Logger logger = LogManager.getLogger(DocumentController.class);
 
 	DocumentController() {
@@ -46,6 +51,8 @@ public class DocumentController {
 		compressionExtension = ".zip";
 		sessionManager = AuthenticationSessionManager.instance();
 		documentDAO = new DocumentDAO();
+		fileValidator = new FileValidator();
+		storageLimitValidator = new StorageLimitValidator();
 	}
 
 	@PostMapping("")
@@ -53,6 +60,16 @@ public class DocumentController {
 			@RequestParam(value = "redirect", defaultValue = "/dashboard") String redirect,
 			RedirectAttributes redirectAttributes)
 	{
+		
+		try {
+			fileValidator.validate(file);
+			storageLimitValidator.validate(file);
+		} catch (Exception e) {
+			logger.log(Level.ERROR, e.getMessage());
+			redirectAttributes.addFlashAttribute("error", e.getMessage());
+			return "redirect:" + redirect;
+		}
+
 		try {
 			Document d = new Document();
 			d.setFilename(file.getOriginalFilename());
@@ -61,7 +78,6 @@ public class DocumentController {
 			d.setCreatedDate(new Date());
 			d.setOwnerId(sessionManager.getUserId());
 			d.setStorageURL();
-			// TODO check Document with Document validator ????
 			File compressedFile = compression.compressFile(file);
 			String storageFileName = d.getStorageURL();
 			String fileName = d.getFilename();
