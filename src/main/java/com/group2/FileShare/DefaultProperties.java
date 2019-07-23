@@ -83,5 +83,17 @@ public class DefaultProperties {
 		return defaultProperties.getProperty("mail_debug");
 	}
 
+	public String[] getInvalidMimePrefixes() {
+		return defaultProperties.getProperty("FILE_UPLOAD.invalidMimePrefixes").split(",");
+	}
+	
+	public Long getSizeLimitInBytes() {
+		return Long.parseLong(defaultProperties.getProperty("FILE_UPLOAD.sizeLimitInBytes"));
+	}
+	
+	public Long getStorageSizeLimitInBytes() {
+		return Long.parseLong(defaultProperties.getProperty("FILE_UPLOAD.storageSizeLimitInBytes"));
+	}
+
 
 }

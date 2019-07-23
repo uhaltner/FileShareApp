@@ -9,4 +9,5 @@ public interface IDocumentDAO {
     Document updateDocument(Document document);
     Document deleteDocument(Document document);
     boolean createPrivateShareLink(int documentId, String accessURL);
+    Long getTotalFileSize();
 }

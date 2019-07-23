@@ -1,12 +1,12 @@
 package com.group2.FileShare.ProfileManagement.PasswordRecovery;
 
-public class PasswordRecoveryMailMessage implements IMail {
+public class PasswordRecoveryMail implements IMail {
 
     private String recipient;
     private String subject;
     private String text;
 
-    public PasswordRecoveryMailMessage(String recipientEmail, String password){
+    public PasswordRecoveryMail(String recipientEmail, String password){
         this.recipient = recipientEmail;
         this.subject = "FileShare App - Password Recovery";
         this.text = "Your FileShare password has been reset. \n"+

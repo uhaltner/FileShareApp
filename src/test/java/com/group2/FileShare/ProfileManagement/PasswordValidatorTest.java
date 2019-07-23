@@ -15,6 +15,8 @@ import static org.junit.Assert.assertEquals;
 @SpringBootTest
 public class PasswordValidatorTest {
 
+    IPasswordRuleSet passwordRuleSet = new PasswordRuleSet();
+
     @Test
     public void emptyPasswordTest(){
         PasswordValidator v = new PasswordValidator();
@@ -37,35 +39,35 @@ public class PasswordValidatorTest {
     public void validPasswordRulesTest(){
 
         PasswordValidator v = new PasswordValidator();
-        assertEquals("validPasswordRulesTest", true, v.validatePassword("Password123","Password123", PasswordRuleSet.getRules()));
+        assertEquals("validPasswordRulesTest", true, v.validatePassword("Password123","Password123", passwordRuleSet.getRules()));
     }
 
     @Test
     public void shortPasswordTest(){
 
         PasswordValidator v = new PasswordValidator();
-        assertEquals("shortPasswordTest", false, v.validatePassword("Pass1","Pass1", PasswordRuleSet.getRules()));
+        assertEquals("shortPasswordTest", false, v.validatePassword("Pass1","Pass1", passwordRuleSet.getRules()));
     }
 
     @Test
     public void noUpperCasePasswordTest(){
 
         PasswordValidator v = new PasswordValidator();
-        assertEquals("noUpperCasePasswordTest", false, v.validatePassword("password1","password1", PasswordRuleSet.getRules()));
+        assertEquals("noUpperCasePasswordTest", false, v.validatePassword("password1","password1", passwordRuleSet.getRules()));
     }
 
     @Test
     public void noLowerCasePasswordTest(){
 
         PasswordValidator v = new PasswordValidator();
-        assertEquals("noLowerCasePasswordTest", false, v.validatePassword("PASSWORD1","PASSWORD1", PasswordRuleSet.getRules()));
+        assertEquals("noLowerCasePasswordTest", false, v.validatePassword("PASSWORD1","PASSWORD1", passwordRuleSet.getRules()));
     }
 
     @Test
     public void noNumberPasswordTest(){
 
         PasswordValidator v = new PasswordValidator();
-        assertEquals("noNumberPasswordTest", false, v.validatePassword("SUPERPASSWORD","SUPERPASSWORD", PasswordRuleSet.getRules()));
+        assertEquals("noNumberPasswordTest", false, v.validatePassword("SUPERPASSWORD","SUPERPASSWORD", passwordRuleSet.getRules()));
     }
 
 

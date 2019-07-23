@@ -1,17 +1,15 @@
 package com.group2.FileShare.ProfileManagement.PasswordRules;
 
-public class NumericCharacterRule implements IPasswordRule {
+public class NumericCharacterRule extends PasswordRuleAbstract {
 
     public NumericCharacterRule(){
-
+        super();
     }
-
 
     @Override
     public boolean isValid(String password) {
 
         String query = "{ call password_numeric_character_rule(?) }";
-
-        return PasswordRuleModel.checkRule(query, password);
+        return passwordRuleDAO.checkRule(query, password);
     }
 }
