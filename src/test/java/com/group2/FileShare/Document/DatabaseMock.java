@@ -4,9 +4,6 @@ import com.group2.FileShare.document.Document;
 
 public class DatabaseMock {
 
-
-
-
     public Document addDocumentsToMockDb(Document document)
     {
         Document doc = new Document();

@@ -9,12 +9,11 @@ import java.util.List;
 public class DocumentDAOMock implements IDocumentDAO {
 
     DatabaseMock databaseMock;
-    public static List<Document> documents;
+    public static List<Document> documents = new ArrayList<Document>();
 
     DocumentDAOMock()
     {
         databaseMock  = new DatabaseMock();
-        documents = new ArrayList<Document>();
     }
 
     public List<Document> getDocuments()
@@ -22,6 +21,23 @@ public class DocumentDAOMock implements IDocumentDAO {
         return documents;
     }
 
+    @Override
+    public Document getDocument(int document_id)
+    {
+        Document document = new Document();
+
+        for (int i=0; i< documents.size(); i++)
+        {
+            int docId = documents.get(i).getId();
+
+            if(docId == document_id)
+            {
+                document = documents.get(i);
+            }
+        }
+
+        return document;
+    }
 
     public Document addDocument(Document document)
     {
@@ -33,24 +49,25 @@ public class DocumentDAOMock implements IDocumentDAO {
 
     }
 
-
     public Document updateDocument(Document document)
     {
-        return null;
+        Document updatedDocument = document;
+        return updatedDocument;
     }
 
     public Document deleteDocument(Document document)
     {
+        documents.remove(document);
         return null;
     }
     
     public boolean createPrivateShareLink(int documentId, String accessURL)
     {
-    	return false;
+        if (null == accessURL && documentId != 0)
+        {
+            return true;
+        }
+        return false;
     }
 
-	@Override
-	public Document getDocument(int document_id) {
-		return null;
-	}
 }
