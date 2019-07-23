@@ -367,7 +367,7 @@ public class DocumentController {
 			return "redirect:" + redirect;
 		}
 		redirectAttributes.addFlashAttribute("message",
-				"You successfully made file, " + fileIndex + ", unpinned!");
+				"You successfully made file, " + d.getFilename() + ", unpinned!");
 		System.out.println("You successfully made " +  d.getFilename() + " unpinned!");
 		logger.log(Level.INFO, "File:" +  d.getId() + " unpinned successfully!");
 		return "redirect:" + redirect;
