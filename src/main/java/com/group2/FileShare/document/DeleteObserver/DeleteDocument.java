@@ -1,5 +1,6 @@
 package com.group2.FileShare.document.DeleteObserver;
 
+import com.group2.FileShare.DefaultProperties;
 import com.group2.FileShare.document.Document;
 import com.group2.FileShare.document.DocumentController;
 import org.apache.logging.log4j.Level;
@@ -13,7 +14,7 @@ import java.util.List;
 public class DeleteDocument
 {
     private static DocumentSubject documentSubject;
-    private static final long NUMBER_OF_DAYS = 30;
+    private static int DELETE_DOCUMENT_EXPIRY_PERIOD;
     private static Timestamp currentTimestamp;
     private static Date trashedDate;
     private static final Logger logger = LogManager.getLogger(DeleteDocument.class);
@@ -24,6 +25,7 @@ public class DeleteDocument
 
         try
         {
+            DELETE_DOCUMENT_EXPIRY_PERIOD = DefaultProperties.getInstance().getDeleteDocumentExpiry();
             documentList = DocumentController.getDocumentList();
             int documentListSize = documentList.size();
             documentSubject = new DocumentSubject();
@@ -39,7 +41,8 @@ public class DeleteDocument
                     trashedDate = documentList.get(i).getTrashedDate();
                     long timeDifference = currentTimestamp.getTime() - trashedDate.getTime();
 
-                    if(timeDifference > NUMBER_OF_DAYS*24*60*60*1000)
+                    // computing in milliseconds
+                    if(timeDifference > DELETE_DOCUMENT_EXPIRY_PERIOD*24*60*60*1000)
                     {
                         documentSubject.notifyObservers(documentList.get(i));
                     }

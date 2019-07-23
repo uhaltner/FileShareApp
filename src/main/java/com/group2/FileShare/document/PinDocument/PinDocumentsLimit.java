@@ -1,5 +1,6 @@
 package com.group2.FileShare.document.PinDocument;
 
+import com.group2.FileShare.DefaultProperties;
 import com.group2.FileShare.document.Document;
 import com.group2.FileShare.document.DocumentDAO;
 import org.apache.logging.log4j.Level;
@@ -12,7 +13,7 @@ public class PinDocumentsLimit
 {
     private DocumentDAO documentDAO;
     List<Document> documentList;
-    private static final int PIN_DOCUMENTS_LIMIT = 3;
+    private int PIN_DOCUMENTS_LIMIT;
     private static final Logger logger = LogManager.getLogger(PinDocumentsLimit.class);
 
     public PinDocumentsLimit()
@@ -23,6 +24,7 @@ public class PinDocumentsLimit
     public boolean isPinDocumentsLimitAvailable()
     {
        documentList = documentDAO.getDocuments();
+       PIN_DOCUMENTS_LIMIT = DefaultProperties.getInstance().getPinDocumentsLimit();
        int countPinDocuments = 0;
 
         try
