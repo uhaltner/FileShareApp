@@ -8,6 +8,7 @@ public interface IDocumentDAO {
     Document addDocument(Document document);
     Document updateDocument(Document document);
     Document deleteDocument(Document document);
+    List<Document> getDocumentList(String query, int userId, boolean publicDocumentsOnly, boolean trashedDocumentsOnly);
     boolean createPrivateShareLink(int documentId, String accessURL);
-    Long getTotalFileSize();
+    SharedLink getLinkedDocumentRefWith(String accessUrl);
 }
