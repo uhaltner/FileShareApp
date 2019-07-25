@@ -2,10 +2,7 @@ package com.group2.FileShare.Dashboard;
 
 import com.group2.FileShare.DefaultProperties;
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
-import com.group2.FileShare.document.DocumentController;
-import com.group2.FileShare.document.SharedLink;
-import com.group2.FileShare.document.Document;
-import com.group2.FileShare.document.DocumentDAO;
+import com.group2.FileShare.document.*;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -27,11 +24,13 @@ public class GuestDashboardController {
 
     private AuthenticationSessionManager sessionManager;
     private DocumentDAO documentDAO;
+    private SharedDocumentLinkValidator sharedDocumentLinkValidator;
     private static final Logger logger = LogManager.getLogger(DefaultProperties.class);
 
     public GuestDashboardController() {
         sessionManager = AuthenticationSessionManager.instance();
         documentDAO = new DocumentDAO();
+        sharedDocumentLinkValidator = new SharedDocumentLinkValidator();
     }
 
     @GetMapping("")
@@ -44,43 +43,23 @@ public class GuestDashboardController {
     public String sharedFile(Model model, @PathVariable String access_url) {
 
         model.addAttribute("isLoggedIn", sessionManager.isUserLoggedIn());
-        SharedLink sharedDocRef = documentDAO.getLinkedDocumentRefWith(access_url);
+        SharedDocumentLink sharedDocRef = documentDAO.getLinkedDocumentRefWith(access_url);
 
-        if(sharedDocRef != null) 
-        {
-            try {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date expDate = dateFormat.parse(sharedDocRef.getExpiration_date());
-                    Date currentDate = new Date();
-                    if(expDate.after(currentDate)) 
-                    {
-
-                        Document document = DocumentController.getGuestDocument(sharedDocRef.getDocument_id());
-                        if(document != null) 
-                        {
-                            model.addAttribute("document", document);
-                        } 
-                        else 
-                        {
-                            model.addAttribute("error", "No document found with the provided link");
-                        }
-                    } 
-                    else 
-                    {
-                        model.addAttribute("error", "Sorry, the link has expired");
-                    }
-                }
-            catch(ParseException ex) 
+        String errorResponse = sharedDocumentLinkValidator.validateDocumentLinkWithErrorResponse(sharedDocRef);
+        if(errorResponse.equals("")) {
+            Document document = DocumentController.getGuestDocument(sharedDocRef.getDocument_id());
+            if(document != null)
             {
-                model.addAttribute("error", "Can't access the file at the moment, please try again later");
-                ex.printStackTrace();
-                logger.log(Level.ERROR, "Error parsing expiration date in sharedFile()" , ex.getMessage());
+                model.addAttribute("document", document);
             }
-        } 
-        else 
-        {
-            model.addAttribute("error", "This link doesn't exist in Fileshare App");
+            else
+            {
+                model.addAttribute("error", "No document found with the provided link");
+            }
+        } else {
+            model.addAttribute("error", errorResponse);
         }
+
         return "guest_dashboard";
     }
 }

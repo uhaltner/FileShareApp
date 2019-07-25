@@ -11,5 +11,5 @@ public interface IDocumentDAO {
     Long getTotalFileSize();
     List<Document> getDocumentList(String query, int userId, boolean publicDocumentsOnly, boolean trashedDocumentsOnly);
     boolean createPrivateShareLink(int documentId, String accessURL);
-    SharedLink getLinkedDocumentRefWith(String accessUrl);
+    SharedDocumentLink getLinkedDocumentRefWith(String accessUrl);
 }

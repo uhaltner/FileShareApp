@@ -2,7 +2,7 @@ package com.group2.FileShare.Document;
 
 import com.group2.FileShare.document.Document;
 import com.group2.FileShare.document.IDocumentDAO;
-import com.group2.FileShare.document.SharedLink;
+import com.group2.FileShare.document.SharedDocumentLink;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,11 +99,11 @@ public class DocumentDAOMock implements IDocumentDAO {
     }
 
     @Override
-    public SharedLink getLinkedDocumentRefWith(String accessUrl)
+    public SharedDocumentLink getLinkedDocumentRefWith(String accessUrl)
     {
         if (null != accessUrl)
         {
-            SharedLink sharedDocumentRefernceTest = new SharedLink(328947243,
+            SharedDocumentLink sharedDocumentRefernceTest = new SharedDocumentLink(328947243,
                     841, "2019-08-15 07:06:37");
             return sharedDocumentRefernceTest;
         }
