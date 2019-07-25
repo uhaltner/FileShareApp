@@ -140,7 +140,8 @@ public class DocumentController {
 		{
 			d = documentsCollection.get(fileIndex);
 		}
-		catch (IndexOutOfBoundsException e) {
+		catch (IndexOutOfBoundsException e) 
+		{
 			System.err.println(e.getMessage());
 			logger.log(Level.ERROR, "Index out of Bounds exception at handleFileDownload():", e);
 			return null;
@@ -149,26 +150,18 @@ public class DocumentController {
 		String filename = d.getFilename();
 		String filePath = d.getStorageURL();
 		Resource resource = null;
-		File compressedFile = null;
+		File decompressedFile = null;
+		
 		try
 		{
-			if (DefaultProperties.getInstance().isDownloadDecompressed()) {
+			if (DefaultProperties.getInstance().isDownloadDecompressed()) 
+			{
 				resource = new UrlResource(storage.downloadFile(filePath));
-				compressedFile = File.createTempFile(filename, "");
-				FileOutputStream fileOutputStream = new FileOutputStream(compressedFile);
-		        InputStream fileInputStream = resource.getInputStream();
-		        int length;
-				byte[] bytes = new byte[1024];
-				
-				while((length = fileInputStream.read(bytes)) >= 0)
-		        {
-					fileOutputStream.write(bytes, 0, length);
-		        }
-				File decompressedFile = compression.deCompressFile(compressedFile.getPath());
+				decompressedFile = compression.deCompressFile(resource.getURL());
 				resource = new UrlResource(decompressedFile.toURI());
-				fileOutputStream.close();
-				fileInputStream.close();
-			} else {
+			} 
+			else 
+			{
 				filename += compression.getExtention();
 				resource = new UrlResource(storage.downloadFile(filePath));
 			}
@@ -178,14 +171,18 @@ public class DocumentController {
 				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
 		}
 		
-		catch (MalformedURLException e) {
+		catch (MalformedURLException e) 
+		{
 			logger.log(Level.ERROR, "MalformedURL exception at handleFileDownload():", e);
 			return null;
-		} catch (IOException e) {
+		} catch (IOException e) 
+		{
 			logger.log(Level.ERROR, "IOException exception at handleFileDownload():", e);
-		}
+		}	
 		finally {
-			compressedFile.deleteOnExit();
+			if(decompressedFile != null) {
+				decompressedFile.deleteOnExit();
+			}
 		}
 		return null;
 	}

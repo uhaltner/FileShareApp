@@ -6,7 +6,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.net.URL;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class ZipCompression implements ICompression
@@ -56,11 +58,45 @@ public class ZipCompression implements ICompression
 	}
 	
 	@Override
-	public File deCompressFile(String fileZip) {
-		// TODO Decompression Algorithm
-		return new File(fileZip);
+	public File deCompressFile(URL url) 
+	{
+		ZipInputStream zis;
+		try 
+		{
+			byte[] buffer = new byte[1024];
+
+			zis = new ZipInputStream(url.openStream());
+			ZipEntry zipEntry = zis.getNextEntry();
+			String tempDir = System.getProperty("java.io.tmpdir");
+
+			while (zipEntry != null) 
+			{
+				File newFile =   new File(tempDir , zipEntry.getName());
+				FileOutputStream fos = new FileOutputStream(newFile);
+				int len;
+				while ((len = zis.read(buffer)) > 0) 
+				{
+					fos.write(buffer, 0, len);
+				}
+				fos.close();
+				zipEntry = zis.getNextEntry();
+				return newFile;
+			}
+			zis.closeEntry();
+			zis.close();
+
+		} 
+		catch (FileNotFoundException e) 
+		{
+			logger.log(Level.ERROR, "File not found exception at deCompressFile(): ", e.getMessage());
+		} catch (IOException e) 
+		{
+			logger.log(Level.ERROR, "IOException at deCompressFile(): ", e.getMessage());
+		}
+
+		return null;
 	}
-	
+
 	@Override
 	public String getExtention() {
 		return extension;
