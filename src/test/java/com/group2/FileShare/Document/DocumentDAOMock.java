@@ -63,6 +63,11 @@ public class DocumentDAOMock implements IDocumentDAO {
     }
 
     @Override
+    public Long getTotalFileSize() {
+        return null;
+    }
+
+    @Override
     public List<Document> getDocumentList(String query, int userId, boolean publicDocumentsOnly, boolean trashedDocumentsOnly) {
 
         Document document = new Document();
