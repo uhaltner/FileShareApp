@@ -1,5 +1,6 @@
 package com.group2.FileShare.document;
 
+import com.group2.FileShare.DefaultProperties;
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.Compression.ICompression;
 import com.group2.FileShare.Compression.ZipCompression;
@@ -25,6 +26,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,7 +41,6 @@ public class DocumentController {
 	private final IStorage storage;
 	private static List<Document> documentsCollection;
 	private final ICompression compression;
-	private final String compressionExtension;
 	private static AuthenticationSessionManager sessionManager;
 	private static IDocumentDAO documentDAO;
 	private static IValidator fileValidator;
@@ -48,7 +51,6 @@ public class DocumentController {
 		storage = S3StorageService.getInstance();
 		documentsCollection = new ArrayList<>();
 		compression = new ZipCompression();
-		compressionExtension = ".zip";
 		sessionManager = AuthenticationSessionManager.instance();
 		documentDAO = new DocumentDAO();
 		fileValidator = new FileValidator();
@@ -142,19 +144,48 @@ public class DocumentController {
 			return null;
 		}
 
-		String filename = d.getFilename() + compressionExtension;
+		String filename = d.getFilename();
 		String filePath = d.getStorageURL();
 		Resource resource = null;
+		File compressedFile = null;
 		try
 		{
-			resource = new UrlResource(storage.downloadFile(filePath));
+			if (DefaultProperties.getInstance().isDownloadDecompressed()) {
+				resource = new UrlResource(storage.downloadFile(filePath));
+				compressedFile = File.createTempFile(filename, "");
+				FileOutputStream fileOutputStream = new FileOutputStream(compressedFile);
+		        InputStream fileInputStream = resource.getInputStream();
+		        int length;
+				byte[] bytes = new byte[1024];
+				
+				while((length = fileInputStream.read(bytes)) >= 0)
+		        {
+					fileOutputStream.write(bytes, 0, length);
+		        }
+				File decompressedFile = compression.deCompressFile(compressedFile.getPath());
+				resource = new UrlResource(decompressedFile.toURI());
+				fileOutputStream.close();
+				fileInputStream.close();
+			} else {
+				filename += compression.getExtention();
+				resource = new UrlResource(storage.downloadFile(filePath));
+			}
+			
+			
+		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
 		}
+		
 		catch (MalformedURLException e) {
 			logger.log(Level.ERROR, "MalformedURL exception at handleFileDownload():", e);
 			return null;
+		} catch (IOException e) {
+			logger.log(Level.ERROR, "IOException exception at handleFileDownload():", e);
 		}
-		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
+		finally {
+			compressedFile.deleteOnExit();
+		}
+		return null;
 	}
 
 	/**@Author Ueli Haltner
