@@ -57,6 +57,12 @@ public class ZipCompression implements ICompression
 	
 	@Override
 	public File deCompressFile(String fileZip) {
-		return null;
+		// TODO Decompression Algorithm
+		return new File(fileZip);
+	}
+	
+	@Override
+	public String getExtention() {
+		return extension;
 	}
 }
