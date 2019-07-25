@@ -150,12 +150,14 @@ public class DocumentController {
 		String filename = d.getFilename();
 		String filePath = d.getStorageURL();
 		Resource resource = null;
+		File decompressedFile = null;
+		
 		try
 		{
 			if (DefaultProperties.getInstance().isDownloadDecompressed()) 
 			{
 				resource = new UrlResource(storage.downloadFile(filePath));
-				File decompressedFile = compression.deCompressFile(resource.getURL());
+				decompressedFile = compression.deCompressFile(resource.getURL());
 				resource = new UrlResource(decompressedFile.toURI());
 			} 
 			else 
@@ -176,6 +178,11 @@ public class DocumentController {
 		} catch (IOException e) 
 		{
 			logger.log(Level.ERROR, "IOException exception at handleFileDownload():", e);
+		}	
+		finally {
+			if(decompressedFile != null) {
+				decompressedFile.deleteOnExit();
+			}
 		}
 		return null;
 	}
