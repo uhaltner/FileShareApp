@@ -9,6 +9,7 @@ import com.group2.FileShare.Dashboard.SortStrategy.IDocumentSorter;
 import com.group2.FileShare.Validator.FileValidator;
 import com.group2.FileShare.Validator.IValidator;
 import com.group2.FileShare.Validator.StorageLimitValidator;
+import com.group2.FileShare.document.PinDocument.PinDocumentsLimit;
 import com.group2.FileShare.storage.IStorage;
 import com.group2.FileShare.storage.S3StorageService;
 import org.apache.logging.log4j.Level;
@@ -45,6 +46,7 @@ public class DocumentController {
 	private static IDocumentDAO documentDAO;
 	private static IValidator fileValidator;
 	private static IValidator storageLimitValidator;
+	private static PinDocumentsLimit pinDocumentsLimit;
 	private static final Logger logger = LogManager.getLogger(DocumentController.class);
 
 	DocumentController() {
@@ -360,8 +362,20 @@ public class DocumentController {
 		try
 		{
 			d = documentsCollection.get(fileIndex);
-			d.setPinned(true);
-			d = documentDAO.updateDocument(d);
+            pinDocumentsLimit = new PinDocumentsLimit();
+			boolean isPinDocumentValid = pinDocumentsLimit.isPinDocumentsLimitAvailable();
+
+			if(isPinDocumentValid)
+			{
+                d.setPinned(true);
+                d = documentDAO.updateDocument(d);
+            }
+			else {
+                redirectAttributes.addFlashAttribute("error", d.getFilename() + " could not be pinned as maximum limit reached for pinned documents!");
+                System.out.println("Pin document failed for " + d.getFilename() + " because of maximum pin documents limit!");
+                logger.log(Level.INFO, "File pin failed for [document ID : " +d.getId()+"]! because of maximum pin documents limit at makePinned()");
+                return "redirect:" + redirect;
+            }
 		}
 		catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
@@ -392,13 +406,13 @@ public class DocumentController {
 		catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			logger.log(Level.ERROR, "Index out of Bounds exception at makeUnPinned():", e);
-			redirectAttributes.addFlashAttribute("error", "File unpin failed for file, " + d.getFilename() + ", !");
+			redirectAttributes.addFlashAttribute("error", "File unpin failed for file, " + d.getFilename() + "!");
 			System.out.println("File unpin failed for " +  d.getFilename() + "!");
 			logger.log(Level.ERROR, "File unpin failed for " +  d.getId() + "! at makeUnPinned()");
 			return "redirect:" + redirect;
 		}
 		redirectAttributes.addFlashAttribute("message",
-				"You successfully made file, " + fileIndex + ", unpinned!");
+				"You successfully made file, " + d.getFilename() + ", unpinned!");
 		System.out.println("You successfully made " +  d.getFilename() + " unpinned!");
 		logger.log(Level.INFO, "File:" +  d.getId() + " unpinned successfully!");
 		return "redirect:" + redirect;
