@@ -1,6 +1,5 @@
 package com.group2.FileShare;
 
-import com.group2.FileShare.document.DeleteObserver.DeleteDocument;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +12,9 @@ public class DefaultProperties {
 
 	private static DefaultProperties properties;
 	private Properties defaultProperties;
-	private static final Logger logger = LogManager.getLogger(DeleteDocument.class);
+	private IConfigDAO configDAO = new ConfigDAO();
+	boolean isDownloadDecompressed = false;
+	private static final Logger logger = LogManager.getLogger(DefaultProperties.class);
 
 	private DefaultProperties() {
 		defaultProperties = new Properties();
@@ -22,7 +23,7 @@ public class DefaultProperties {
 			InputStream inputDB = getClass().getClassLoader().getResourceAsStream(dbFile);
 			defaultProperties.load(inputDB);
 		} catch (IOException e) {
-			logger.log(Level.ERROR, "Error connecting file of default Properties at DefaultProperties(): ", e);
+			logger.log(Level.ERROR, "Error accessing Default Properties file in DefaultProperties()" , e);
 		}
 	}
 
@@ -99,6 +100,15 @@ public class DefaultProperties {
 	
 	public Long getStorageSizeLimitInBytes() {
 		return Long.parseLong(defaultProperties.getProperty("FILE_UPLOAD.storageSizeLimitInBytes"));
+	}
+	
+	public boolean isDownloadDecompressed() {
+		try {
+			isDownloadDecompressed = configDAO.getConfig("DOWNLOAD_DECOMPRESSED");
+		} catch (Exception e) {
+			logger.log(Level.ERROR, "Error retrieving system configurations from DB in DefaultProperties()" , e);
+		}
+		return isDownloadDecompressed;
 	}
 
 	public int getPinDocumentsLimit() {

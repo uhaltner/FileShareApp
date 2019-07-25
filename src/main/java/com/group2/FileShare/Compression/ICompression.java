@@ -7,4 +7,5 @@ import org.springframework.web.multipart.MultipartFile;
 public interface ICompression {
 	public File compressFile(MultipartFile file);
 	public File deCompressFile(String url);
+	String getExtention();
 }
