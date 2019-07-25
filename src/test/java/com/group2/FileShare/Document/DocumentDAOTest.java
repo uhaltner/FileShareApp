@@ -54,7 +54,7 @@ public class DocumentDAOTest
 
         documentDAOMock.addDocument(document2);
 
-        Assert.assertTrue(documentDAOMock.getDocuments().size()==2);
+        Assert.assertNotNull(documentDAOMock.getDocuments());
     }
 
     @Test
@@ -153,6 +153,44 @@ public class DocumentDAOTest
     }
 
     @Test
+    public void getDocumentListTest()
+    {
+        Document document8 = new Document();
+        document8.setId(499);
+        document8.setStorageURL("http://document.gettest.com");
+        document8.setCreatedDate(new Date());
+        document8.setSize(9832473);
+        document8.setOwnerId(343);
+        document8.setFilename("Document8.txt");
+        document8.setDescription("documents get test desc");
+        document8.setTrashedDate(new Date());
+        document8.setPublic(false);
+        document8.setTrashed(false);
+        document8.setPinned(true);
+
+        documentDAOMock.addDocument(document8);
+
+        Document document9 = new Document();
+        document9.setId(974);
+        document9.setStorageURL("http://document.gettesttwo.com");
+        document9.setCreatedDate(new Date());
+        document9.setSize(81924);
+        document9.setOwnerId(343);
+        document9.setFilename("Document9.txt");
+        document9.setDescription("document9 get test desc");
+        document9.setTrashedDate(new Date());
+        document9.setPublic(false);
+        document9.setTrashed(false);
+        document9.setPinned(true);
+
+        documentDAOMock.addDocument(document9);
+        documentsListTest = documentDAOMock.getDocumentList("CALL getDocuments{?,?,?}", 343, false, false);
+
+        Assert.assertEquals(documentsListTest.size(), 2);
+    }
+
+
+    @Test
     public void createPrivateShareLinkTest()
     {
         Document document7 = new Document();
@@ -175,6 +213,26 @@ public class DocumentDAOTest
 
         boolean isPrivate = documentDAOMock.createPrivateShareLink(DocId, randomAccessString);
 
-        Assert.assertFalse(isPrivate);
+        Assert.assertTrue(isPrivate);
+    }
+
+    @Test
+    public void getLinkedDocumentRefWithTest()
+    {
+        Document document10 = new Document();
+        document10.setId(841);
+        document10.setStorageURL("http://document.linkedDocumentRefWithTest.com");
+        document10.setCreatedDate(new Date());
+        document10.setSize(264890);
+        document10.setOwnerId(213);
+        document10.setFilename("Document10.txt");
+        document10.setDescription("document10 get Linked Document Ref With Test desc");
+        document10.setTrashedDate(new Date());
+        document10.setPublic(false);
+        document10.setTrashed(false);
+        document10.setPinned(true);
+        documentDAOMock.addDocument(document10);
+
+        Assert.assertNotNull(documentDAOMock.getLinkedDocumentRefWith("2wfenk-31efwn-ewkn9we-ewin62f"));
     }
 }
