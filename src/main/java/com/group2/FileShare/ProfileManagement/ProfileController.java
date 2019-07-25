@@ -1,6 +1,7 @@
 package com.group2.FileShare.ProfileManagement;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
+import com.group2.FileShare.ProfileManagement.PasswordRules.IPasswordRuleSet;
 import com.group2.FileShare.ProfileManagement.PasswordRules.PasswordRuleSet;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -10,8 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import javax.servlet.http.HttpSession;
 
 @Controller
 public class ProfileController {
@@ -26,13 +25,9 @@ public class ProfileController {
 
         sessionManager = AuthenticationSessionManager.instance();
 
-        String firstName = sessionManager.getFirstName();
-        String lastName = sessionManager.getLastName();
-        String email = sessionManager.getEmail();
-
-        model.addAttribute("userFirstName", firstName);
-        model.addAttribute("userLastName", lastName);
-        model.addAttribute("userEmail", email);
+        model.addAttribute("userFirstName", sessionManager.getFirstName());
+        model.addAttribute("userLastName", sessionManager.getLastName());
+        model.addAttribute("userEmail", sessionManager.getEmail());
         model.addAttribute("passwordForm", new PasswordForm());
 
         if(profile_error == true){
@@ -52,39 +47,28 @@ public class ProfileController {
     @PostMapping(value="/profile", params = "action=update")
     public String updateProfile(@ModelAttribute PasswordForm passwordForm){
 
-        PasswordValidator passwordValidator = new PasswordValidator();
-        PasswordModel passwordModel = new PasswordModel();
-
-        boolean validPassword = false;
+        IPasswordValidator passwordValidator = new PasswordValidator();
+        IPasswordDAO passwordDAO = new PasswordDAO();
+        IPasswordRuleSet passwordRuleSet = new PasswordRuleSet();
 
         int userId = sessionManager.getUserId();
 
         String updatedPassword = passwordForm.getPassword();
         String updatedPasswordConfirm = passwordForm.getConfirmPassword();
 
-        //Check validity of password
-        try
-        {
-            validPassword = passwordValidator.validatePassword(updatedPassword, updatedPasswordConfirm, PasswordRuleSet.getRules());
+        boolean validPassword = false;
 
-        }
-        catch(Exception e) {
-            logger.log(Level.ERROR, "Failed to validate password at updateProfile(): ", e);
-        }
+        //Check validity of password
+        validPassword = passwordValidator.validatePassword(updatedPassword, updatedPasswordConfirm, passwordRuleSet.getRules());
 
         if(validPassword){
-
-            passwordModel.updatePassword(userId, updatedPassword);
-
+            passwordDAO.updatePassword(userId, updatedPassword);
             return "redirect:/dashboard";
 
         }else{
-
             profile_error = true;
             return "redirect:/profile";
         }
-
     }
-
-
+    
 }

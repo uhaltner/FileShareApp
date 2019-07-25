@@ -7,9 +7,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class PasswordRuleModel {
+public class PasswordRuleDAO implements IPasswordRuleDAO{
 
-    public static boolean checkRule(String query, String password){
+    @Override
+    public boolean checkRule(String query, String password){
 
         ResultSet rs;
         boolean rulePassed = false;
@@ -31,14 +32,12 @@ public class PasswordRuleModel {
                 rulePassed = rs.getBoolean(1);
             }
 
-            db.closeConnection();
-
-            return rulePassed;
-
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+        }finally {
+            db.closeConnection();
         }
 
-        return false;
+        return rulePassed;
     }
 }
