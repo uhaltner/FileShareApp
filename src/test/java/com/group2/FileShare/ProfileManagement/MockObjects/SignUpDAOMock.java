@@ -6,7 +6,7 @@ public class SignUpDAOMock implements ISignUpDAO {
 
 	@Override
 	public boolean userExist(String email) {
-		if(email.equals("valid@email.com")){
+		if(email.equals("existing@email.com")){
 			return true;
 		}else{
 			return false;
