@@ -1,15 +1,24 @@
 package com.group2.FileShare.ProfileManagement.PasswordRules;
 
-public class PasswordRuleSet extends PasswordRuleSetAbstract{
+import java.util.ArrayList;
+
+public class PasswordRuleSet implements IPasswordRuleSet{
+
+    private ArrayList<IPasswordRule> passwordRules;
 
     public PasswordRuleSet(){
-        super();
-        passwordRules.add(new LengthRule());
-        passwordRules.add(new LowercaseCharacterRule());
-        passwordRules.add(new UppercaseCharacterRule());
-        passwordRules.add(new NumericCharacterRule());
+        this.passwordRules = new ArrayList<>();
     }
 
+    @Override
+    public ArrayList<IPasswordRule> getRules(){
+        return this.passwordRules;
+    }
+
+    @Override
+    public void addRule(IPasswordRule rule){
+        this.passwordRules.add(rule);
+    }
 }
 
 

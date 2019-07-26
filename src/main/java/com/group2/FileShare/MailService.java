@@ -10,8 +10,9 @@ import org.springframework.stereotype.Component;
 import java.util.Properties;
 
 @Component
-public class MailService {
+public class MailService implements IMailService{
 
+    @Override
     public void sendEmail(IMail mail) {
         SimpleMailMessage message = new SimpleMailMessage();
 
