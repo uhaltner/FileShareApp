@@ -1,8 +1,8 @@
 package com.group2.FileShare.ProfileManagement;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
-import com.group2.FileShare.ProfileManagement.PasswordRules.IPasswordRuleSet;
-import com.group2.FileShare.ProfileManagement.PasswordRules.PasswordRuleSet;
+import com.group2.FileShare.ProfileManagement.PasswordRules.IPasswordRuleDAO;
+import com.group2.FileShare.ProfileManagement.PasswordRules.PasswordRuleDAO;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,9 +47,9 @@ public class ProfileController {
     @PostMapping(value="/profile", params = "action=update")
     public String updateProfile(@ModelAttribute PasswordForm passwordForm){
 
-        IPasswordValidator passwordValidator = new PasswordValidator();
+        IPasswordRuleDAO passwordRuleDAO = new PasswordRuleDAO();
+        IPasswordValidator passwordValidator = new PasswordValidator(passwordRuleDAO);
         IPasswordDAO passwordDAO = new PasswordDAO();
-        IPasswordRuleSet passwordRuleSet = new PasswordRuleSet();
 
         int userId = sessionManager.getUserId();
 
@@ -59,7 +59,7 @@ public class ProfileController {
         boolean validPassword = false;
 
         //Check validity of password
-        validPassword = passwordValidator.validatePassword(updatedPassword, updatedPasswordConfirm, passwordRuleSet.getRules());
+        validPassword = passwordValidator.validatePassword(updatedPassword, updatedPasswordConfirm);
 
         if(validPassword){
             passwordDAO.updatePassword(userId, updatedPassword);

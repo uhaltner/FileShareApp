@@ -5,4 +5,5 @@ import java.util.ArrayList;
 public interface IPasswordRuleSet {
 
     public ArrayList<IPasswordRule> getRules();
+	public void addRule(IPasswordRule rule);
 }

@@ -2,8 +2,8 @@ package com.group2.FileShare.SignUp;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.ProfileManagement.IPasswordValidator;
-import com.group2.FileShare.ProfileManagement.PasswordRules.IPasswordRuleSet;
-import com.group2.FileShare.ProfileManagement.PasswordRules.PasswordRuleSet;
+import com.group2.FileShare.ProfileManagement.PasswordRules.IPasswordRuleDAO;
+import com.group2.FileShare.ProfileManagement.PasswordRules.PasswordRuleDAO;
 import com.group2.FileShare.ProfileManagement.PasswordValidator;
 import com.group2.FileShare.User.User;
 import org.apache.logging.log4j.Level;
@@ -26,8 +26,8 @@ public class SignUpController {
     @RequestMapping(value = "/signup", method = POST)
     public String signUpUser(@ModelAttribute SignUpForm signupForm, HttpSession session, RedirectAttributes redirectAttributes){
 
-        IPasswordValidator passwordValidator = new PasswordValidator();
-        IPasswordRuleSet passwordRuleSet = new PasswordRuleSet();
+        IPasswordRuleDAO passwordRuleDAO = new PasswordRuleDAO();
+        IPasswordValidator passwordValidator = new PasswordValidator(passwordRuleDAO);
         ISignUpDAO signUpDAO = new SignUpDAO();
 
         boolean validPassword = false;
@@ -37,7 +37,7 @@ public class SignUpController {
 
             if(userExists(signupForm,signUpDAO) == false){
 
-                validPassword = validatePassword(passwordValidator, signupForm, passwordRuleSet);
+                validPassword = validatePassword(passwordValidator, signupForm);
 
                 if(validPassword)
                 {
@@ -81,12 +81,12 @@ public class SignUpController {
         return signUpDAO.userExist(signUpForm.getEmail());
     }
 
-    private boolean validatePassword(IPasswordValidator passwordValidator, SignUpForm signUpForm, IPasswordRuleSet passwordRuleSet){
+    private boolean validatePassword(IPasswordValidator passwordValidator, SignUpForm signUpForm){
 
         String formRawPassword = signUpForm.getPassword();
         String formRawConfirmPassword = signUpForm.getConfirmPassword();
 
-        return passwordValidator.validatePassword( formRawPassword, formRawConfirmPassword, passwordRuleSet.getRules() );
+        return passwordValidator.validatePassword( formRawPassword, formRawConfirmPassword);
     }
 
     private int createUser(ISignUpDAO signUpDAO, SignUpForm signUpForm){
