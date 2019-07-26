@@ -14,7 +14,7 @@ import java.util.List;
 public class DeleteDocument
 {
     private static DocumentSubject documentSubject;
-    private static int DELETE_DOCUMENT_EXPIRY_PERIOD;
+    private static long DELETE_DOCUMENT_EXPIRY_PERIOD;
     private static Timestamp currentTimestamp;
     private static Date trashedDate;
     private static final Logger logger = LogManager.getLogger(DeleteDocument.class);
