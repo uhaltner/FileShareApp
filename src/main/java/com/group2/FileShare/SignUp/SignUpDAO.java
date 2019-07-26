@@ -76,7 +76,7 @@ public class SignUpDAO implements ISignUpDAO{
             }
 
         } catch (SQLException ex) {
-            logger.log(Level.ERROR, "Failed to create user profile with query:" +query +" of user email: "+ email +" at createProfile()" , ex);
+            logger.log(Level.ERROR, "Failed to create user profile of user email: "+ email +" at createProfile()" , ex);
         } finally {
             db.closeConnection();
         }

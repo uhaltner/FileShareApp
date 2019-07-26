@@ -28,7 +28,7 @@ public class PasswordRecoveryControllerTest {
 	@Test
 	public void validUserTest(){
 
-		String email = "valid@email.com";
+		String email = "existing@email.com";
 		PasswordRecoveryController.Feedback feedback;
 
 		feedback = passwordRecoveryController.passwordRecovery(signUpDAO,passwordDAO,mailService,email);
@@ -39,7 +39,7 @@ public class PasswordRecoveryControllerTest {
 	@Test
 	public void invalidUserTest(){
 
-		String email = "notValid@email.com";
+		String email = "new@email.com";
 		PasswordRecoveryController.Feedback feedback;
 
 		feedback = passwordRecoveryController.passwordRecovery(signUpDAO,passwordDAO,mailService,email);
