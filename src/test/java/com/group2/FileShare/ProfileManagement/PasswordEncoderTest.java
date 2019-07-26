@@ -20,7 +20,17 @@ public class PasswordEncoderTest {
         String rawPassword = "Password123";
         String hashedPassword = pe.hashPassword(rawPassword);
 
-        assertEquals("hashPasswordTest", true, pe.matches(rawPassword, hashedPassword));
+        assertEquals("HashPassword Match Test", true, pe.matches(rawPassword, hashedPassword));
     }
 
+    @Test
+    public void passwordsNotMatchTest(){
+
+        PasswordEncoder pe = new PasswordEncoder();
+
+        String rawPassword = "Password123";
+        String hashedPassword = pe.hashPassword("Password456");
+
+        assertEquals("HashPassword Not Match Test", false, pe.matches(rawPassword, hashedPassword));
+    }
 }

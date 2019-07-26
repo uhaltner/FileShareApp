@@ -33,7 +33,7 @@ public class SignUpControllerTest {
 
 		feedback = signUpController.signUpUser(signUpForm, signUpDAO, passwordValidator, session);
 
-		assertEquals("Creating a successful RuleSet",SignUpController.Feedback.INVALID_USER ,feedback);
+		assertEquals("Invalid Email Test",SignUpController.Feedback.INVALID_USER ,feedback);
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class SignUpControllerTest {
 
 		feedback = signUpController.signUpUser(signUpForm, signUpDAO, passwordValidator, session);
 
-		assertEquals("Creating a successful RuleSet",SignUpController.Feedback.INVALID_PASSWORD ,feedback);
+		assertEquals("invalid Password Test",SignUpController.Feedback.INVALID_PASSWORD ,feedback);
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class SignUpControllerTest {
 		SignUpController.Feedback feedback;
 		feedback = signUpController.signUpUser(null, null, null, session);
 
-		assertEquals("Creating a successful RuleSet",SignUpController.Feedback.ERROR ,feedback);
+		assertEquals("Input Error Test",SignUpController.Feedback.ERROR ,feedback);
 	}
 
 	@Test
@@ -68,7 +68,7 @@ public class SignUpControllerTest {
 
 		feedback = signUpController.signUpUser(signUpForm, signUpDAO, passwordValidator, session);
 
-		assertEquals("Creating a successful RuleSet",SignUpController.Feedback.OK ,feedback);
+		assertEquals("Valid SignUp Test",SignUpController.Feedback.OK ,feedback);
 	}
 
 
