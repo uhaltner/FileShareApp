@@ -1,13 +1,11 @@
 package com.group2.FileShare.ProfileManagement;
 
+import com.group2.FileShare.ProfileManagement.MockObjects.PasswordRuleDAOMock;
 import com.group2.FileShare.ProfileManagement.PasswordRules.*;
-import com.group2.FileShare.ProfileManagement.PasswordValidator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,9 +28,9 @@ public class PasswordValidatorTest {
     }
 
     @Test
-    public void passwordMatchTest(){
+    public void passwordNotMatchTest(){
         PasswordValidator v = new PasswordValidator(passwordRuleDAO);
-        assertEquals("passwordMatchTest", false, v.validatePassword("Test1235","Test1234"));
+        assertEquals("Non Matching Password Test", false, v.validatePassword("Test1235","Test1234"));
     }
 
     @Test
@@ -40,6 +38,13 @@ public class PasswordValidatorTest {
 
         PasswordValidator v = new PasswordValidator(passwordRuleDAO);
         assertEquals("validPasswordRulesTest", true, v.validatePassword("Password123","Password123"));
+    }
+
+    @Test
+    public void notValidPasswordRulesTest(){
+
+        PasswordValidator v = new PasswordValidator(passwordRuleDAO);
+        assertEquals("NotValidPasswordRulesTest", false, v.validatePassword("Password","Password"));
     }
 
     @Test
@@ -69,7 +74,5 @@ public class PasswordValidatorTest {
         PasswordValidator v = new PasswordValidator(passwordRuleDAO);
         assertEquals("noNumberPasswordTest", false, v.validatePassword("SUPERPASSWORD","SUPERPASSWORD"));
     }
-
-
 
 }

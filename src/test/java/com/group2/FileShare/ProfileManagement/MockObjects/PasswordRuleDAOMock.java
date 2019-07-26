@@ -1,4 +1,4 @@
-package com.group2.FileShare.ProfileManagement;
+package com.group2.FileShare.ProfileManagement.MockObjects;
 
 import com.group2.FileShare.ProfileManagement.PasswordRules.IPasswordRuleDAO;
 import com.group2.FileShare.ProfileManagement.PasswordRulesBuilder.PasswordRulesObject;
@@ -7,7 +7,10 @@ public class PasswordRuleDAOMock implements IPasswordRuleDAO {
 
 	@Override
 	public boolean checkRule(String query, String password) {
-		return true;
+
+
+		//this will never be reached as password rules use the real DAO.
+		return false;
 	}
 
 	@Override

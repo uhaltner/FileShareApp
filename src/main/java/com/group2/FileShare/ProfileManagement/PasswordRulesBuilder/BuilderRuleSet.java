@@ -13,10 +13,16 @@ public class BuilderRuleSet {
 
 	public PasswordRuleSet createPasswordRuleSet(IPasswordRuleDAO passwordRuleDAO){
 
-		PasswordRulesObject passwordRules = passwordRuleDAO.getPasswordRules();
+		try{
 
-		for(int i = 0; i < passwordRules.size(); i++){
-			builder.setRules(passwordRules.getParameter(i), passwordRules.getValue(i));
+			PasswordRulesObject passwordRules = passwordRuleDAO.getPasswordRules();
+
+			for(int i = 0; i < passwordRules.size(); i++){
+				builder.setRules(passwordRules.getParameter(i), passwordRules.getValue(i));
+			}
+
+		}catch (Exception e){
+
 		}
 
 		return builder.getRules();

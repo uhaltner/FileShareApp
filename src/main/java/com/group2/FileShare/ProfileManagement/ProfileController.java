@@ -51,24 +51,35 @@ public class ProfileController {
         IPasswordValidator passwordValidator = new PasswordValidator(passwordRuleDAO);
         IPasswordDAO passwordDAO = new PasswordDAO();
 
+        boolean validPassword = false;
+        String nextPage = "redirect:/profile";
         int userId = sessionManager.getUserId();
+
+        try{
+            //Check validity of password
+            validPassword = checkPassword(passwordValidator, passwordForm);
+
+            if(validPassword){
+                passwordDAO.updatePassword(userId, passwordForm.getPassword());
+                nextPage = "redirect:/dashboard";
+
+            }else{
+                profile_error = true;
+            }
+
+        }catch (Exception e){
+            logger.log(Level.ERROR, "[User:"+userId+"] failed to update password in updateProfile()", e);
+        }
+
+        return nextPage;
+    }
+
+    private boolean checkPassword(IPasswordValidator passwordValidator, PasswordForm passwordForm){
 
         String updatedPassword = passwordForm.getPassword();
         String updatedPasswordConfirm = passwordForm.getConfirmPassword();
 
-        boolean validPassword = false;
-
-        //Check validity of password
-        validPassword = passwordValidator.validatePassword(updatedPassword, updatedPasswordConfirm);
-
-        if(validPassword){
-            passwordDAO.updatePassword(userId, updatedPassword);
-            return "redirect:/dashboard";
-
-        }else{
-            profile_error = true;
-            return "redirect:/profile";
-        }
+        return passwordValidator.validatePassword(updatedPassword, updatedPasswordConfirm);
     }
     
 }

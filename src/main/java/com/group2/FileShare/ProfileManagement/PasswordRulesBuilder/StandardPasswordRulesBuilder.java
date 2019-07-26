@@ -14,16 +14,20 @@ public class StandardPasswordRulesBuilder implements IPasswordRuleBuilder{
 	public void setRules(String parameter, int value)
 	{
 
-		if(parameter.equals("LENGTH") && value == 1){
+		if(parameter == null || parameter.isEmpty()){
+			return;
+		}
+
+		if(parameter.equals("LENGTH") && value != 0){
 			passwordRuleSet.addRule( new LengthRule() );
 
-		}else if(parameter.equals("UPPERCASE") && value == 1) {
+		}else if(parameter.equals("UPPERCASE") && value != 0) {
 			passwordRuleSet.addRule(new UppercaseCharacterRule());
 
-		}else if(parameter.equals("LOWERCASE") && value == 1) {
+		}else if(parameter.equals("LOWERCASE") && value != 0) {
 			passwordRuleSet.addRule(new LowercaseCharacterRule());
 
-		}else if(parameter.equals("NUMERIC") && value == 1) {
+		}else if(parameter.equals("NUMERIC") && value != 0) {
 			passwordRuleSet.addRule(new NumericCharacterRule());
 		}
 
