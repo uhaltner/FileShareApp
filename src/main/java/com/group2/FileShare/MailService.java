@@ -8,19 +8,33 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.Properties;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Component
 public class MailService implements IMailService{
 
+    private static final Logger logger = LogManager.getLogger(MailService.class);
+
     @Override
     public void sendEmail(IMail mail) {
-        SimpleMailMessage message = new SimpleMailMessage();
 
-        message.setTo(mail.getRecipient());
-        message.setSubject(mail.getSubject());
-        message.setText(mail.getText());
+        try{
 
-        getJavaMailSender().send(message);
+            SimpleMailMessage message = new SimpleMailMessage();
+
+            message.setTo(mail.getRecipient());
+            message.setSubject(mail.getSubject());
+            message.setText(mail.getText());
+
+            getJavaMailSender().send(message);
+
+        }catch (Exception e){
+            logger.log(Level.ERROR, "Error sending MailService using sendEmail()" , e);
+        }
+
+        return;
     }
 
     @Bean
