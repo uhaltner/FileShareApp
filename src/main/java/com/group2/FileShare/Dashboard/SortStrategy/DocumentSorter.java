@@ -11,13 +11,18 @@ public class DocumentSorter implements IDocumentSorter{
 
     public DocumentSorter(ISortStrategy strategy)
     {
-        this.strategy = strategy;
+        changeStrategy(strategy);
     }
 
     @Override
     public void changeStrategy(ISortStrategy strategy)
     {
-        this.strategy = strategy;
+        if(strategy == null) {
+            throw new NullPointerException("Sort Strategy cannot be null");
+        }else{
+            this.strategy = strategy;
+        }
+
     }
 
     @Override
