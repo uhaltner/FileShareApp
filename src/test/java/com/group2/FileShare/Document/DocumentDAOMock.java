@@ -12,7 +12,7 @@ public class DocumentDAOMock implements IDocumentDAO {
     DatabaseMock databaseMock;
     public static List<Document> documents = new ArrayList<Document>();
 
-    DocumentDAOMock()
+    public DocumentDAOMock()
     {
         databaseMock  = new DatabaseMock();
     }
