@@ -425,6 +425,11 @@ public class DocumentController {
 		{
 			d = documentsCollection.get(fileIndex);
 			d.setTrashed(true);
+
+			if (d.isPinned())
+			{
+				d.setPinned(false);
+			}
 			d.setTrashedDate(new Date());
 			d = documentDAO.updateDocument(d);
 		}
