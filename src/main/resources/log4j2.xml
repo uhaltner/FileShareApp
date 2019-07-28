@@ -60,6 +60,10 @@
             <AppenderRef ref="SQLAppender" />
         </Logger>
 
+        <Logger name="com.group2.FileShare.DefaultProperties" level="all" additivity="false">
+            <AppenderRef ref="SQLAppender" />
+        </Logger>
+
         <Root level="info">
             <AppenderRef ref="ConsoleAppender" />
             <AppenderRef ref="SQLAppender" />

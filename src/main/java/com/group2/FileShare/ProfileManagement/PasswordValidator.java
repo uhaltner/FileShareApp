@@ -1,6 +1,11 @@
 package com.group2.FileShare.ProfileManagement;
 
 import com.group2.FileShare.ProfileManagement.PasswordRules.IPasswordRule;
+import com.group2.FileShare.ProfileManagement.PasswordRules.IPasswordRuleDAO;
+import com.group2.FileShare.ProfileManagement.PasswordRules.IPasswordRuleSet;
+import com.group2.FileShare.ProfileManagement.PasswordRulesBuilder.BuilderRuleSet;
+import com.group2.FileShare.ProfileManagement.PasswordRulesBuilder.IPasswordRuleBuilder;
+import com.group2.FileShare.ProfileManagement.PasswordRulesBuilder.StandardPasswordRulesBuilder;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,9 +14,20 @@ import java.util.ArrayList;
 
 public class PasswordValidator implements IPasswordValidator {
 
+    private IPasswordRuleBuilder builder;
+    private BuilderRuleSet ruleSet;
+    private IPasswordRuleSet passwordRuleSet;
+
     private static final Logger logger = LogManager.getLogger(PasswordValidator.class);
 
-    public boolean validatePassword(String password, String passwordConfirm, ArrayList<IPasswordRule> passwordRuleList){
+    public PasswordValidator(IPasswordRuleDAO passwordRuleDAO){
+        builder = new StandardPasswordRulesBuilder();
+        ruleSet = new BuilderRuleSet(builder);
+        passwordRuleSet = ruleSet.createPasswordRuleSet(passwordRuleDAO);
+    }
+
+    @Override
+    public boolean validatePassword(String password, String passwordConfirm){
 
         boolean validationResult = false;
 
@@ -19,7 +35,7 @@ public class PasswordValidator implements IPasswordValidator {
 
             if( !isEmpty(password, passwordConfirm) &&
                     password.equals(passwordConfirm) &&
-                    verifyRules(password, passwordRuleList) )
+                    verifyRules(password, passwordRuleSet.getRules()) )
             {
                 validationResult = true;
             }else{
@@ -43,7 +59,7 @@ public class PasswordValidator implements IPasswordValidator {
         }
     }
 
-    public boolean verifyRules(String password, ArrayList<IPasswordRule> passwordRuleList){
+    private boolean verifyRules(String password, ArrayList<IPasswordRule> passwordRuleList){
 
         boolean validity = false;
 

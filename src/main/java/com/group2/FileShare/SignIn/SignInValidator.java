@@ -22,8 +22,6 @@ public class SignInValidator implements Validator {
         }
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty");
-        //PasswordValidator passwordValidator = new PasswordValidator();
-        // TODO call password validator
         if (signInForm.getPassword().length() < 8) {
             errors.rejectValue("password", "Size.signInForm.password");
         }

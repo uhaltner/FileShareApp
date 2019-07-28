@@ -46,6 +46,7 @@ public class PasswordDAO implements IPasswordDAO {
         return;
     }
 
+    @Override
     public void updateRecoveryPassword(String userEmail, String rawNewPassword)
     {
         //hash encode the password

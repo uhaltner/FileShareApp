@@ -351,7 +351,7 @@ public class DocumentDAO implements IDocumentDAO {
 	}
 
 
-	public SharedLink getLinkedDocumentRefWith(String accessUrl) {
+	public SharedDocumentLink getLinkedDocumentRefWith(String accessUrl) {
 
 		query = "{ call get_shared_document(?) }";
 
@@ -362,7 +362,7 @@ public class DocumentDAO implements IDocumentDAO {
 			resultSet = stmt.executeQuery();
 
 			while(resultSet.next()) {
-				SharedLink sharedDocumentRefernce = new SharedLink(resultSet.getInt("link_id"),
+				SharedDocumentLink sharedDocumentRefernce = new SharedDocumentLink(resultSet.getInt("link_id"),
 						resultSet.getInt("document_id"),
 						resultSet.getString("expiration_date"));
 				return sharedDocumentRefernce;

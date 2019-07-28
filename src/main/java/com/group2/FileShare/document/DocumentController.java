@@ -1,5 +1,6 @@
 package com.group2.FileShare.document;
 
+import com.group2.FileShare.DefaultProperties;
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.Compression.ICompression;
 import com.group2.FileShare.Compression.ZipCompression;
@@ -8,6 +9,7 @@ import com.group2.FileShare.Dashboard.SortStrategy.IDocumentSorter;
 import com.group2.FileShare.Validator.FileValidator;
 import com.group2.FileShare.Validator.IValidator;
 import com.group2.FileShare.Validator.StorageLimitValidator;
+import com.group2.FileShare.document.PinDocument.PinDocumentsLimit;
 import com.group2.FileShare.storage.IStorage;
 import com.group2.FileShare.storage.S3StorageService;
 import org.apache.logging.log4j.Level;
@@ -25,6 +27,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,18 +42,17 @@ public class DocumentController {
 	private final IStorage storage;
 	private static List<Document> documentsCollection;
 	private final ICompression compression;
-	private final String compressionExtension;
 	private static AuthenticationSessionManager sessionManager;
 	private static IDocumentDAO documentDAO;
 	private static IValidator fileValidator;
 	private static IValidator storageLimitValidator;
+	private static PinDocumentsLimit pinDocumentsLimit;
 	private static final Logger logger = LogManager.getLogger(DocumentController.class);
 
 	DocumentController() {
 		storage = S3StorageService.getInstance();
 		documentsCollection = new ArrayList<>();
 		compression = new ZipCompression();
-		compressionExtension = ".zip";
 		sessionManager = AuthenticationSessionManager.instance();
 		documentDAO = new DocumentDAO();
 		fileValidator = new FileValidator();
@@ -136,25 +140,51 @@ public class DocumentController {
 		{
 			d = documentsCollection.get(fileIndex);
 		}
-		catch (IndexOutOfBoundsException e) {
+		catch (IndexOutOfBoundsException e) 
+		{
 			System.err.println(e.getMessage());
 			logger.log(Level.ERROR, "Index out of Bounds exception at handleFileDownload():", e);
 			return null;
 		}
 
-		String filename = d.getFilename() + compressionExtension;
+		String filename = d.getFilename();
 		String filePath = d.getStorageURL();
 		Resource resource = null;
+		File decompressedFile = null;
+		
 		try
 		{
-			resource = new UrlResource(storage.downloadFile(filePath));
-		}
-		catch (MalformedURLException e) {
-			logger.log(Level.ERROR, "MalformedURL exception at handleFileDownload():", e);
-			return null;
-		}
+			if (DefaultProperties.getInstance().isDownloadDecompressed()) 
+			{
+				resource = new UrlResource(storage.downloadFile(filePath));
+				decompressedFile = compression.deCompressFile(resource.getURL());
+				resource = new UrlResource(decompressedFile.toURI());
+			} 
+			else 
+			{
+				filename += compression.getExtention();
+				resource = new UrlResource(storage.downloadFile(filePath));
+			}
+			
+			
 		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
 				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
+		}
+		
+		catch (MalformedURLException e) 
+		{
+			logger.log(Level.ERROR, "MalformedURL exception at handleFileDownload():", e);
+			return null;
+		} catch (IOException e) 
+		{
+			logger.log(Level.ERROR, "IOException exception at handleFileDownload():", e);
+		}	
+		finally {
+			if(decompressedFile != null) {
+				decompressedFile.deleteOnExit();
+			}
+		}
+		return null;
 	}
 
 	/**@Author Ueli Haltner
@@ -329,8 +359,20 @@ public class DocumentController {
 		try
 		{
 			d = documentsCollection.get(fileIndex);
-			d.setPinned(true);
-			d = documentDAO.updateDocument(d);
+            pinDocumentsLimit = new PinDocumentsLimit();
+			boolean isPinDocumentValid = pinDocumentsLimit.isPinDocumentsLimitAvailable();
+
+			if(isPinDocumentValid)
+			{
+                d.setPinned(true);
+                d = documentDAO.updateDocument(d);
+            }
+			else {
+                redirectAttributes.addFlashAttribute("error", d.getFilename() + " could not be pinned as maximum limit reached for pinned documents!");
+                System.out.println("Pin document failed for " + d.getFilename() + " because of maximum pin documents limit!");
+                logger.log(Level.INFO, "File pin failed for [document ID : " +d.getId()+"]! because of maximum pin documents limit at makePinned()");
+                return "redirect:" + redirect;
+            }
 		}
 		catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
@@ -361,7 +403,7 @@ public class DocumentController {
 		catch (IndexOutOfBoundsException e) {
 			System.err.println(e.getMessage());
 			logger.log(Level.ERROR, "Index out of Bounds exception at makeUnPinned():", e);
-			redirectAttributes.addFlashAttribute("error", "File unpin failed for file, " + d.getFilename() + ", !");
+			redirectAttributes.addFlashAttribute("error", "File unpin failed for file, " + d.getFilename() + "!");
 			System.out.println("File unpin failed for " +  d.getFilename() + "!");
 			logger.log(Level.ERROR, "File unpin failed for " +  d.getId() + "! at makeUnPinned()");
 			return "redirect:" + redirect;
@@ -383,6 +425,11 @@ public class DocumentController {
 		{
 			d = documentsCollection.get(fileIndex);
 			d.setTrashed(true);
+
+			if (d.isPinned())
+			{
+				d.setPinned(false);
+			}
 			d.setTrashedDate(new Date());
 			d = documentDAO.updateDocument(d);
 		}
