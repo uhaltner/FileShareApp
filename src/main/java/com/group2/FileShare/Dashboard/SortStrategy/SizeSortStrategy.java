@@ -1,13 +1,14 @@
 package com.group2.FileShare.Dashboard.SortStrategy;
 
 import com.group2.FileShare.document.Document;
-import com.group2.FileShare.document.DocumentDAO;
 
 import java.util.List;
 
-public class SizeSortStrategy implements ISortStrategy {
+public class SizeSortStrategy extends SortStrategyAbstract {
 
-    private static DocumentDAO documentDAO = new DocumentDAO();
+    public SizeSortStrategy(){
+        super();
+    }
 
     @Override
     public List<Document> getSortedDocuments(int userId, boolean publicDocumentsOnly, boolean onlyTrashedDocuments) {

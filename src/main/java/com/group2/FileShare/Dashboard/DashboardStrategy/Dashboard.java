@@ -6,12 +6,16 @@ public class Dashboard implements IDashboard{
 
     public Dashboard(IDashboard dashboard)
     {
-        this.dashboard = dashboard;
+        changeDashboard(dashboard);
     }
 
     public void changeDashboard(IDashboard dashboard)
     {
-        this.dashboard = dashboard;
+        if(dashboard == null) {
+            throw new NullPointerException("Dashboard cannot be null");
+        }else{
+            this.dashboard = dashboard;
+        }
     }
 
     @Override

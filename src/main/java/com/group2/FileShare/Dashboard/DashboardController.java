@@ -35,6 +35,7 @@ public class DashboardController {
     private Dashboard currentDashboard = new Dashboard(new PrivateDashboard());
     private SearchBarHandler searchBarHandler = new SearchBarHandler();
     private IDocumentDAO documentDAO = new DocumentDAO();
+    private DeleteDocument deleteDocument =new DeleteDocument();
 
     private static final Logger logger = LogManager.getLogger(DashboardController.class);
 
@@ -123,7 +124,7 @@ public class DashboardController {
     @GetMapping("/trash")
     public String trashDashboard()
     {
-        DeleteDocument.deleteDocumentPermanently();
+        deleteDocument.deleteDocumentPermanently();
         currentDashboard.changeDashboard(new TrashDashboard());
 
         return "redirect: /dashboard";

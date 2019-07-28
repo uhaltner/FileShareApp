@@ -22,7 +22,7 @@ public class IndexController implements ErrorController {
 	}
 
     @GetMapping(value = {"/", ""})
-    public String profileForm(HttpSession session, Model model)
+    public String profileForm(Model model)
     {
 		if (AuthenticationSessionManager.instance().isUserLoggedIn()) {
 			return "redirect:/dashboard";
