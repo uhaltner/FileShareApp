@@ -135,10 +135,13 @@ public class AuthenticationSessionManager
 
     public User getUser()
     {
+        User user;
         HttpSession session = getRequestSession();
         if (session != null)
         {
-            session.getAttribute(UserKey);
+            Object userObject = session.getAttribute(UserKey);
+            user = (User) userObject;
+            return user;
         }
         return null;
     }
