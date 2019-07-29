@@ -20,10 +20,11 @@ import javax.validation.Valid;
 public class SignInController {
 	
 	private AuthenticationSessionManager authSessionManager;
-	private static final Logger logger = LogManager.getLogger(SignInController.class);
+	private Logger logger;
 
 	public SignInController() {
 		authSessionManager = AuthenticationSessionManager.instance();
+		logger = LogManager.getLogger(SignInController.class);
 	}
 	
     @GetMapping("/login")
@@ -63,7 +64,7 @@ public class SignInController {
     
     @GetMapping("/signout")
     public String logout(HttpSession session){
-		logger.log(Level.INFO, "User: "+authSessionManager.getUserId() +" logout successfully");
+		logger.log(Level.INFO, "User: "+ authSessionManager.getUserId() +" logout successfully");
     	authSessionManager.destroySession();
     	return "redirect:/login";
     }

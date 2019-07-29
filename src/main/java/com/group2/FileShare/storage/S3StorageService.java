@@ -9,6 +9,10 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.group2.FileShare.DefaultProperties;
+import com.group2.FileShare.database.DatabaseConnection;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.net.URL;
@@ -20,6 +24,7 @@ public class S3StorageService implements IStorage {
 	private final AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
 	private Bucket s3_bucket;
 	private long linkValidityMillis = 0;
+	private static final Logger logger = LogManager.getLogger(DatabaseConnection.class);
 
 	private S3StorageService() {
 		String bucket_name = DefaultProperties.getInstance().getS3BucketName();
@@ -45,6 +50,7 @@ public class S3StorageService implements IStorage {
 				b = s3.createBucket(bucket_name);
 			} catch (AmazonS3Exception e) {
 				System.err.println(e.getErrorMessage());
+				logger.log(Level.ERROR, "AmazonS3Exception exception in createS3Bucket() :", e.getMessage());
 			}
 		}
 		return b;
@@ -72,6 +78,7 @@ public class S3StorageService implements IStorage {
 			s3.putObject(s3_bucket.getName(), filename, file);
 		} catch (AmazonServiceException e) {
 			System.err.println(e.getErrorMessage());
+			logger.log(Level.ERROR, "AmazonS3Exception exception in uploadFile() :", e.getMessage());
 			return false;
 		}
 		return true;
@@ -84,6 +91,7 @@ public class S3StorageService implements IStorage {
 			s3.deleteObject(bucketName, objectKey);
 		} catch (AmazonServiceException e) {
 			System.err.println(e.getErrorMessage());
+			logger.log(Level.ERROR, "AmazonS3Exception exception in deleteFile() :", e.getMessage());
 			return false;
 		}
 		return true;
@@ -104,8 +112,10 @@ public class S3StorageService implements IStorage {
 			presignedurl = url.toString();
 		} catch (AmazonServiceException e) {
 			e.printStackTrace();
+			logger.log(Level.ERROR, "AmazonS3Exception exception in generateS3PreSignedURL() :", e.getMessage());
 		} catch (SdkClientException e) {
 			e.printStackTrace();
+			logger.log(Level.ERROR, "SdkClientException exception in generateS3PreSignedURL() :", e.getMessage());
 		}
 
 		return presignedurl;

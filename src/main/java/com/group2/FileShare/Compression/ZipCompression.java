@@ -26,7 +26,6 @@ public class ZipCompression implements ICompression
 			FileOutputStream fileOutputStream = new FileOutputStream(compressedFile);
 	        InputStream fileInputStream = file.getInputStream();
 
-		
 	        ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
 	        ZipEntry zipEntry = new ZipEntry(fileName);
 	        zipOutputStream.putNextEntry(zipEntry);
@@ -98,7 +97,7 @@ public class ZipCompression implements ICompression
 	}
 
 	@Override
-	public String getExtention() {
+	public String getExtension() {
 		return extension;
 	}
 }

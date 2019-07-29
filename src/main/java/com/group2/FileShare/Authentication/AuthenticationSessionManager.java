@@ -69,7 +69,9 @@ public class AuthenticationSessionManager
             if (session != null)
             {
                 Object id = session.getAttribute(UserIdKey);
-                return (id != null ? (int)id : -1);
+                if(id != null ) {
+                    return (int)id;
+                }
             }
             return -1;
         }
@@ -88,18 +90,28 @@ public class AuthenticationSessionManager
         return "";
     }
 
-    public String getFirstName() {
+    public String getFirstName()
+    {
         HttpSession session = getRequestSession();
-        if(session != null) {
-            return (String) session.getAttribute(FirstNameKey);
+        if(session != null)
+        {
+            Object firstName = session.getAttribute(FirstNameKey);
+            if(firstName != null) {
+                return (String)firstName;
+            }
         }
         return "";
     }
 
-    public String getLastName() {
+    public String getLastName()
+    {
         HttpSession session = getRequestSession();
-        if(session != null) {
-            return (String) session.getAttribute(LastNameKey);
+        if(session != null)
+        {
+            Object lastName = session.getAttribute(LastNameKey);
+            if(lastName != null) {
+                return (String) lastName;
+            }
         }
         return "";
     }
@@ -114,13 +126,15 @@ public class AuthenticationSessionManager
                 session.invalidate();
             }
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             logger.log(Level.ERROR, "Failed to destroy session at destroySession(): ", e);
         }
 
     }
 
-    public User getUser() {
+    public User getUser()
+    {
         HttpSession session = getRequestSession();
         if (session != null)
         {
@@ -129,7 +143,8 @@ public class AuthenticationSessionManager
         return null;
     }
 
-    public void setSession(User user, HttpSession session) {
+    public void setSession(User user, HttpSession session)
+    {
         session.setAttribute(UserIdKey, user.getId());
         session.setAttribute(EmailKey, user.getEmail());
         session.setAttribute(FirstNameKey, user.getFirstName());
