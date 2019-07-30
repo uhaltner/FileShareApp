@@ -84,6 +84,12 @@ public class DocumentDAOMock implements IDocumentDAO {
                 document = documents.get(i);
                 newDocumentList.add(document);
             }
+
+            if(ownerID == userId && !isPublicDoc && isTrashedDoc)
+            {
+                document = documents.get(i);
+                newDocumentList.add(document);
+            }
         }
 
         return newDocumentList;
