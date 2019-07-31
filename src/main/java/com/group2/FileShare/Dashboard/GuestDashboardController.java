@@ -19,7 +19,7 @@ public class GuestDashboardController
 {
     private AuthenticationSessionManager sessionManager;
     private DocumentDAO documentDAO;
-    private SharedDocumentLinkValidator sharedDocumentLinkValidator;
+    private ISharedDocumentLinkValidator sharedDocumentLinkValidator;
 
     public GuestDashboardController() {
         sessionManager = AuthenticationSessionManager.instance();
@@ -40,7 +40,7 @@ public class GuestDashboardController
         SharedDocumentLink sharedDocRef = documentDAO.getLinkedDocumentRefWith(access_url);
 
         String errorResponse = sharedDocumentLinkValidator.validateDocumentLinkWithErrorResponse(sharedDocRef);
-        if(errorResponse.equals("")) {
+        if(errorResponse.isEmpty()) {
             Document document = DocumentController.getGuestDocument(sharedDocRef.getDocument_id());
             if(document != null)
             {

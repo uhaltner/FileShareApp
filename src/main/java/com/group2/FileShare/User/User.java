@@ -29,6 +29,7 @@ public class User implements IUser {
 		return this.email;
 	}
 
+	@Override
 	public int getId(){
 		return this.id;
 	}

@@ -1,6 +1,7 @@
 package com.group2.FileShare.SignIn;
 
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
+import com.group2.FileShare.ProfileManagement.IPasswordEncoder;
 import com.group2.FileShare.ProfileManagement.PasswordEncoder;
 import com.group2.FileShare.SignUp.SignUpForm;
 import com.group2.FileShare.User.User;
@@ -43,8 +44,8 @@ public class SignInController {
     	 
         if (!bindingResult.hasErrors())
         {
-        	PasswordEncoder passwordEncoder = new PasswordEncoder();
-        	SignInDAO signInDao = new SignInDAO();
+        	IPasswordEncoder passwordEncoder = new PasswordEncoder();
+        	ISignInDAO signInDao = new SignInDAO();
         	User user = signInDao.getUserWith(signInForm, passwordEncoder);
 
         	if(user != null) {
