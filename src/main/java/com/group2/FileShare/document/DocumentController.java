@@ -162,7 +162,7 @@ public class DocumentController {
 			} 
 			else 
 			{
-				filename += compression.getExtention();
+				filename += compression.getExtension();
 				resource = new UrlResource(storage.downloadFile(filePath));
 			}
 			

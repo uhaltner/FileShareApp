@@ -40,6 +40,7 @@ public class PasswordRuleDAO implements IPasswordRuleDAO{
 
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            logger.log(Level.ERROR, "Error while checking passwordRule user in checkRule()" , ex);
         }finally {
             db.closeConnection();
         }

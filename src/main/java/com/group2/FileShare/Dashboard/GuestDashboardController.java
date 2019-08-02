@@ -1,6 +1,5 @@
 package com.group2.FileShare.Dashboard;
 
-import com.group2.FileShare.DefaultProperties;
 import com.group2.FileShare.Authentication.AuthenticationSessionManager;
 import com.group2.FileShare.document.*;
 
@@ -13,19 +12,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.text.ParseException;
-
 
 @Controller
 @RequestMapping("/shared")
-public class GuestDashboardController {
-
+public class GuestDashboardController
+{
     private AuthenticationSessionManager sessionManager;
     private DocumentDAO documentDAO;
-    private SharedDocumentLinkValidator sharedDocumentLinkValidator;
-    private static final Logger logger = LogManager.getLogger(DefaultProperties.class);
+    private ISharedDocumentLinkValidator sharedDocumentLinkValidator;
 
     public GuestDashboardController() {
         sessionManager = AuthenticationSessionManager.instance();
@@ -34,19 +28,19 @@ public class GuestDashboardController {
     }
 
     @GetMapping("")
-    public String sharedFile() {
-
+    public String sharedFile()
+    {
         return "redirect: dashboard";
     }
 
     @GetMapping("/{access_url}")
-    public String sharedFile(Model model, @PathVariable String access_url) {
-
+    public String sharedFile(Model model, @PathVariable String access_url)
+    {
         model.addAttribute("isLoggedIn", sessionManager.isUserLoggedIn());
         SharedDocumentLink sharedDocRef = documentDAO.getLinkedDocumentRefWith(access_url);
 
         String errorResponse = sharedDocumentLinkValidator.validateDocumentLinkWithErrorResponse(sharedDocRef);
-        if(errorResponse.equals("")) {
+        if(errorResponse.isEmpty()) {
             Document document = DocumentController.getGuestDocument(sharedDocRef.getDocument_id());
             if(document != null)
             {

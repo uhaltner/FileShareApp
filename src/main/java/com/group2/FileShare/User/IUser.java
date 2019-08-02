@@ -7,4 +7,6 @@ public interface IUser {
 	public String getLastName();
 
 	public String getEmail();
+
+	public int getId();
 }

@@ -30,6 +30,11 @@ public class PublicAccessTest {
     }
 
     @Test
+    public void getInstanceTest() {
+        Assert.assertNotNull(publicAccess);
+    }
+
+    @Test
     public void publicURISuccessTest()
     {
         boolean status = publicAccess.isPublic(".css");

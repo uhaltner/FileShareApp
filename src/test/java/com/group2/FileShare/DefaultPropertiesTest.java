@@ -19,6 +19,8 @@ public class DefaultPropertiesTest {
     private String s3BucketNameMock = "csci5308-file-share-app-dev";
     private long s3LinkValidityMock = 3600000;
     private String dbFile = "default.properties";
+    private int deleteDocumentExpiryDaysMock = 30;
+    private int pinDocumentsLimitMock = 3;
 
     @Test
     public void getDatabasePropFileTest() {
@@ -48,6 +50,20 @@ public class DefaultPropertiesTest {
     public void getS3LinkValidityMillisTest() {
         long s3LinkValidityMillis = DefaultProperties.getInstance().getS3LinkValidityMillis();
         Assert.assertEquals(s3LinkValidityMock, s3LinkValidityMillis);
+    }
+
+    @Test
+    public void getPinDocumentsLimitTest()
+    {
+        int pinDocumentsLimit = DefaultProperties.getInstance().getPinDocumentsLimit();
+        Assert.assertEquals(pinDocumentsLimitMock, pinDocumentsLimit);
+    }
+
+    @Test
+    public void getDeleteDocumentExpiryTest()
+    {
+        int deleteDocumentExpiryDays = DefaultProperties.getInstance().getDeleteDocumentExpiry();
+        Assert.assertEquals(deleteDocumentExpiryDaysMock, deleteDocumentExpiryDays);
     }
 
 }
